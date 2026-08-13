@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0d1b2a">
+<meta name="description" content="BALAJI Construction Services — Prakash Chand Swami, 25+ years construction experience in Mandawara, Jhunjhunu and nearby villages.">
+<title>BALAJI Construction Services | Prakash Chand Swami</title>
+<style>
+:root{--navy:#0d1b2a;--navy2:#132b43;--orange:#e76f20;--gold:#f4b942;--cream:#fffaf3;--ink:#17202a;--muted:#667085;--white:#fff;--line:#e7e9ee;--shadow:0 18px 50px rgba(13,27,42,.12);--radius:20px}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Noto Sans,Arial,sans-serif;color:var(--ink);background:#fff;line-height:1.6}
+a{text-decoration:none;color:inherit}.container{width:min(1160px,92%);margin:auto}
+.topbar{background:var(--navy);color:#dce7f0;font-size:14px}.topbar .container{display:flex;justify-content:space-between;gap:18px;padding:8px 0;flex-wrap:wrap}
+nav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.navin{display:flex;align-items:center;justify-content:space-between;min-height:76px;gap:20px}.brand{display:flex;align-items:center;gap:12px;font-weight:900}.logo{width:50px;height:50px;border-radius:14px;background:linear-gradient(135deg,var(--orange),var(--gold));color:#fff;display:grid;place-items:center;font-weight:1000;box-shadow:0 8px 20px rgba(231,111,32,.25)}.brand small{display:block;color:var(--muted);font-weight:600;font-size:11px;letter-spacing:.7px}
+.links{display:flex;gap:22px;align-items:center;font-weight:700;font-size:14px}.links a:hover{color:var(--orange)}.actions{display:flex;gap:8px;align-items:center}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:12px;padding:12px 17px;font-weight:800;cursor:pointer}.btn-primary{background:var(--orange);color:#fff}.btn-dark{background:var(--navy);color:#fff}.btn-light{background:#fff;border:1px solid var(--line);color:var(--navy)}.lang{padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:#fff;font-weight:800;cursor:pointer}
+.hero{background:radial-gradient(circle at 75% 20%,#244b69 0,#132b43 35%,#0d1b2a 70%);color:#fff;overflow:hidden}.hero .container{display:grid;grid-template-columns:1.02fr .98fr;gap:50px;align-items:center;padding:72px 0}.eyebrow{color:#ffd27a;font-weight:900;letter-spacing:1.3px;text-transform:uppercase;font-size:13px}.hero h1{font-size:clamp(38px,5.5vw,68px);line-height:1.03;margin:12px 0 18px}.hero h1 span{color:#ffb35d}.hero p{font-size:18px;color:#dbe5ee;max-width:640px}.hero-buttons{display:flex;gap:12px;flex-wrap:wrap;margin:28px 0}.trust{display:flex;gap:25px;flex-wrap:wrap;margin-top:26px}.trust strong{display:block;font-size:24px;color:#fff}.trust span{color:#b9c8d5;font-size:13px}.hero-img{position:relative}.hero-img img{width:100%;height:510px;object-fit:cover;border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,.3);border:5px solid rgba(255,255,255,.1)}.badge{position:absolute;left:-22px;bottom:26px;background:#fff;color:var(--navy);padding:16px 20px;border-radius:16px;box-shadow:var(--shadow);font-weight:900}.badge span{display:block;color:var(--orange);font-size:12px}
+section{padding:80px 0}.section-head{text-align:center;max-width:760px;margin:0 auto 42px}.section-head .eyebrow{color:var(--orange)}.section-head h2{font-size:clamp(28px,4vw,42px);margin:8px 0}.section-head p{color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:26px;box-shadow:0 8px 30px rgba(13,27,42,.05)}.card:hover{transform:translateY(-3px);transition:.2s;box-shadow:var(--shadow)}.icon{width:48px;height:48px;border-radius:14px;background:#fff0e7;color:var(--orange);display:grid;place-items:center;font-size:23px;margin-bottom:15px}.card h3{margin:4px 0 8px}.card p{color:var(--muted);margin:0}
+.about{background:var(--cream)}.about-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:50px;align-items:center}.about-img{position:relative}.about-img img{width:100%;height:480px;object-fit:cover;border-radius:25px}.about-img .years{position:absolute;right:-20px;bottom:25px;background:var(--orange);color:#fff;border-radius:18px;padding:18px 20px;font-weight:900}.about h2{font-size:42px;line-height:1.15;margin:8px 0 18px}.checks{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:24px 0}.check{font-weight:750}.check::before{content:"✓";display:inline-grid;place-items:center;width:25px;height:25px;border-radius:50%;background:#e9f8ef;color:#17864b;margin-right:9px}
+.process{background:#f7f9fb}.process-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}.step{position:relative;background:#fff;border:1px solid var(--line);padding:25px;border-radius:18px}.num{font-size:36px;font-weight:1000;color:var(--orange)}
+.gallery{display:grid;grid-template-columns:1.2fr .8fr .8fr;grid-auto-rows:250px;gap:14px}.gallery figure{margin:0;position:relative;overflow:hidden;border-radius:18px;background:#ddd}.gallery figure:first-child{grid-row:span 2}.gallery img{width:100%;height:100%;object-fit:cover;display:block}.gallery figcaption{position:absolute;left:12px;bottom:12px;background:rgba(13,27,42,.82);color:#fff;padding:7px 11px;border-radius:9px;font-size:13px;font-weight:700}
+.estimate{background:var(--navy);color:#fff}.estimate-grid{display:grid;grid-template-columns:.85fr 1.15fr;gap:45px;align-items:start}.estimate h2{font-size:42px;line-height:1.1;margin:8px 0}.estimate p{color:#c7d3df}.form{background:#fff;color:var(--ink);padding:28px;border-radius:22px;box-shadow:var(--shadow)}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:13px;font-weight:800}.field input,.field select,.field textarea{font:inherit;padding:12px 13px;border:1px solid #d8dde5;border-radius:10px;outline:none}.field textarea{min-height:105px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(231,111,32,.12)}
+.testimonials{background:#fffaf3}.review-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.review{background:#fff;border:1px solid #eee3d4;padding:25px;border-radius:20px}.stars{color:#e7a51e;letter-spacing:2px}.review small{color:var(--muted)}.review-note{margin-top:18px;color:var(--muted);font-size:13px;text-align:center}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:30px}.contact-card{background:#f7f9fb;border:1px solid var(--line);border-radius:20px;padding:28px}.contact-row{display:flex;gap:14px;margin:20px 0}.contact-row b{display:block}.contact-row span{color:var(--muted)}.map{width:100%;height:390px;border:0;border-radius:20px}
+footer{background:#08131f;color:#cbd6df;padding:45px 0 25px}.footer-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:30px}.footer-title{color:#fff;font-weight:900;font-size:18px;margin-bottom:12px}.copyright{border-top:1px solid #263746;margin-top:30px;padding-top:18px;font-size:13px;display:flex;justify-content:space-between;gap:15px;flex-wrap:wrap}
+.float-wa{position:fixed;right:20px;bottom:20px;z-index:80;background:#16a34a;color:#fff;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-size:25px;box-shadow:0 12px 30px rgba(22,163,74,.35)}.mobile-menu{display:none}
+@media(max-width:900px){.links{display:none}.mobile-menu{display:block}.hero .container,.about-grid,.estimate-grid,.contact-grid{grid-template-columns:1fr}.hero-img{order:-1}.hero-img img{height:360px}.badge{left:12px}.cards,.review-grid{grid-template-columns:1fr 1fr}.process-grid{grid-template-columns:1fr 1fr}.gallery{grid-template-columns:1fr 1fr}.gallery figure:first-child{grid-row:span 1}.footer-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.topbar .container{justify-content:center;text-align:center}.navin{min-height:68px}.actions .btn{display:none}.hero .container{padding:50px 0}.hero h1{font-size:42px}.cards,.review-grid,.process-grid,.gallery,.form-grid,.footer-grid{grid-template-columns:1fr}.gallery{grid-auto-rows:230px}.about h2,.estimate h2{font-size:32px}.checks{grid-template-columns:1fr}section{padding:60px 0}}
+</style>
+</head>
+<body>
+<div class="topbar"><div class="container"><span>📍 Mandawara, Jhunjhunu, Rajasthan 333302</span><span>📞 9785438345 &nbsp; | &nbsp; 25+ Years Experience</span></div></div>
+
+<nav>
+<div class="container navin">
+<a class="brand" href="#home"><div class="logo">BC</div><div>BALAJI Construction Services<small>QUALITY • TRUST • ON-TIME WORK</small></div></a>
+<div class="links">
+<a href="#about" data-hi="हमारे बारे में" data-en="About Us">हमारे बारे में</a>
+<a href="#services" data-hi="सेवाएं" data-en="Services">सेवाएं</a>
+<a href="#work" data-hi="हमारा काम" data-en="Our Work">हमारा काम</a>
+<a href="#estimate" data-hi="कोटेशन" data-en="Quote">कोटेशन</a>
+<a href="#contact" data-hi="संपर्क" data-en="Contact">संपर्क</a>
+</div>
+<div class="actions"><button class="lang" id="langBtn">EN</button><a class="btn btn-primary" href="tel:+919785433845">Call Now</a></div>
+</div>
+</nav>
+
+<main id="home">
+<section class="hero">
+<div class="container">
+<div>
+<div class="eyebrow" data-hi="25+ वर्षों का भरोसा" data-en="25+ Years of Trust">25+ वर्षों का भरोसा</div>
+<h1 data-hi="मजबूत घर। <span>बेहतरीन निर्माण।</span>" data-en="Strong Homes. <span>Better Construction.</span>">मजबूत घर। <span>बेहतरीन निर्माण।</span></h1>
+<p data-hi="Prakash Chand Swami द्वारा संचालित BALAJI Construction Services — Mandawara और Udaipurwati के आसपास के क्षेत्रों में नए मकान से लेकर renovation तक निर्माण का भरोसेमंद काम।" data-en="BALAJI Construction Services, led by Prakash Chand Swami — trusted construction work from new homes to renovation across Mandawara, Udaipurwati and nearby areas.">Prakash Chand Swami द्वारा संचालित BALAJI Construction Services — Mandawara और Udaipurwati के आसपास के क्षेत्रों में नए मकान से लेकर renovation तक निर्माण का भरोसेमंद काम।</p>
+<div class="hero-buttons">
+<a class="btn btn-primary" href="#estimate" data-hi="फ्री कोटेशन लें" data-en="Get Free Quote">फ्री कोटेशन लें</a>
+<a class="btn btn-light" href="https://wa.me/919785433845?text=Namaste%20BALAJI%20Construction%20Services%2C%20mujhe%20construction%20ke%20liye%20jaankari%20chahiye." target="_blank">💬 WhatsApp</a>
+</div>
+<div class="trust"><div><strong>25+</strong><span>Years Experience</span></div><div><strong>On-Time</strong><span>Work Focus</span></div><div><strong>Local</strong><span>Trusted Service</span></div></div>
+</div>
+<div class="hero-img"><img src="assets/completed-home.png" alt="BALAJI Construction Services completed house"><div class="badge">Prakash Chand Swami<span>Owner & Contractor</span></div></div>
+</div>
+</section>
+
+<section id="services">
+<div class="container">
+<div class="section-head"><div class="eyebrow">Our Services</div><h2 data-hi="घर बनाने से finishing तक — पूरा construction work" data-en="Complete construction work — from structure to finishing">घर बनाने से finishing तक — पूरा construction work</h2><p data-hi="काम की जरूरत के अनुसार सलाह, material coordination और site execution." data-en="Practical guidance, material coordination and site execution according to your project needs.">काम की जरूरत के अनुसार सलाह, material coordination और site execution.</p></div>
+<div class="cards">
+<div class="card"><div class="icon">🏠</div><h3 data-hi="नया मकान निर्माण" data-en="New House Construction">नया मकान निर्माण</h3><p data-hi="नक्शे/प्लान के अनुसार foundation से लेकर finishing तक." data-en="From foundation to finishing as per your plan and requirements.">नक्शे/प्लान के अनुसार foundation से लेकर finishing तक.</p></div>
+<div class="card"><div class="icon">🧱</div><h3 data-hi="ईंट का काम" data-en="Brick Masonry">ईंट का काम</h3><p data-hi="दीवार, कमरे, partition और मजबूत masonry work." data-en="Walls, rooms, partitions and quality masonry work.">दीवार, कमरे, partition और मजबूत masonry work.</p></div>
+<div class="card"><div class="icon">🏗️</div><h3 data-hi="छत / RCC Work" data-en="Roof / RCC Work">छत / RCC Work</h3><p data-hi="छत की shuttering, reinforcement coordination और concrete work." data-en="Roof shuttering, reinforcement coordination and concrete work.">छत की shuttering, reinforcement coordination और concrete work.</p></div>
+<div class="card"><div class="icon">🎨</div><h3 data-hi="प्लास्टर & Finishing" data-en="Plaster & Finishing">प्लास्टर & Finishing</h3><p data-hi="अंदर-बाहर plaster और साफ finishing work." data-en="Interior and exterior plaster with neat finishing.">अंदर-बाहर plaster और साफ finishing work.</p></div>
+<div class="card"><div class="icon">▦</div><h3 data-hi="Tiles & Flooring" data-en="Tiles & Flooring">Tiles & Flooring</h3><p data-hi="Floor, wall tiles और finishing installation work." data-en="Floor, wall tiles and finishing installation work.">Floor, wall tiles और finishing installation work.</p></div>
+<div class="card"><div class="icon">🔧</div><h3 data-hi="Renovation / Repair" data-en="Renovation / Repair">Renovation / Repair</h3><p data-hi="पुराने मकान की मरम्मत, बदलाव और renovation." data-en="Repairs, alterations and renovation of existing homes.">पुराने मकान की मरम्मत, बदलाव और renovation.</p></div>
+<div class="card"><div class="icon">🚧</div><h3 data-hi="Boundary Wall" data-en="Boundary Wall">Boundary Wall</h3><p data-hi="मजबूत boundary wall और gate-area masonry." data-en="Strong boundary walls and gate-area masonry.">मजबूत boundary wall और gate-area masonry.</p></div>
+<div class="card"><div class="icon">🏪</div><h3 data-hi="दुकान / अन्य निर्माण" data-en="Shops / Other Builds">दुकान / अन्य निर्माण</h3><p data-hi="घर के अलावा जरूरत के अनुसार छोटे-बड़े construction projects." data-en="Small and large construction projects beyond homes.">घर के अलावा जरूरत के अनुसार छोटे-बड़े construction projects.</p></div>
+<div class="card"><div class="icon">📐</div><h3 data-hi="Site Consultation" data-en="Site Consultation">Site Consultation</h3><p data-hi="काम शुरू करने से पहले site देखकर scope और estimate पर चर्चा." data-en="Discuss scope and estimate after understanding your site requirements.">काम शुरू करने से पहले site देखकर scope और estimate पर चर्चा.</p></div>
+</div>
+</div>
+</section>
+
+<section id="about" class="about">
+<div class="container about-grid">
+<div class="about-img"><img src="assets/prakash-chand-work.jpg" alt="Prakash Chand Swami at construction site"><div class="years">25+<br><small>YEARS EXPERIENCE</small></div></div>
+<div>
+<div class="eyebrow">About BALAJI Construction Services</div>
+<h2 data-hi="काम में भरोसा, गुणवत्ता और समय की अहमियत" data-en="Trust, quality and time matter in every project">काम में भरोसा, गुणवत्ता और समय की अहमियत</h2>
+<p data-hi="BALAJI Construction Services के मालिक Prakash Chand Swami पिछले 25+ वर्षों से Mandawara और आसपास के गांवों में मकान व construction का काम कर रहे हैं। उद्देश्य साफ है — मेहनत से काम करना, ग्राहक की जरूरत समझना और अच्छा result देना।" data-en="Owner and contractor Prakash Chand Swami has 25+ years of construction experience in Mandawara and nearby villages. The focus is simple: understand the client, execute carefully and deliver a quality result.">BALAJI Construction Services के मालिक Prakash Chand Swami पिछले 25+ वर्षों से Mandawara और आसपास के गांवों में मकान व construction का काम कर रहे हैं। उद्देश्य साफ है — मेहनत से काम करना, ग्राहक की जरूरत समझना और अच्छा result देना।</p>
+<div class="checks"><div class="check">25+ Years Experience</div><div class="check">Local Area Service</div><div class="check">Quality Work</div><div class="check">On-Time Focus</div><div class="check">Clear Discussion</div><div class="check">End-to-End Work</div></div>
+<a class="btn btn-primary" href="#contact" data-hi="Prakash Chand Swami से बात करें" data-en="Talk to Prakash Chand Swami">Prakash Chand Swami से बात करें</a>
+</div>
+</div>
+</section>
+
+<section class="process">
+<div class="container">
+<div class="section-head"><div class="eyebrow">How We Work</div><h2 data-hi="काम करने का आसान और साफ process" data-en="A simple, clear project process">काम करने का आसान और साफ process</h2></div>
+<div class="process-grid">
+<div class="step"><div class="num">01</div><h3 data-hi="Inquiry" data-en="Inquiry">Inquiry</h3><p data-hi="Call/WhatsApp से काम की जरूरत बताएं और फोटो/जानकारी भेजें।" data-en="Tell us what you need by call/WhatsApp and share photos/details.">Call/WhatsApp से काम की जरूरत बताएं और फोटो/जानकारी भेजें।</p></div>
+<div class="step"><div class="num">02</div><h3 data-hi="Site Visit" data-en="Site Visit">Site Visit</h3><p data-hi="जरूरत के अनुसार site देखकर scope और काम की जानकारी समझी जाती है।" data-en="We understand the site and project scope based on your requirements.">जरूरत के अनुसार site देखकर scope और काम की जानकारी समझी जाती है।</p></div>
+<div class="step"><div class="num">03</div><h3 data-hi="Estimate & Plan" data-en="Estimate & Plan">Estimate & Plan</h3><p data-hi="काम के scope, material और budget पर चर्चा करके quotation तैयार किया जाता है।" data-en="We discuss scope, material and budget before preparing a quotation.">काम के scope, material और budget पर चर्चा करके quotation तैयार किया जाता है।</p></div>
+<div class="step"><div class="num">04</div><h3 data-hi="Construction" data-en="Construction">Construction</h3><p data-hi="काम तय plan के अनुसार शुरू होता है और progress पर बातचीत बनी रहती है।" data-en="Work starts as agreed, with ongoing communication about progress.">काम तय plan के अनुसार शुरू होता है और progress पर बातचीत बनी रहती है।</p></div>
+</div>
+</div>
+</section>
+
+<section id="work">
+<div class="container">
+<div class="section-head"><div class="eyebrow">Portfolio / Our Work</div><h2 data-hi="हमारे काम की झलक" data-en="A glimpse of our work">हमारे काम की झलक</h2><p data-hi="नीचे दिए photos आपके वास्तविक काम और construction journey को दिखाते हैं।" data-en="These photos show real work and the construction journey.">नीचे दिए photos आपके वास्तविक काम और construction journey को दिखाते हैं।</p></div>
+<div class="gallery">
+<figure><img src="assets/construction-progress.png" alt="Construction in progress"><figcaption>Construction in Progress</figcaption></figure>
+<figure><img src="assets/completed-home.png" alt="Completed house"><figcaption>Completed Home</figcaption></figure>
+<figure><img src="assets/prakash-chand-work.jpg" alt="Construction site work"><figcaption>On-Site Work</figcaption></figure>
+<figure><img src="assets/prakash-chand-portrait.png" alt="Prakash Chand Swami"><figcaption>Prakash Chand Swami</figcaption></figure>
+</div>
+</div>
+</section>
+
+<section id="estimate" class="estimate">
+<div class="container estimate-grid">
+<div>
+<div class="eyebrow">Free Quote / Consultation</div>
+<h2 data-hi="अपने काम का अनुमान जानने के लिए enquiry भेजें" data-en="Send an enquiry for your project estimate">अपने काम का अनुमान जानने के लिए enquiry भेजें</h2>
+<p data-hi="नीचे basic details भरें। Submit करने पर आपकी enquiry WhatsApp में तैयार हो जाएगी। Final estimate site visit और काम के scope के अनुसार तय होगा।" data-en="Fill in the basic details. Submit to open a WhatsApp enquiry. Final estimate depends on site visit and project scope.">नीचे basic details भरें। Submit करने पर आपकी enquiry WhatsApp में तैयार हो जाएगी। Final estimate site visit और काम के scope के अनुसार तय होगा।</p>
+<div class="hero-buttons"><a class="btn btn-primary" href="https://wa.me/919785433845?text=Namaste%20BALAJI%20Construction%20Services%2C%20main%20apne%20construction%20project%20ke%20liye%20quotation%20chahta%2Fchahti%20hun." target="_blank">💬 WhatsApp Enquiry</a><a class="btn btn-light" href="tel:+919785433845">📞 Call 9785438345</a></div>
+</div>
+<form class="form" id="quoteForm">
+<div class="form-grid">
+<div class="field"><label data-hi="आपका नाम" data-en="Your Name">आपका नाम</label><input id="qname" required placeholder="नाम"></div>
+<div class="field"><label data-hi="मोबाइल नंबर" data-en="Mobile Number">मोबाइल नंबर</label><input id="qphone" required inputmode="tel" placeholder="10 digit mobile"></div>
+<div class="field"><label data-hi="काम का प्रकार" data-en="Project Type">काम का प्रकार</label><select id="qtype"><option>नया मकान / New House</option><option>Boundary Wall</option><option>RCC / Chhat</option><option>Plaster</option><option>Tiles / Flooring</option><option>Renovation / Repair</option><option>अन्य / Other</option></select></div>
+<div class="field"><label data-hi="अनुमानित क्षेत्रफल" data-en="Approx. Area">अनुमानित क्षेत्रफल</label><input id="qarea" placeholder="जैसे 1200 sq.ft."></div>
+<div class="field"><label data-hi="स्थान / गांव" data-en="Location / Village">स्थान / गांव</label><input id="qlocation" placeholder="Mandawara / nearby village"></div>
+<div class="field"><label data-hi="बजट (यदि पता हो)" data-en="Budget (if known)">बजट (यदि पता हो)</label><input id="qbudget" placeholder="Optional"></div>
+<div class="field full"><label data-hi="काम की जानकारी" data-en="Project Details">काम की जानकारी</label><textarea id="qdetails" placeholder="काम कब शुरू करना है, क्या-क्या काम चाहिए आदि"></textarea></div>
+<div class="field full"><button class="btn btn-primary" type="submit" style="width:100%;padding:15px" data-hi="WhatsApp पर Enquiry भेजें →" data-en="Send Enquiry on WhatsApp →">WhatsApp पर Enquiry भेजें →</button></div>
+</div>
+</form>
+</div>
+</section>
+
+<section class="testimonials">
+<div class="container">
+<div class="section-head"><div class="eyebrow">Customer Reviews</div><h2 data-hi="ग्राहक का भरोसा सबसे जरूरी" data-en="Customer trust comes first">ग्राहक का भरोसा सबसे जरूरी</h2><p data-hi="आपके असली ग्राहक reviews मिलने के बाद इस section में नाम और review जोड़े जा सकते हैं।" data-en="Once you collect real customer reviews, their names and feedback can be added here.">आपके असली ग्राहक reviews मिलने के बाद इस section में नाम और review जोड़े जा सकते हैं।</p></div>
+<div class="review-grid">
+<div class="review"><div class="stars">★★★★★</div><h3 data-hi="गुणवत्ता पर फोकस" data-en="Quality-focused work">गुणवत्ता पर फोकस</h3><p data-hi="“हमारा लक्ष्य हर काम में मजबूत और साफ construction देना है।”" data-en="“Our goal is strong, clean construction on every project.”">“हमारा लक्ष्य हर काम में मजबूत और साफ construction देना है।”</p><small>BALAJI Construction Services</small></div>
+<div class="review"><div class="stars">★★★★★</div><h3 data-hi="समय का ध्यान" data-en="Time-conscious execution">समय का ध्यान</h3><p data-hi="“काम शुरू करने से पहले scope और जरूरतों पर साफ बातचीत।”" data-en="“Clear discussion about scope and requirements before work begins.”">“काम शुरू करने से पहले scope और जरूरतों पर साफ बातचीत।”</p><small>BALAJI Construction Services</small></div>
+<div class="review"><div class="stars">★★★★★</div><h3 data-hi="स्थानीय भरोसा" data-en="Local trust">स्थानीय भरोसा</h3><p data-hi="“Mandawara और आसपास के गांवों में लंबे अनुभव के साथ service।”" data-en="“Serving Mandawara and nearby villages with long local experience.”">“Mandawara और आसपास के गांवों में लंबे अनुभव के साथ service।”</p><small>BALAJI Construction Services</small></div>
+</div>
+<div class="review-note" data-hi="नोट: ये अभी brand highlights हैं, वास्तविक ग्राहक testimonials नहीं। असली reviews भेजने पर हम इन्हें अपडेट कर सकते हैं।" data-en="Note: These are brand highlights, not real customer testimonials. Send actual reviews and we can replace them.">नोट: ये अभी brand highlights हैं, वास्तविक ग्राहक testimonials नहीं। असली reviews भेजने पर हम इन्हें अपडेट कर सकते हैं।</div>
+</div>
+</section>
+
+<section id="contact">
+<div class="container">
+<div class="section-head"><div class="eyebrow">Contact Us</div><h2 data-hi="काम की बात सीधे करें" data-en="Let's discuss your project">काम की बात सीधे करें</h2><p data-hi="Call, WhatsApp या enquiry form — जो आसान लगे।" data-en="Call, WhatsApp or use the enquiry form — whichever is easier.">Call, WhatsApp या enquiry form — जो आसान लगे।</p></div>
+<div class="contact-grid">
+<div class="contact-card">
+<div class="contact-row"><div>👤</div><div><b>Prakash Chand Swami</b><span>Owner & Contractor</span></div></div>
+<div class="contact-row"><div>📞</div><div><b>9785438345</b><span>Call for construction enquiry</span></div></div>
+<div class="contact-row"><div>💬</div><div><b>WhatsApp</b><span>काम की फोटो और details भेज सकते हैं</span></div></div>
+<div class="contact-row"><div>📍</div><div><b>Mandawara, Jhunjhunu, Rajasthan 333302</b><span>Udaipurwati और आसपास के क्षेत्र</span></div></div>
+<div class="hero-buttons"><a class="btn btn-primary" href="tel:+919785433845">📞 Call Now</a><a class="btn btn-dark" href="https://wa.me/919785433845?text=Namaste%20Prakash%20ji%2C%20mujhe%20construction%20ke%20liye%20baat%20karni%20hai." target="_blank">💬 WhatsApp</a><a class="btn btn-light" href="https://www.google.com/maps/search/?api=1&query=Mandawara%2C%20Jhunjhunu%2C%20Rajasthan%20333302" target="_blank">🗺️ Google Maps</a></div>
+</div>
+<iframe class="map" loading="lazy" src="https://www.google.com/maps?q=Mandawara%2C%20Jhunjhunu%2C%20Rajasthan%20333302&output=embed" title="Mandawara location map"></iframe>
+</div>
+</div>
+</section>
+</main>
+
+<a class="float-wa" href="https://wa.me/919785433845?text=Namaste%20BALAJI%20Construction%20Services%2C%20mujhe%20construction%20ke%20liye%20jaankari%20chahiye." target="_blank" aria-label="WhatsApp">💬</a>
+
+<footer>
+<div class="container">
+<div class="footer-grid">
+<div><div class="brand" style="color:#fff"><div class="logo">BC</div><div>BALAJI Construction Services<small style="color:#9fb0bf">Prakash Chand Swami • Contractor</small></div></div><p>25+ years of construction experience in Mandawara, Jhunjhunu and nearby areas.</p></div>
+<div><div class="footer-title" data-hi="Quick Links" data-en="Quick Links">Quick Links</div><p><a href="#about">About Us</a></p><p><a href="#services">Services</a></p><p><a href="#work">Portfolio</a></p><p><a href="#estimate">Free Quote</a></p></div>
+<div><div class="footer-title" data-hi="Contact" data-en="Contact">Contact</div><p>📞 9785438345</p><p>📍 Mandawara, Jhunjhunu, Rajasthan 333302</p><p>Udaipurwati & nearby areas</p></div>
+</div>
+<div class="copyright"><span>© <span id="year"></span> BALAJI Construction Services. All rights reserved.</span><span>Built for local construction enquiries.</span></div>
+</div>
+</footer>
+
+<script>
+const phone="919785433845";
+let lang="hi";
+const langBtn=document.getElementById("langBtn");
+function setLang(next){
+  lang=next;
+  document.documentElement.lang=lang;
+  document.querySelectorAll("[data-hi]").forEach(el=>{
+    const val=el.getAttribute("data-"+lang);
+    if(val!==null) el.innerHTML=val;
+  });
+  langBtn.textContent=lang==="hi"?"EN":"हिं";
+}
+langBtn.addEventListener("click",()=>setLang(lang==="hi"?"en":"hi"));
+document.getElementById("year").textContent=new Date().getFullYear();
+
+document.getElementById("quoteForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const name=document.getElementById("qname").value.trim();
+  const phoneNo=document.getElementById("qphone").value.trim();
+  const type=document.getElementById("qtype").value;
+  const area=document.getElementById("qarea").value.trim();
+  const loc=document.getElementById("qlocation").value.trim();
+  const budget=document.getElementById("qbudget").value.trim();
+  const details=document.getElementById("qdetails").value.trim();
+  const msg=`Namaste BALAJI Construction Services,%0A%0A*New Project Enquiry*%0AName: ${encodeURIComponent(name)}%0AMobile: ${encodeURIComponent(phoneNo)}%0AWork: ${encodeURIComponent(type)}%0AArea: ${encodeURIComponent(area||"Not specified")}%0ALocation: ${encodeURIComponent(loc||"Not specified")}%0ABudget: ${encodeURIComponent(budget||"Not specified")}%0ADetails: ${encodeURIComponent(details||"Not specified")}%0A%0AMujhe project ke quotation/consultation ke liye baat karni hai.`;
+  window.open(`https://wa.me/${phone}?text=${msg}`,"_blank");
+});
+</script>
+</body>
+</html>
