@@ -19,6 +19,7 @@
 --m:#6b7788;
 --l:#e4e9f0;
 --r:#dc2626;
+--b:#2563eb;
 }
 
 *{box-sizing:border-box}
@@ -69,8 +70,16 @@ align-items:center;
 margin-bottom:24px;
 }
 
-.brand h1{margin:0;font-size:21px}
-.brand p{margin:3px 0;color:#9fb0c0;font-size:12px}
+.brand h1{
+margin:0;
+font-size:21px;
+}
+
+.brand p{
+margin:3px 0;
+color:#9fb0c0;
+font-size:12px;
+}
 
 .side nav button{
 width:100%;
@@ -103,11 +112,19 @@ gap:15px;
 margin-bottom:22px;
 }
 
-.top h1{margin:0;font-size:28px}
+.top h1{
+margin:0;
+font-size:28px;
+}
 
-.muted{color:var(--m);font-size:13px}
+.muted{
+color:var(--m);
+font-size:13px;
+}
 
-.userbox,.row,.actions{
+.userbox,
+.row,
+.actions{
 display:flex;
 gap:9px;
 align-items:center;
@@ -120,18 +137,32 @@ grid-template-columns:repeat(5,1fr);
 gap:15px;
 }
 
-.stat,.panel{
+.stat,
+.panel{
 background:var(--c);
 border:1px solid var(--l);
 border-radius:19px;
 padding:19px;
 }
 
-.stat small{color:var(--m)}
-.stat .num{font-size:27px;font-weight:900;margin-top:4px}
+.stat small{
+color:var(--m);
+}
 
-.panel{margin-top:17px}
-.panel h2{margin:0 0 14px;font-size:19px}
+.stat .num{
+font-size:27px;
+font-weight:900;
+margin-top:4px;
+}
+
+.panel{
+margin-top:17px;
+}
+
+.panel h2{
+margin:0 0 14px;
+font-size:19px;
+}
 
 .forms{
 display:grid;
@@ -139,7 +170,9 @@ grid-template-columns:1fr 1fr;
 gap:13px;
 }
 
-.full{grid-column:1/-1}
+.full{
+grid-column:1/-1;
+}
 
 label{
 display:block;
@@ -148,7 +181,9 @@ font-size:13px;
 margin:13px 0 6px;
 }
 
-input,select,textarea{
+input,
+select,
+textarea{
 width:100%;
 padding:12px 13px;
 border:1px solid var(--l);
@@ -156,7 +191,10 @@ border-radius:11px;
 background:#fff;
 }
 
-textarea{min-height:90px}
+textarea{
+min-height:90px;
+resize:vertical;
+}
 
 .btn{
 border:0;
@@ -165,14 +203,39 @@ padding:12px 16px;
 font-weight:800;
 }
 
-.primary{background:var(--o);color:#fff}
-.secondary{background:#eef2f7;color:var(--t)}
-.danger{background:#fee2e2;color:#991b1b}
-.success{background:#dcfce7;color:#166534}
-.warning{background:#fef3c7;color:#92400e}
-.info{background:#e0f2fe;color:#075985}
+.primary{
+background:var(--o);
+color:#fff;
+}
 
-.tablewrap{overflow:auto}
+.secondary{
+background:#eef2f7;
+color:var(--t);
+}
+
+.danger{
+background:#fee2e2;
+color:#991b1b;
+}
+
+.success{
+background:#dcfce7;
+color:#166534;
+}
+
+.warning{
+background:#fef3c7;
+color:#92400e;
+}
+
+.info{
+background:#e0f2fe;
+color:#075985;
+}
+
+.tablewrap{
+overflow:auto;
+}
 
 .table{
 width:100%;
@@ -180,7 +243,8 @@ border-collapse:collapse;
 min-width:850px;
 }
 
-.table th,.table td{
+.table th,
+.table td{
 padding:11px 9px;
 border-bottom:1px solid var(--l);
 text-align:left;
@@ -204,15 +268,35 @@ font-weight:800;
 font-size:11px;
 }
 
-.pill.pending{background:#fff7ed;color:#c2410c}
-.pill.rejected{background:#fee2e2;color:#991b1b}
-.pill.contacted{background:#fef3c7;color:#92400e}
-.pill.approved{background:#dcfce7;color:#166534}
-.pill.absent{background:#fee2e2;color:#991b1b}
-.pill.present{background:#dcfce7;color:#166534}
+.pill.pending{
+background:#fff7ed;
+color:#c2410c;
+}
 
-.section{display:none}
-.section.active{display:block}
+.pill.rejected,
+.pill.absent{
+background:#fee2e2;
+color:#991b1b;
+}
+
+.pill.contacted{
+background:#fef3c7;
+color:#92400e;
+}
+
+.pill.approved,
+.pill.present{
+background:#dcfce7;
+color:#166534;
+}
+
+.section{
+display:none;
+}
+
+.section.active{
+display:block;
+}
 
 .report{
 display:grid;
@@ -220,7 +304,10 @@ grid-template-columns:1fr 1fr;
 gap:15px;
 }
 
-.big{font-size:29px;font-weight:900}
+.big{
+font-size:29px;
+font-weight:900;
+}
 
 .notice{
 padding:13px;
@@ -237,10 +324,13 @@ background:#111827;
 color:#fff;
 padding:13px 17px;
 border-radius:12px;
-z-index:9999;
+z-index:99999;
+max-width:420px;
 }
 
-.small{font-size:12px}
+.small{
+font-size:12px;
+}
 
 .action-buttons{
 display:flex;
@@ -259,6 +349,7 @@ height:55px;
 border-radius:12px;
 object-fit:cover;
 border:1px solid var(--l);
+background:#f1f5f9;
 }
 
 .face-box{
@@ -303,13 +394,15 @@ display:none;
 align-items:center;
 justify-content:center;
 padding:20px;
-z-index:500;
+z-index:5000;
 }
 
-.modal.open{display:flex}
+.modal.open{
+display:flex;
+}
 
 .modal-box{
-width:min(850px,100%);
+width:min(900px,100%);
 max-height:92vh;
 overflow:auto;
 background:#fff;
@@ -317,43 +410,243 @@ border-radius:22px;
 padding:24px;
 }
 
+.project-row{
+cursor:pointer;
+transition:.15s;
+}
+
+.project-row:hover{
+background:#f8fafc;
+}
+
+.progress-wrap{
+margin-top:15px;
+}
+
+.progress-track{
+height:15px;
+background:#e5e7eb;
+border-radius:99px;
+overflow:hidden;
+}
+
+.progress-bar{
+height:100%;
+background:#16a34a;
+width:0%;
+transition:.4s;
+}
+
+.timeline{
+position:relative;
+margin-top:20px;
+}
+
+.timeline-item{
+position:relative;
+padding:18px;
+margin-bottom:14px;
+border:1px solid var(--l);
+border-radius:18px;
+background:#fff;
+}
+
+.timeline-item:hover{
+box-shadow:0 5px 20px #0000000a;
+}
+
+.progress-photo{
+width:180px;
+height:130px;
+object-fit:cover;
+border-radius:14px;
+cursor:zoom-in;
+border:1px solid var(--l);
+}
+
+.photo-grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:12px;
+margin-top:15px;
+}
+
+.photo-grid img{
+width:100%;
+height:140px;
+object-fit:cover;
+border-radius:13px;
+cursor:zoom-in;
+border:1px solid var(--l);
+}
+
+.project-card{
+background:#fff;
+border:1px solid var(--l);
+border-radius:18px;
+padding:17px;
+cursor:pointer;
+transition:.2s;
+}
+
+.project-card:hover{
+transform:translateY(-2px);
+box-shadow:0 8px 25px #00000012;
+}
+
+.project-grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:14px;
+}
+
+.customer-profile{
+display:flex;
+gap:12px;
+align-items:center;
+}
+
+.customer-profile img{
+width:58px;
+height:58px;
+border-radius:14px;
+object-fit:cover;
+cursor:zoom-in;
+border:1px solid var(--l);
+}
+
+.empty{
+padding:25px;
+text-align:center;
+color:var(--m);
+}
+
+.loading{
+padding:20px;
+text-align:center;
+color:var(--m);
+}
+
 @media(max-width:1100px){
-.grid{grid-template-columns:repeat(3,1fr)}
-.att-summary{grid-template-columns:repeat(2,1fr)}
+
+.grid{
+grid-template-columns:repeat(3,1fr);
+}
+
+.att-summary{
+grid-template-columns:repeat(2,1fr);
+}
+
+.project-grid{
+grid-template-columns:repeat(2,1fr);
+}
+
+.photo-grid{
+grid-template-columns:repeat(3,1fr);
+}
+
 }
 
 @media(max-width:950px){
-.shell{grid-template-columns:1fr}
-.side{position:static;height:auto}
-.side nav{display:grid;grid-template-columns:repeat(3,1fr)}
-.grid{grid-template-columns:repeat(2,1fr)}
+
+.shell{
+grid-template-columns:1fr;
+}
+
+.side{
+position:static;
+height:auto;
+}
+
+.side nav{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+}
+
+.grid{
+grid-template-columns:repeat(2,1fr);
+}
+
 }
 
 @media(max-width:600px){
-.main{padding:15px}
-.side nav{grid-template-columns:repeat(2,1fr)}
-.grid,.forms,.report,.att-summary{grid-template-columns:1fr}
-.full{grid-column:auto}
-.top{align-items:flex-start;flex-direction:column}
+
+.main{
+padding:15px;
+}
+
+.side nav{
+grid-template-columns:repeat(2,1fr);
+}
+
+.grid,
+.forms,
+.report,
+.att-summary,
+.project-grid{
+grid-template-columns:1fr;
+}
+
+.photo-grid{
+grid-template-columns:repeat(2,1fr);
+}
+
+.full{
+grid-column:auto;
+}
+
+.top{
+align-items:flex-start;
+flex-direction:column;
+}
+
 }
 
 @media print{
-.side,.top button,.action-buttons,.forms{display:none!important}
-.main{padding:0}
+
+.side,
+.top button,
+.action-buttons,
+.forms{
+display:none!important;
+}
+
+.main{
+padding:0;
+}
+
 }
 </style>
 </head>
 
 <body>
 
+<!-- ======================================================
+LOADING
+====================================================== -->
+
 <div id="loadingScreen"
-style="min-height:100vh;display:grid;place-items:center;background:#0b1f33;color:#fff;text-align:center;padding:25px">
+style="
+min-height:100vh;
+display:grid;
+place-items:center;
+background:#0b1f33;
+color:#fff;
+text-align:center;
+padding:25px">
 
 <div>
+
 <div style="
-width:70px;height:70px;border-radius:20px;
-background:#f58220;display:grid;place-items:center;
-font-weight:900;font-size:25px;margin:auto auto 18px">
+width:70px;
+height:70px;
+border-radius:20px;
+background:#f58220;
+display:grid;
+place-items:center;
+font-weight:900;
+font-size:25px;
+margin:auto auto 18px">
 BC
 </div>
 
@@ -362,10 +655,15 @@ BC
 <div style="opacity:.8">
 Admin session verify हो रही है...
 </div>
-</div>
 
 </div>
 
+</div>
+
+
+<!-- ======================================================
+APP
+====================================================== -->
 
 <div id="app" class="shell hidden">
 
@@ -376,42 +674,76 @@ Admin session verify हो रही है...
 <div class="logo">BC</div>
 
 <div>
-<h1 style="color:#fff;font-size:17px">BALAJI</h1>
-<p>Private Management</p>
+
+<h1 style="color:#fff;font-size:17px">
+BALAJI
+</h1>
+
+<p>
+Private Management
+</p>
+
 </div>
 
 </div>
+
 
 <nav>
 
-<button data-s="dashboard" class="active">📊 Dashboard</button>
+<button data-s="dashboard" class="active">
+📊 Dashboard
+</button>
 
-<button data-s="enquiries">📩 Customer Enquiries</button>
+<button data-s="enquiries">
+📩 Customer Enquiries
+</button>
 
-<button data-s="customers">👥 Customers</button>
+<button data-s="customers">
+👥 Customers
+</button>
 
-<button data-s="projects">🏗️ Projects</button>
+<button data-s="projects">
+🏗️ Projects
+</button>
 
-<button data-s="progress">📈 Project Progress</button>
+<button data-s="progress">
+📈 Project Progress
+</button>
 
-<button data-s="workers">👷 Workers</button>
+<button data-s="workers">
+👷 Workers
+</button>
 
-<button data-s="attendance">🕘 Attendance</button>
+<button data-s="attendance">
+🕘 Attendance
+</button>
 
-<button data-s="work">📝 Work Entry</button>
+<button data-s="work">
+📝 Work Entry
+</button>
 
-<button data-s="payments">💰 Payments</button>
+<button data-s="payments">
+💰 Payments
+</button>
 
-<button data-s="expenses">🧾 Expenses</button>
+<button data-s="expenses">
+🧾 Expenses
+</button>
 
-<button data-s="reports">📊 Reports</button>
+<button data-s="reports">
+📊 Reports
+</button>
 
 </nav>
 
-<button class="btn secondary"
+
+<button
+class="btn secondary"
 style="width:100%;margin-top:18px"
 onclick="logout()">
+
 Logout
+
 </button>
 
 </aside>
@@ -419,23 +751,39 @@ Logout
 
 <main class="main">
 
+
+<!-- TOP -->
+
 <div class="top">
 
 <div>
-<h1 id="title">Dashboard</h1>
+
+<h1 id="title">
+Dashboard
+</h1>
+
 <div class="muted">
 BALAJI Construction Services • Secure Management
 </div>
+
 </div>
+
 
 <div class="userbox">
 
-<span id="userRole" class="pill">Admin</span>
+<span id="userRole" class="pill">
+Admin
+</span>
 
-<span id="userEmail" class="muted"></span>
+<span id="userEmail" class="muted">
+</span>
 
-<button class="btn secondary" onclick="refreshAll()">
+<button
+class="btn secondary"
+onclick="refreshAll()">
+
 ↻ Refresh
+
 </button>
 
 </div>
@@ -443,35 +791,86 @@ BALAJI Construction Services • Secure Management
 </div>
 
 
-<!-- DASHBOARD -->
+<!-- ======================================================
+DASHBOARD
+====================================================== -->
 
 <section id="dashboard" class="section active">
 
 <div class="grid">
 
 <div class="stat">
-<small>Customers</small>
-<div class="num" id="mCustomers">0</div>
+
+<small>
+Customers
+</small>
+
+<div
+class="num"
+id="mCustomers">
+0
 </div>
 
-<div class="stat">
-<small>Projects</small>
-<div class="num" id="mProjects">0</div>
 </div>
 
-<div class="stat">
-<small>Workers</small>
-<div class="num" id="mWorkers">0</div>
-</div>
 
 <div class="stat">
-<small>Present Today</small>
-<div class="num" id="mPresent">0</div>
+
+<small>
+Projects
+</small>
+
+<div
+class="num"
+id="mProjects">
+0
 </div>
 
+</div>
+
+
 <div class="stat">
-<small>Pending Enquiries</small>
-<div class="num" id="mEnquiries">0</div>
+
+<small>
+Workers
+</small>
+
+<div
+class="num"
+id="mWorkers">
+0
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<small>
+Present Today
+</small>
+
+<div
+class="num"
+id="mPresent">
+0
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<small>
+Pending Enquiries
+</small>
+
+<div
+class="num"
+id="mEnquiries">
+0
+</div>
+
 </div>
 
 </div>
@@ -479,89 +878,201 @@ BALAJI Construction Services • Secure Management
 
 <div class="panel">
 
-<h2>Recent Projects</h2>
+<div class="row"
+style="justify-content:space-between">
 
-<div id="recentProjects" class="tablewrap"></div>
+<h2>
+🏗️ Recent Projects
+</h2>
+
+<button
+class="btn secondary"
+onclick="showSection('projects')">
+
+All Projects →
+
+</button>
+
+</div>
+
+<div
+id="recentProjects"
+class="project-grid">
+
+</div>
 
 </div>
 
 
 <div class="panel">
 
-<h2>📩 Latest Customer Enquiries</h2>
+<h2>
+📩 Latest Customer Enquiries
+</h2>
 
-<div id="recentEnquiries" class="tablewrap"></div>
+<div
+id="recentEnquiries"
+class="tablewrap">
+</div>
 
 </div>
 
 </section>
 
 
-<!-- ENQUIRIES -->
+<!-- ======================================================
+ENQUIRIES
+====================================================== -->
 
 <section id="enquiries" class="section">
 
 <div class="panel">
 
-<div class="row" style="justify-content:space-between">
+<div
+class="row"
+style="justify-content:space-between">
 
 <div>
-<h2>📩 Customer Enquiries / Contract Requests</h2>
+
+<h2>
+📩 Customer Enquiries / Contract Requests
+</h2>
+
 <div class="muted">
 Customer द्वारा भेजी गई enquiry यहाँ दिखाई देगी।
 </div>
+
 </div>
 
-<button class="btn primary" onclick="loadEnquiries()">
+<button
+class="btn primary"
+onclick="loadEnquiries()">
+
 ↻ Refresh
+
 </button>
 
 </div>
 
-<div id="enquiriesList" class="tablewrap" style="margin-top:15px"></div>
+
+<div
+id="enquiriesList"
+class="tablewrap"
+style="margin-top:15px">
+</div>
 
 </div>
 
 </section>
 
 
-<!-- CUSTOMERS -->
+<!-- ======================================================
+CUSTOMERS
+====================================================== -->
 
 <section id="customers" class="section">
 
+
 <div class="panel">
 
-<h2>Customer जोड़ें</h2>
+<h2>
+Customer जोड़ें
+</h2>
 
-<form class="forms" onsubmit="addCustomer(event)">
 
-<div>
-<label>Name *</label>
-<input id="cName" required>
-</div>
-
-<div>
-<label>Phone</label>
-<input id="cPhone">
-</div>
+<form
+class="forms"
+onsubmit="addCustomer(event)">
 
 <div>
-<label>Email</label>
-<input id="cEmail" type="email">
+
+<label>
+Name *
+</label>
+
+<input
+id="cName"
+required>
+
 </div>
 
+
 <div>
-<label>Address</label>
-<input id="cAddress">
+
+<label>
+Phone
+</label>
+
+<input
+id="cPhone">
+
 </div>
+
+
+<div>
+
+<label>
+Email
+</label>
+
+<input
+id="cEmail"
+type="email">
+
+</div>
+
+
+<div>
+
+<label>
+Address
+</label>
+
+<input
+id="cAddress">
+
+</div>
+
 
 <div class="full">
-<label>Notes</label>
-<textarea id="cNotes"></textarea>
+
+<label>
+Photo URL
+</label>
+
+<input
+id="cPhoto"
+placeholder="Customer photo का URL">
+
+<div class="muted" style="margin-top:5px">
+यदि photo_url पहले से customer record में है तो उसे यहाँ बदलने की आवश्यकता नहीं।
 </div>
 
+</div>
+
+
+<div class="full">
+
+<label>
+Notes
+</label>
+
+<textarea
+id="cNotes">
+</textarea>
+
+</div>
+
+
 <div>
-<button class="btn primary">Save Customer</button>
+
+<button
+class="btn primary">
+
+Save Customer
+
+</button>
+
 </div>
 
 </form>
@@ -571,85 +1082,196 @@ Customer द्वारा भेजी गई enquiry यहाँ दिख�
 
 <div class="panel">
 
-<div class="row" style="justify-content:space-between">
+<div
+class="row"
+style="justify-content:space-between">
 
-<h2>👥 Customers List</h2>
+<h2>
+👥 Customers List
+</h2>
 
-<button class="btn secondary" onclick="refreshAll()">↻ Refresh</button>
+<button
+class="btn secondary"
+onclick="refreshAll()">
+
+↻ Refresh
+
+</button>
 
 </div>
 
-<div id="customersList" class="tablewrap"></div>
+
+<div
+id="customersList"
+class="tablewrap">
+</div>
 
 </div>
 
 </section>
 
 
-<!-- PROJECTS -->
+<!-- ======================================================
+PROJECTS
+====================================================== -->
 
 <section id="projects" class="section">
 
+
 <div class="panel">
 
-<h2>Project जोड़ें</h2>
+<h2>
+🏗️ Project जोड़ें
+</h2>
 
-<form class="forms" onsubmit="addProject(event)">
+
+<form
+class="forms"
+onsubmit="addProject(event)">
+
 
 <div>
-<label>Project Name *</label>
-<input id="pName" required>
+
+<label>
+Project Name *
+</label>
+
+<input
+id="pName"
+required>
+
 </div>
 
+
 <div>
-<label>Customer</label>
+
+<label>
+Customer
+</label>
+
 <select id="pCustomer">
-<option value="">Select</option>
+
+<option value="">
+Select
+</option>
+
 </select>
+
 </div>
 
+
 <div>
-<label>Work Type</label>
+
+<label>
+Work Type
+</label>
+
 <input id="pType">
+
 </div>
 
+
 <div>
-<label>Location</label>
+
+<label>
+Location
+</label>
+
 <input id="pLocation">
+
 </div>
 
-<div>
-<label>Start Date</label>
-<input id="pStart" type="date">
-</div>
 
 <div>
-<label>Expected End</label>
-<input id="pEnd" type="date">
+
+<label>
+Start Date
+</label>
+
+<input
+id="pStart"
+type="date">
+
 </div>
 
+
 <div>
-<label>Status</label>
+
+<label>
+Expected End
+</label>
+
+<input
+id="pEnd"
+type="date">
+
+</div>
+
+
+<div>
+
+<label>
+Status
+</label>
+
 <select id="pStatus">
-<option value="lead">Lead</option>
-<option value="active">Active</option>
-<option value="completed">Completed</option>
-<option value="cancelled">Cancelled</option>
+
+<option value="lead">
+Lead
+</option>
+
+<option value="active">
+Active
+</option>
+
+<option value="completed">
+Completed
+</option>
+
+<option value="cancelled">
+Cancelled
+</option>
+
 </select>
+
 </div>
 
+
 <div>
-<label>Agreed Amount</label>
-<input id="pAmount" type="number" min="0">
+
+<label>
+Agreed Amount
+</label>
+
+<input
+id="pAmount"
+type="number"
+min="0">
+
 </div>
+
 
 <div class="full">
-<label>Notes</label>
-<textarea id="pNotes"></textarea>
+
+<label>
+Notes
+</label>
+
+<textarea id="pNotes">
+</textarea>
+
 </div>
 
+
 <div>
-<button class="btn primary">Save Project</button>
+
+<button
+class="btn primary">
+
+Save Project
+
+</button>
+
 </div>
 
 </form>
@@ -659,97 +1281,221 @@ Customer द्वारा भेजी गई enquiry यहाँ दिख�
 
 <div class="panel">
 
-<h2>Projects List</h2>
+<h2>
+Projects List
+</h2>
 
-<div id="projectsList" class="tablewrap"></div>
+<div class="muted" style="margin-bottom:12px">
+💡 किसी भी Project पर click करके उसकी पूरी progress, updates और photos देखें।
+</div>
+
+<div
+id="projectsList"
+class="project-grid">
+</div>
 
 </div>
 
 </section>
 
 
-<!-- PROGRESS -->
+<!-- ======================================================
+PROJECT PROGRESS
+====================================================== -->
 
 <section id="progress" class="section">
 
-<div class="panel" style="padding:0;overflow:hidden">
+<div class="panel">
 
-<iframe
-src="project-progress.html"
-title="Project Progress"
-style="display:block;width:100%;height:900px;border:0">
-</iframe>
+<div class="row"
+style="justify-content:space-between">
+
+<div>
+
+<h2>
+📈 Project Progress
+</h2>
+
+<div class="muted">
+किसी project को चुनें।
+</div>
+
+</div>
+
+</div>
+
+
+<div
+id="progressProjectCards"
+class="project-grid"
+style="margin-top:18px">
+</div>
 
 </div>
 
 </section>
 
 
-<!-- WORKERS -->
+<!-- ======================================================
+WORKERS
+====================================================== -->
 
 <section id="workers" class="section">
 
+
 <div class="panel">
 
-<h2>👷 Worker जोड़ें / Account बनाएं</h2>
+<h2>
+👷 Worker जोड़ें / Account बनाएं
+</h2>
+
 
 <div class="notice">
-Worker का password database में plain text में save नहीं किया जाता।
-Worker Login Account बनाने के लिए सुरक्षित Supabase Auth/Edge Function इस्तेमाल करना होगा।
+
+Worker का password workers table में plain text में save नहीं होगा।
+
+Worker save करते समय Supabase Auth account भी बनाया जाएगा।
+
+<br><br>
+
+<strong>
+Login ID + Email + Password तीनों जरूरी हैं।
+</strong>
+
 </div>
 
-<form class="forms" onsubmit="addWorker(event)">
+
+<form
+class="forms"
+onsubmit="addWorker(event)">
+
 
 <div>
-<label>Name *</label>
-<input id="wName" required>
+
+<label>
+Name *
+</label>
+
+<input
+id="wName"
+required>
+
 </div>
 
+
 <div>
-<label>Phone</label>
+
+<label>
+Phone
+</label>
+
 <input id="wPhone">
+
 </div>
 
+
 <div>
-<label>काम / Role</label>
+
+<label>
+काम / Role
+</label>
+
 <input id="wRole">
+
 </div>
 
-<div>
-<label>Daily Rate</label>
-<input id="wRate" type="number" min="0">
-</div>
 
 <div>
-<label>Village</label>
+
+<label>
+Daily Rate
+</label>
+
+<input
+id="wRate"
+type="number"
+min="0">
+
+</div>
+
+
+<div>
+
+<label>
+Village
+</label>
+
 <input id="wVillage">
+
 </div>
 
-<div>
-<label>Worker Login ID *</label>
-<input id="wLoginId" required>
-</div>
 
 <div>
-<label>Worker Login Email *</label>
-<input id="wLoginEmail" type="email" required>
+
+<label>
+Worker Login ID *
+</label>
+
+<input
+id="wLoginId"
+required
+placeholder="worker001">
+
 </div>
 
+
 <div>
-<label>Worker Password</label>
-<input id="wPassword" type="password" minlength="6"
-placeholder="Auth function के लिए">
+
+<label>
+Worker Login Email *
+</label>
+
+<input
+id="wLoginEmail"
+type="email"
+required
+placeholder="worker001@gmail.com">
+
 </div>
+
+
+<div>
+
+<label>
+Worker Password *
+</label>
+
+<input
+id="wPassword"
+type="password"
+minlength="6"
+required
+placeholder="कम से कम 6 characters">
+
+</div>
+
 
 <div class="full">
-<label>Notes</label>
-<textarea id="wNotes"></textarea>
+
+<label>
+Notes
+</label>
+
+<textarea id="wNotes">
+</textarea>
+
 </div>
 
+
 <div>
-<button class="btn primary">
-➕ Save Worker
+
+<button
+class="btn primary">
+
+➕ Save Worker + Login Account
+
 </button>
+
 </div>
 
 </form>
@@ -759,45 +1505,74 @@ placeholder="Auth function के लिए">
 
 <div class="panel">
 
-<div class="row" style="justify-content:space-between">
+<div
+class="row"
+style="justify-content:space-between">
 
 <div>
-<h2>👷 Workers List</h2>
+
+<h2>
+👷 Workers List
+</h2>
+
 <div class="muted">
 Worker Login, Face Registration और Attendance status।
 </div>
+
 </div>
 
-<button class="btn secondary" onclick="refreshAll()">
+<button
+class="btn secondary"
+onclick="refreshAll()">
+
 ↻ Refresh
+
 </button>
 
 </div>
 
-<div id="workersList" class="tablewrap"></div>
+
+<div
+id="workersList"
+class="tablewrap">
+</div>
 
 </div>
 
 </section>
 
 
-<!-- ATTENDANCE -->
+<!-- ======================================================
+ATTENDANCE
+====================================================== -->
 
 <section id="attendance" class="section">
 
+
 <div class="panel">
 
-<div class="row" style="justify-content:space-between">
+<div
+class="row"
+style="justify-content:space-between">
 
 <div>
-<h2>🕘 Worker Attendance Management</h2>
+
+<h2>
+🕘 Worker Attendance Management
+</h2>
+
 <div class="muted">
 Check-in / Check-out और daily attendance।
 </div>
+
 </div>
 
-<button class="btn primary" onclick="loadAttendance()">
+<button
+class="btn primary"
+onclick="loadAttendance()">
+
 ↻ Refresh Attendance
+
 </button>
 
 </div>
@@ -805,16 +1580,34 @@ Check-in / Check-out और daily attendance।
 
 <div class="forms">
 
-<div>
-<label>Date</label>
-<input id="attDate" type="date">
-</div>
 
 <div>
-<label>Worker Filter</label>
+
+<label>
+Date
+</label>
+
+<input
+id="attDate"
+type="date">
+
+</div>
+
+
+<div>
+
+<label>
+Worker Filter
+</label>
+
 <select id="attWorkerFilter">
-<option value="">सभी Worker</option>
+
+<option value="">
+सभी Worker
+</option>
+
 </select>
+
 </div>
 
 </div>
@@ -826,331 +1619,878 @@ Check-in / Check-out और daily attendance।
 
 <div class="att-summary">
 
-<div class="att-card">
-<small>Total</small>
-<b id="attTotal">0</b>
-</div>
 
 <div class="att-card">
-<small>Present</small>
-<b id="attPresent">0</b>
+
+<small>
+Total
+</small>
+
+<b id="attTotal">
+0
+</b>
+
 </div>
+
 
 <div class="att-card">
-<small>Absent</small>
-<b id="attAbsent">0</b>
+
+<small>
+Present
+</small>
+
+<b id="attPresent">
+0
+</b>
+
 </div>
+
 
 <div class="att-card">
-<small>Checked Out</small>
-<b id="attOut">0</b>
-</div>
+
+<small>
+Absent
+</small>
+
+<b id="attAbsent">
+0
+</b>
 
 </div>
 
-<div id="attendanceList" class="tablewrap"></div>
+
+<div class="att-card">
+
+<small>
+Checked Out
+</small>
+
+<b id="attOut">
+0
+</b>
+
+</div>
+
+
+</div>
+
+
+<div
+id="attendanceList"
+class="tablewrap">
+</div>
 
 </div>
 
 </section>
 
 
-<!-- WORK -->
+<!-- ======================================================
+WORK
+====================================================== -->
 
 <section id="work" class="section">
 
+
 <div class="panel">
 
-<h2>Daily Work Entry</h2>
+<h2>
+📝 Daily Work Entry
+</h2>
 
-<form class="forms" onsubmit="addWork(event)">
+
+<form
+class="forms"
+onsubmit="addWork(event)">
+
 
 <div>
-<label>Project *</label>
-<select id="lProject" required>
-<option value="">Select Project</option>
+
+<label>
+Project *
+</label>
+
+<select
+id="lProject"
+required>
+
+<option value="">
+Select Project
+</option>
+
 </select>
+
 </div>
 
+
 <div>
-<label>Worker</label>
+
+<label>
+Worker
+</label>
+
 <select id="lWorker">
-<option value="">Select Worker</option>
+
+<option value="">
+Select Worker
+</option>
+
 </select>
+
 </div>
 
-<div>
-<label>Date</label>
-<input id="lDate" type="date">
-</div>
 
 <div>
-<label>Days</label>
-<input id="lDays" type="number" step="0.5" value="1">
+
+<label>
+Date
+</label>
+
+<input
+id="lDate"
+type="date">
+
 </div>
 
+
 <div>
-<label>Work Description</label>
+
+<label>
+Days
+</label>
+
+<input
+id="lDays"
+type="number"
+step="0.5"
+value="1">
+
+</div>
+
+
+<div>
+
+<label>
+Work Description
+</label>
+
 <input id="lDesc">
+
 </div>
 
+
 <div>
-<label>Amount</label>
-<input id="lAmount" type="number" min="0">
+
+<label>
+Amount
+</label>
+
+<input
+id="lAmount"
+type="number"
+min="0">
+
 </div>
+
 
 <div class="full">
-<label>Notes</label>
-<textarea id="lNotes"></textarea>
+
+<label>
+Notes
+</label>
+
+<textarea id="lNotes">
+</textarea>
+
 </div>
+
 
 <div>
-<button class="btn primary">Save Work Entry</button>
-</div>
 
-</form>
+<button
+class="btn primary">
 
-</div>
+Save Work Entry
 
-<div class="panel">
-
-<h2>Recent Work</h2>
-
-<div id="workList" class="tablewrap"></div>
-
-</div>
-
-</section>
-
-
-<!-- PAYMENTS -->
-
-<section id="payments" class="section">
-
-<div class="panel">
-
-<h2>Payment / ग्राहक से प्राप्त राशि</h2>
-
-<form class="forms" onsubmit="addPayment(event)">
-
-<div>
-<label>Project *</label>
-<select id="payProject" required>
-<option value="">Select Project</option>
-</select>
-</div>
-
-<div>
-<label>Date</label>
-<input id="payDate" type="date">
-</div>
-
-<div>
-<label>Amount *</label>
-<input id="payAmount" type="number" min="0" required>
-</div>
-
-<div>
-<label>Method</label>
-<select id="payMethod">
-<option>Cash</option>
-<option>UPI</option>
-<option>Bank Transfer</option>
-<option>Cheque</option>
-</select>
-</div>
-
-<div>
-<label>Reference No.</label>
-<input id="payRef">
-</div>
-
-<div>
-<label>Notes</label>
-<input id="payNotes">
-</div>
-
-<div>
-<button class="btn primary">Save Payment</button>
-</div>
-
-</form>
-
-</div>
-
-<div class="panel">
-
-<h2>Payment History</h2>
-
-<div id="paymentsList" class="tablewrap"></div>
-
-</div>
-
-</section>
-
-
-<!-- EXPENSES -->
-
-<section id="expenses" class="section">
-
-<div class="panel">
-
-<h2>Expense जोड़ें</h2>
-
-<form class="forms" onsubmit="addExpense(event)">
-
-<div>
-<label>Project</label>
-<select id="eProject">
-<option value="">General</option>
-</select>
-</div>
-
-<div>
-<label>Date</label>
-<input id="eDate" type="date">
-</div>
-
-<div>
-<label>Category *</label>
-<select id="eCategory">
-<option>Material</option>
-<option>Labour</option>
-<option>Transport</option>
-<option>Machine</option>
-<option>Other</option>
-</select>
-</div>
-
-<div>
-<label>Amount *</label>
-<input id="eAmount" type="number" min="0" required>
-</div>
-
-<div class="full">
-<label>Description</label>
-<input id="eDesc">
-</div>
-
-<div class="full">
-<label>Notes</label>
-<textarea id="eNotes"></textarea>
-</div>
-
-<div>
-<button class="btn primary">Save Expense</button>
-</div>
-
-</form>
-
-</div>
-
-<div class="panel">
-
-<h2>Expense History</h2>
-
-<div id="expensesList" class="tablewrap"></div>
-
-</div>
-
-</section>
-
-
-<!-- REPORTS -->
-
-<section id="reports" class="section">
-
-<div class="row" style="justify-content:space-between">
-
-<h2>Financial & Project Report</h2>
-
-<button class="btn primary" onclick="window.print()">
-🖨️ Print Report
 </button>
 
 </div>
 
-<div class="report">
-
-<div class="stat">
-<small>Total Payments</small>
-<div class="big" id="rPayments">₹0</div>
-</div>
-
-<div class="stat">
-<small>Total Expenses</small>
-<div class="big" id="rExpenses">₹0</div>
-</div>
-
-<div class="stat">
-<small>Net Cash Flow</small>
-<div class="big" id="rNet">₹0</div>
-</div>
-
-<div class="stat">
-<small>Work Value</small>
-<div class="big" id="rWork">₹0</div>
-</div>
+</form>
 
 </div>
+
 
 <div class="panel">
 
-<h2>Project-wise Summary</h2>
+<h2>
+Recent Work
+</h2>
 
-<div id="reportProjects" class="tablewrap"></div>
+<div
+id="workList"
+class="tablewrap">
+</div>
 
 </div>
 
 </section>
+
+
+<!-- ======================================================
+PAYMENTS
+====================================================== -->
+
+<section id="payments" class="section">
+
+
+<div class="panel">
+
+<h2>
+💰 Payment / ग्राहक से प्राप्त राशि
+</h2>
+
+
+<form
+class="forms"
+onsubmit="addPayment(event)">
+
+
+<div>
+
+<label>
+Project *
+</label>
+
+<select
+id="payProject"
+required>
+
+<option value="">
+Select Project
+</option>
+
+</select>
+
+</div>
+
+
+<div>
+
+<label>
+Date
+</label>
+
+<input
+id="payDate"
+type="date">
+
+</div>
+
+
+<div>
+
+<label>
+Amount *
+</label>
+
+<input
+id="payAmount"
+type="number"
+min="0"
+required>
+
+</div>
+
+
+<div>
+
+<label>
+Method
+</label>
+
+<select id="payMethod">
+
+<option>
+Cash
+</option>
+
+<option>
+UPI
+</option>
+
+<option>
+Bank Transfer
+</option>
+
+<option>
+Cheque
+</option>
+
+</select>
+
+</div>
+
+
+<div>
+
+<label>
+Reference No.
+</label>
+
+<input id="payRef">
+
+</div>
+
+
+<div>
+
+<label>
+Notes
+</label>
+
+<input id="payNotes">
+
+</div>
+
+
+<div>
+
+<button
+class="btn primary">
+
+Save Payment
+
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+
+<div class="panel">
+
+<h2>
+Payment History
+</h2>
+
+<div
+id="paymentsList"
+class="tablewrap">
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ======================================================
+EXPENSES
+====================================================== -->
+
+<section id="expenses" class="section">
+
+
+<div class="panel">
+
+<h2>
+🧾 Expense जोड़ें
+</h2>
+
+
+<form
+class="forms"
+onsubmit="addExpense(event)">
+
+
+<div>
+
+<label>
+Project
+</label>
+
+<select id="eProject">
+
+<option value="">
+General
+</option>
+
+</select>
+
+</div>
+
+
+<div>
+
+<label>
+Date
+</label>
+
+<input
+id="eDate"
+type="date">
+
+</div>
+
+
+<div>
+
+<label>
+Category *
+</label>
+
+<select id="eCategory">
+
+<option>
+Material
+</option>
+
+<option>
+Labour
+</option>
+
+<option>
+Transport
+</option>
+
+<option>
+Machine
+</option>
+
+<option>
+Other
+</option>
+
+</select>
+
+</div>
+
+
+<div>
+
+<label>
+Amount *
+</label>
+
+<input
+id="eAmount"
+type="number"
+min="0"
+required>
+
+</div>
+
+
+<div class="full">
+
+<label>
+Description
+</label>
+
+<input id="eDesc">
+
+</div>
+
+
+<div class="full">
+
+<label>
+Notes
+</label>
+
+<textarea id="eNotes">
+</textarea>
+
+</div>
+
+
+<div>
+
+<button
+class="btn primary">
+
+Save Expense
+
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+
+<div class="panel">
+
+<h2>
+Expense History
+</h2>
+
+<div
+id="expensesList"
+class="tablewrap">
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ======================================================
+REPORTS
+====================================================== -->
+
+<section id="reports" class="section">
+
+
+<div
+class="row"
+style="justify-content:space-between">
+
+<h2>
+📊 Financial & Project Report
+</h2>
+
+<button
+class="btn primary"
+onclick="window.print()">
+
+🖨️ Print Report
+
+</button>
+
+</div>
+
+
+<div class="report">
+
+
+<div class="stat">
+
+<small>
+Total Payments
+</small>
+
+<div
+class="big"
+id="rPayments">
+₹0
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<small>
+Total Expenses
+</small>
+
+<div
+class="big"
+id="rExpenses">
+₹0
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<small>
+Net Cash Flow
+</small>
+
+<div
+class="big"
+id="rNet">
+₹0
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<small>
+Work Value
+</small>
+
+<div
+class="big"
+id="rWork">
+₹0
+</div>
+
+</div>
+
+</div>
+
+
+<div class="panel">
+
+<h2>
+Project-wise Summary
+</h2>
+
+<div
+id="reportProjects"
+class="tablewrap">
+</div>
+
+</div>
+
+</section>
+
 
 </main>
 </div>
 
 
-<div id="toast" class="toast hidden"></div>
+<!-- ======================================================
+TOAST
+====================================================== -->
+
+<div
+id="toast"
+class="toast hidden">
+</div>
 
 
-<!-- WORKER EDIT MODAL -->
+<!-- ======================================================
+WORKER EDIT MODAL
+====================================================== -->
 
-<div id="workerModal" class="modal">
+<div
+id="workerModal"
+class="modal">
 
 <div class="modal-box">
 
-<div class="row" style="justify-content:space-between">
+<div
+class="row"
+style="justify-content:space-between">
 
-<h2>👷 Worker Edit</h2>
+<h2>
+👷 Worker Edit
+</h2>
 
-<button class="btn secondary" onclick="closeWorkerModal()">
+<button
+class="btn secondary"
+onclick="closeWorkerModal()">
+
 ✕ Close
+
 </button>
 
 </div>
 
-<div id="workerEditContent"></div>
-
+<div
+id="workerEditContent">
 </div>
 
 </div>
 
+</div>
 
-<!-- ATTENDANCE EDIT MODAL -->
 
-<div id="attendanceModal" class="modal">
+<!-- ======================================================
+ATTENDANCE EDIT MODAL
+====================================================== -->
+
+<div
+id="attendanceModal"
+class="modal">
 
 <div class="modal-box">
 
-<div class="row" style="justify-content:space-between">
+<div
+class="row"
+style="justify-content:space-between">
 
-<h2>🕘 Attendance Edit</h2>
+<h2>
+🕘 Attendance Edit
+</h2>
 
-<button class="btn secondary" onclick="closeAttendanceModal()">
+<button
+class="btn secondary"
+onclick="closeAttendanceModal()">
+
 ✕ Close
+
 </button>
 
 </div>
 
-<div id="attendanceEditContent"></div>
+<div
+id="attendanceEditContent">
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ======================================================
+PROJECT PROGRESS MODAL
+====================================================== -->
+
+<div
+id="projectProgressModal"
+class="modal">
+
+<div
+class="modal-box"
+style="width:min(1000px,100%)">
+
+
+<div
+class="row"
+style="justify-content:space-between">
+
+<div>
+
+<h2 id="ppTitle">
+🏗️ Project Progress
+</h2>
+
+<div
+id="ppMeta"
+class="muted">
+</div>
+
+</div>
+
+
+<button
+class="btn secondary"
+onclick="closeProjectProgress()">
+
+✕ Close
+
+</button>
+
+</div>
+
+
+<div
+style="
+margin-top:18px;
+padding:18px;
+border-radius:18px;
+background:#f8fafc">
+
+<div
+class="row"
+style="justify-content:space-between">
+
+<b>
+Current Progress
+</b>
+
+<strong
+id="ppPercent"
+style="font-size:28px">
+0%
+</strong>
+
+</div>
+
+
+<div class="progress-wrap">
+
+<div class="progress-track">
+
+<div
+id="ppBar"
+class="progress-bar">
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div
+class="panel"
+style="margin-top:15px">
+
+<h3 style="margin-top:0">
+📅 Date-wise Updates
+</h3>
+
+<div
+id="ppTimeline"
+class="timeline">
+</div>
+
+</div>
+
+
+<div
+class="panel">
+
+<h3 style="margin-top:0">
+📷 Project Progress Photos
+</h3>
+
+<div
+id="ppPhotos"
+class="photo-grid">
+</div>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<!-- ======================================================
+PHOTO VIEWER
+====================================================== -->
+
+<div
+id="photoViewer"
+class="modal"
+onclick="closePhotoViewer(event)">
+
+<div
+style="
+position:relative;
+max-width:95vw;
+max-height:95vh">
+
+<img
+id="largePhoto"
+src=""
+style="
+max-width:95vw;
+max-height:90vh;
+object-fit:contain;
+border-radius:15px;
+box-shadow:0 20px 60px #000">
+
+<button
+class="btn secondary"
+onclick="closePhotoViewer()"
+style="
+position:absolute;
+right:-10px;
+top:-10px;
+width:42px;
+height:42px;
+padding:0;
+border-radius:50%">
+
+✕
+
+</button>
 
 </div>
 
@@ -1163,63 +2503,189 @@ Check-in / Check-out और daily attendance।
 SUPABASE
 ========================================================= */
 
-const sb = window.supabase.createClient(
+const sb=window.supabase.createClient(
+
 'https://iefxfyjmyssuiuyncfqz.supabase.co',
+
 'sb_publishable_45zaRM5LLByFABddU5hm9g_4UwfnT7t'
+
 );
+
 
 let user=null;
 let role=null;
+
 let workersCache=[];
 let projectsCache=[];
 let customersCache=[];
+
 let customerCache={};
+
 
 const q=id=>document.getElementById(id);
 
-const today=()=>new Date().toISOString().slice(0,10);
 
-const money=n=>'₹'+Number(n||0).toLocaleString(
+const today=()=>{
+
+const d=new Date();
+
+const pad=n=>String(n).padStart(2,'0');
+
+return d.getFullYear()+
+'-'+
+pad(d.getMonth()+1)+
+'-'+
+pad(d.getDate());
+
+};
+
+
+const money=n=>
+'₹'+
+Number(n||0).toLocaleString(
 'en-IN',
-{maximumFractionDigits:2}
+{
+maximumFractionDigits:2
+}
 );
 
+
 function esc(v){
-return String(v??'').replace(/[&<>"']/g,c=>({
+
+return String(v??'').replace(
+/[&<>"']/g,
+c=>({
 '&':'&amp;',
 '<':'&lt;',
 '>':'&gt;',
 '"':'&quot;',
 "'":'&#39;'
-}[c]));
+}[c])
+);
+
 }
 
+
 function toast(t){
+
 q('toast').textContent=t;
+
 q('toast').classList.remove('hidden');
-setTimeout(()=>q('toast').classList.add('hidden'),3000);
+
+clearTimeout(window.__toastTimer);
+
+window.__toastTimer=setTimeout(
+()=>q('toast').classList.add('hidden'),
+3500
+);
+
 }
+
 
 function table(headers,rows){
 
 return `
+
 <table class="table">
+
 <thead>
+
 <tr>
-${headers.map(h=>`<th>${esc(h)}</th>`).join('')}
+
+${headers.map(
+h=>`<th>${esc(h)}</th>`
+).join('')}
+
 </tr>
+
 </thead>
+
 <tbody>
+
 ${
 rows&&rows.length
-?rows.join('')
-:`<tr><td colspan="${headers.length}" class="muted">
+?
+rows.join('')
+:
+`
+<tr>
+<td colspan="${headers.length}"
+class="empty">
 कोई रिकॉर्ड नहीं मिला।
-</td></tr>`
+</td>
+</tr>
+`
 }
+
 </tbody>
-</table>`;
+
+</table>
+
+`;
+
 }
+
+
+/* =========================================================
+NAVIGATION
+========================================================= */
+
+function showSection(name){
+
+document
+.querySelectorAll('.section')
+.forEach(s=>
+s.classList.remove('active')
+);
+
+const section=q(name);
+
+if(!section)return;
+
+section.classList.add('active');
+
+document
+.querySelectorAll('.side nav button')
+.forEach(x=>
+x.classList.remove('active')
+);
+
+const btn=document.querySelector(
+`.side nav button[data-s="${name}"]`
+);
+
+if(btn){
+
+btn.classList.add('active');
+
+q('title').textContent=
+btn.textContent
+.replace(/^\S+\s*/,'')
+.trim();
+
+}
+
+if(name==='enquiries')
+loadEnquiries();
+
+if(name==='attendance')
+loadAttendance();
+
+if(name==='progress')
+renderProgressCards();
+
+}
+
+
+document
+.querySelectorAll('.side nav button')
+.forEach(b=>{
+
+b.onclick=()=>showSection(
+b.dataset.s
+);
+
+});
 
 
 /* =========================================================
@@ -1230,18 +2696,28 @@ async function checkAdminSession(){
 
 try{
 
-const {data:{session},error}=await sb.auth.getSession();
+const {
+data:{session},
+error
+}=await sb.auth.getSession();
 
 if(error)throw error;
 
 if(!session){
+
 location.replace('index.html');
+
 return;
+
 }
 
 user=session.user;
 
-const {data:p,error:pe}=await sb
+
+const {
+data:p,
+error:pe
+}=await sb
 .from('profiles')
 .select('full_name,role')
 .eq('id',user.id)
@@ -1250,88 +2726,118 @@ const {data:p,error:pe}=await sb
 if(pe)throw pe;
 
 if(!p){
+
 await sb.auth.signOut();
+
 location.replace('index.html');
+
 return;
+
 }
 
-role=String(p.role||'').toLowerCase();
 
-if(!['owner','manager','staff','admin'].includes(role)){
+role=String(
+p.role||''
+).toLowerCase();
+
+
+if(![
+'owner',
+'manager',
+'staff',
+'admin'
+].includes(role)){
+
 await sb.auth.signOut();
+
 location.replace('index.html');
+
 return;
+
 }
 
-q('loadingScreen').classList.add('hidden');
-q('app').classList.remove('hidden');
 
-q('userEmail').textContent=user.email||'';
-q('userRole').textContent=role==='owner'?'Admin':role;
+q('loadingScreen')
+.classList.add('hidden');
+
+q('app')
+.classList.remove('hidden');
+
+
+q('userEmail').textContent=
+user.email||'';
+
+
+q('userRole').textContent=
+role==='owner'
+?'Admin'
+:role;
+
 
 q('attDate').value=today();
 
+q('lDate').value=today();
+q('payDate').value=today();
+q('eDate').value=today();
+
+
 await refreshAll();
+
 
 }catch(err){
 
 console.error(err);
 
 q('loadingScreen').innerHTML=`
+
 <div>
-<h2>Dashboard खुल नहीं पाया</h2>
-<p>${esc(err.message||String(err))}</p>
-<button class="btn primary"
+
+<h2>
+Dashboard खुल नहीं पाया
+</h2>
+
+<p>
+${esc(err.message||String(err))}
+</p>
+
+<button
+class="btn primary"
 onclick="location.href='index.html'">
+
 ← वापस Login
+
 </button>
-</div>`;
+
+</div>
+
+`;
 
 }
 
 }
+
 
 async function logout(){
+
 await sb.auth.signOut();
+
 location.replace('index.html');
+
 }
 
-sb.auth.onAuthStateChange((event)=>{
-if(event==='SIGNED_OUT')location.replace('index.html');
-});
+
+sb.auth.onAuthStateChange(
+(event)=>{
+
+if(event==='SIGNED_OUT')
+location.replace('index.html');
+
+}
+);
 
 
 /* =========================================================
-NAVIGATION
-========================================================= */
-
-document.querySelectorAll('.side nav button').forEach(b=>{
-
-b.onclick=async()=>{
-
-document.querySelectorAll('.section')
-.forEach(s=>s.classList.remove('active'));
-
-q(b.dataset.s).classList.add('active');
-
-document.querySelectorAll('.side nav button')
-.forEach(x=>x.classList.remove('active'));
-
-b.classList.add('active');
-
-q('title').textContent=b.textContent.replace(/^\S+\s*/,'');
-
-if(b.dataset.s==='enquiries')await loadEnquiries();
-
-if(b.dataset.s==='attendance')await loadAttendance();
-
-};
-
-});
-
-
-/* =========================================================
-GET DATA
+GET ALL
 ========================================================= */
 
 async function getAll(t){
@@ -1344,157 +2850,365 @@ const r=await sb
 if(r.error)throw r.error;
 
 return r.data||[];
+
 }
 
 
 /* =========================================================
-CUSTOMER
+CUSTOMER ADD
 ========================================================= */
 
 async function addCustomer(e){
 
 e.preventDefault();
 
-const {error}=await sb.from('customers').insert({
+const photo=q('cPhoto')?.value.trim()||'';
+
+
+const {error}=await sb
+.from('customers')
+.insert({
 
 name:q('cName').value.trim(),
 phone:q('cPhone').value.trim(),
 email:q('cEmail').value.trim(),
 address:q('cAddress').value.trim(),
+photo_url:photo||null,
 notes:q('cNotes').value.trim(),
 created_by:user.id
 
 });
 
-if(error)return toast(error.message);
+
+if(error){
+
+toast(error.message);
+
+return;
+
+}
+
 
 e.target.reset();
+
 toast('Customer saved');
 
 await refreshAll();
 
 }
 
+
+/* =========================================================
+CUSTOMER EDIT
+========================================================= */
+
 async function editCustomer(id){
 
-const {data:c,error}=await sb
+const {
+data:c,
+error
+}=await sb
 .from('customers')
 .select('*')
 .eq('id',id)
 .maybeSingle();
 
+
 if(error)return toast(error.message);
+
 if(!c)return toast('Customer नहीं मिला');
 
-const name=prompt('Customer Name',c.name||'');
+
+const name=prompt(
+'Customer Name',
+c.name||''
+);
+
 if(name===null)return;
 
-const phone=prompt('Phone',c.phone||'');
+
+const phone=prompt(
+'Phone',
+c.phone||''
+);
+
 if(phone===null)return;
 
-const email=prompt('Email',c.email||'');
+
+const email=prompt(
+'Email',
+c.email||''
+);
+
 if(email===null)return;
 
-const address=prompt('Address',c.address||'');
+
+const address=prompt(
+'Address',
+c.address||''
+);
+
 if(address===null)return;
 
-const notes=prompt('Notes',c.notes||'');
+
+const photo=prompt(
+'Photo URL',
+c.photo_url||''
+);
+
+if(photo===null)return;
+
+
+const notes=prompt(
+'Notes',
+c.notes||''
+);
+
 if(notes===null)return;
+
 
 const {error:ue}=await sb
 .from('customers')
 .update({
+
 name:name.trim(),
 phone:phone.trim(),
 email:email.trim(),
 address:address.trim(),
+photo_url:photo.trim()||null,
 notes:notes.trim(),
 updated_at:new Date().toISOString()
+
 })
 .eq('id',id);
+
 
 if(ue)return toast(ue.message);
 
 toast('Customer updated');
-await refreshAll();
 
-}
-
-async function deleteCustomer(id){
-
-const {data:c,error}=await sb
-.from('customers')
-.select('id,name')
-.eq('id',id)
-.maybeSingle();
-
-if(error)return toast(error.message);
-
-if(!confirm(`"${c?.name||'Customer'}" delete करें?`))return;
-
-const {error:de}=await sb
-.from('customers')
-.delete()
-.eq('id',id);
-
-if(de)return toast(de.message);
-
-toast('Customer deleted');
 await refreshAll();
 
 }
 
 
 /* =========================================================
-PROJECT
+CUSTOMER DELETE
+========================================================= */
+
+async function deleteCustomer(id){
+
+const {
+data:c,
+error
+}=await sb
+.from('customers')
+.select('id,name')
+.eq('id',id)
+.maybeSingle();
+
+
+if(error)return toast(error.message);
+
+
+if(!confirm(
+`"${c?.name||'Customer'}" delete करें?`
+))return;
+
+
+const {error:de}=await sb
+.from('customers')
+.delete()
+.eq('id',id);
+
+
+if(de)return toast(de.message);
+
+toast('Customer deleted');
+
+await refreshAll();
+
+}
+
+
+/* =========================================================
+CUSTOMER VIEW
+========================================================= */
+
+async function viewCustomer(id){
+
+const {
+data:c,
+error
+}=await sb
+.from('customers')
+.select('*')
+.eq('id',id)
+.maybeSingle();
+
+
+if(error)return toast(error.message);
+
+if(!c)return toast('Customer नहीं मिला');
+
+
+const photo=c.photo_url
+?
+`
+<img
+src="${esc(c.photo_url)}"
+onclick="openPhoto('${esc(c.photo_url)}')"
+style="
+width:110px;
+height:110px;
+object-fit:cover;
+border-radius:18px;
+cursor:zoom-in;
+border:1px solid var(--l)">
+`
+:
+`
+<div style="
+width:110px;
+height:110px;
+border-radius:18px;
+background:#eef2f7;
+display:grid;
+place-items:center;
+font-size:40px">
+👤
+</div>
+`;
+
+
+q('workerEditContent').innerHTML='';
+
+
+alert(
+`Customer Profile
+
+Name: ${c.name||''}
+Phone: ${c.phone||''}
+Email: ${c.email||''}
+Address: ${c.address||''}
+Notes: ${c.notes||''}`
+);
+
+}
+
+
+/* =========================================================
+PHOTO
+========================================================= */
+
+function openPhoto(url){
+
+if(!url)return;
+
+q('largePhoto').src=url;
+
+q('photoViewer')
+.classList.add('open');
+
+}
+
+
+function closePhotoViewer(e){
+
+if(e && e.target!==q('photoViewer'))
+return;
+
+q('photoViewer')
+.classList.remove('open');
+
+q('largePhoto').src='';
+
+}
+
+
+/* =========================================================
+PROJECT ADD
 ========================================================= */
 
 async function addProject(e){
 
 e.preventDefault();
 
-const {error}=await sb.from('projects').insert({
 
-project_name:q('pName').value,
+const {error}=await sb
+.from('projects')
+.insert({
+
+project_name:q('pName').value.trim(),
 customer_id:q('pCustomer').value||null,
-work_type:q('pType').value,
-location:q('pLocation').value,
+work_type:q('pType').value.trim(),
+location:q('pLocation').value.trim(),
 start_date:q('pStart').value||null,
 expected_end_date:q('pEnd').value||null,
 status:q('pStatus').value,
-agreed_amount:Number(q('pAmount').value||0),
-notes:q('pNotes').value,
+agreed_amount:Number(
+q('pAmount').value||0
+),
+notes:q('pNotes').value.trim(),
 created_by:user.id
 
 });
 
+
 if(error)return toast(error.message);
 
+
 e.target.reset();
+
 toast('Project saved');
 
 await refreshAll();
 
 }
 
+
+/* =========================================================
+PROJECT EDIT
+========================================================= */
+
 async function editProject(id){
 
-const {data:p,error}=await sb
+const {
+data:p,
+error
+}=await sb
 .from('projects')
 .select('*')
 .eq('id',id)
 .maybeSingle();
 
+
 if(error)return toast(error.message);
 
-const name=prompt('Project Name',p.project_name||'');
+
+const name=prompt(
+'Project Name',
+p.project_name||''
+);
+
 if(name===null)return;
 
-const type=prompt('Work Type',p.work_type||'');
+
+const type=prompt(
+'Work Type',
+p.work_type||''
+);
+
 if(type===null)return;
 
-const location=prompt('Location',p.location||'');
+
+const location=prompt(
+'Location',
+p.location||''
+);
+
 if(location===null)return;
+
 
 const status=prompt(
 'Status: lead / active / completed / cancelled',
@@ -1503,15 +3217,27 @@ p.status||'active'
 
 if(status===null)return;
 
-const amount=prompt('Agreed Amount',p.agreed_amount||0);
+
+const amount=prompt(
+'Agreed Amount',
+p.agreed_amount||0
+);
+
 if(amount===null)return;
 
-const notes=prompt('Notes',p.notes||'');
+
+const notes=prompt(
+'Notes',
+p.notes||''
+);
+
 if(notes===null)return;
+
 
 const {error:ue}=await sb
 .from('projects')
 .update({
+
 project_name:name.trim(),
 work_type:type.trim(),
 location:location.trim(),
@@ -1519,72 +3245,566 @@ status:status.trim(),
 agreed_amount:Number(amount||0),
 notes:notes.trim(),
 updated_at:new Date().toISOString()
+
 })
 .eq('id',id);
+
 
 if(ue)return toast(ue.message);
 
 toast('Project updated');
-await refreshAll();
 
-}
-
-async function deleteProject(id){
-
-const {data:p}=await sb
-.from('projects')
-.select('project_name')
-.eq('id',id)
-.maybeSingle();
-
-if(!confirm(`"${p?.project_name||'Project'}" delete करें?`))return;
-
-const {error}=await sb
-.from('projects')
-.delete()
-.eq('id',id);
-
-if(error)return toast(error.message);
-
-toast('Project deleted');
 await refreshAll();
 
 }
 
 
 /* =========================================================
-WORKER ADD
+PROJECT DELETE
+========================================================= */
+
+async function deleteProject(id){
+
+const {
+data:p
+}=await sb
+.from('projects')
+.select('project_name')
+.eq('id',id)
+.maybeSingle();
+
+
+if(!confirm(
+`"${p?.project_name||'Project'}" delete करें?`
+))return;
+
+
+const {error}=await sb
+.from('projects')
+.delete()
+.eq('id',id);
+
+
+if(error)return toast(error.message);
+
+toast('Project deleted');
+
+await refreshAll();
+
+}
+
+
+/* =========================================================
+PROJECT PROGRESS
+========================================================= */
+
+async function openProjectProgress(projectId){
+
+const project=
+projectsCache.find(
+x=>x.id===projectId
+);
+
+
+if(!project){
+
+toast('Project नहीं मिला');
+
+return;
+
+}
+
+
+q('ppTitle').textContent=
+'🏗️ '+(
+project.project_name||
+'Project'
+);
+
+
+q('ppMeta').textContent=[
+project.location,
+project.work_type,
+project.status
+]
+.filter(Boolean)
+.join(' • ');
+
+
+q('ppPercent').textContent='...';
+
+q('ppBar').style.width='0%';
+
+
+q('ppTimeline').innerHTML=
+'<div class="loading">Progress load हो रही है...</div>';
+
+q('ppPhotos').innerHTML='';
+
+
+q('projectProgressModal')
+.classList.add('open');
+
+
+const {
+data:updates,
+error
+}=await sb
+.from('project_updates')
+.select('*')
+.eq('project_id',projectId)
+.order('update_date',{ascending:false})
+.order('created_at',{ascending:false});
+
+
+if(error){
+
+q('ppTimeline').innerHTML=`
+
+<div class="notice">
+
+Progress load नहीं हुई।
+
+<br><br>
+
+${esc(error.message)}
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+const rows=updates||[];
+
+
+let currentProgress=0;
+
+
+if(rows.length){
+
+currentProgress=Math.max(
+...rows.map(
+x=>Number(
+x.progress_percent||0
+)
+)
+);
+
+}
+
+
+currentProgress=Math.min(
+100,
+Math.max(0,currentProgress)
+);
+
+
+q('ppPercent').textContent=
+currentProgress+'%';
+
+
+q('ppBar').style.width=
+currentProgress+'%';
+
+
+if(!rows.length){
+
+q('ppTimeline').innerHTML=`
+
+<div class="empty">
+
+अभी इस project का कोई progress update नहीं है।
+
+</div>
+
+`;
+
+q('ppPhotos').innerHTML=`
+
+<div class="empty">
+
+📷 अभी कोई progress photo नहीं है।
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+q('ppTimeline').innerHTML=
+rows.map(x=>`
+
+<div class="timeline-item">
+
+
+<div
+class="row"
+style="justify-content:space-between">
+
+<div>
+
+<b style="font-size:17px">
+
+${esc(
+x.title||
+'Progress Update'
+)}
+
+</b>
+
+
+<div
+class="muted"
+style="margin-top:4px">
+
+📅 ${esc(
+x.update_date||
+''
+)}
+
+</div>
+
+</div>
+
+
+<span class="pill present">
+
+${Number(
+x.progress_percent||0
+)}%
+
+</span>
+
+</div>
+
+
+${
+x.details
+?
+`
+<div
+style="
+margin-top:13px;
+line-height:1.65">
+
+<b>
+काम की Details:
+</b>
+
+<br>
+
+${esc(x.details)}
+
+</div>
+`
+:''
+}
+
+
+${
+x.photo_url
+?
+`
+<div style="margin-top:15px">
+
+<img
+src="${esc(x.photo_url)}"
+class="progress-photo"
+onclick="openPhoto('${esc(x.photo_url)}')"
+loading="lazy">
+
+</div>
+`
+:''
+}
+
+
+</div>
+
+`).join('');
+
+
+const photos=rows.filter(
+x=>x.photo_url
+);
+
+
+if(!photos.length){
+
+q('ppPhotos').innerHTML=`
+
+<div class="empty">
+
+📷 अभी कोई progress photo नहीं है।
+
+</div>
+
+`;
+
+}else{
+
+q('ppPhotos').innerHTML=
+photos.map(x=>`
+
+<div>
+
+<img
+src="${esc(x.photo_url)}"
+onclick="openPhoto('${esc(x.photo_url)}')"
+loading="lazy">
+
+<div
+class="small"
+style="margin-top:4px">
+
+${esc(x.update_date||'')}
+
+</div>
+
+</div>
+
+`).join('');
+
+}
+
+}
+
+
+function closeProjectProgress(){
+
+q('projectProgressModal')
+.classList.remove('open');
+
+}
+
+
+/* =========================================================
+PROGRESS CARDS
+========================================================= */
+
+async function renderProgressCards(){
+
+const box=q('progressProjectCards');
+
+box.innerHTML=
+'<div class="loading">Projects load हो रहे हैं...</div>';
+
+
+if(!projectsCache.length){
+
+box.innerHTML=
+'<div class="empty">कोई Project नहीं है।</div>';
+
+return;
+
+}
+
+
+const ids=projectsCache.map(
+x=>x.id
+);
+
+
+const {data:updates}=await sb
+.from('project_updates')
+.select(
+'project_id,progress_percent'
+)
+.in('project_id',ids);
+
+
+const latest={};
+
+
+(updates||[]).forEach(x=>{
+
+const n=Number(
+x.progress_percent||0
+);
+
+if(
+latest[x.project_id]===undefined ||
+n>latest[x.project_id]
+){
+
+latest[x.project_id]=n;
+
+}
+
+});
+
+
+box.innerHTML=projectsCache.map(
+p=>{
+
+const percent=Math.min(
+100,
+Math.max(
+0,
+Number(latest[p.id]||0)
+)
+);
+
+
+return `
+
+<div
+class="project-card"
+onclick="openProjectProgress('${esc(p.id)}')">
+
+
+<div
+class="row"
+style="justify-content:space-between">
+
+<b>
+${esc(p.project_name||'')}
+</b>
+
+<span class="pill">
+${esc(p.status||'')}
+</span>
+
+</div>
+
+
+<div
+class="muted"
+style="margin-top:7px">
+
+📍 ${esc(p.location||'')}
+
+</div>
+
+
+<div
+style="
+margin-top:15px;
+font-size:24px;
+font-weight:900">
+
+${percent}%
+
+</div>
+
+
+<div
+class="progress-track"
+style="margin-top:7px">
+
+<div
+class="progress-bar"
+style="width:${percent}%">
+</div>
+
+</div>
+
+
+<div
+class="muted"
+style="margin-top:9px">
+
+👆 Click करके पूरी progress देखें
+
+</div>
+
+
+</div>
+
+`;
+
+}
+).join('');
+
+}
+
+
+/* =========================================================
+WORKER ADD + AUTH
 ========================================================= */
 
 async function addWorker(e){
 
 e.preventDefault();
 
-const loginId=q('wLoginId').value.trim();
-const loginEmail=q('wLoginEmail').value.trim();
 
-if(!loginId||!loginEmail){
-return toast('Worker Login ID और Email जरूरी है');
+const loginId=
+q('wLoginId').value.trim();
+
+
+const loginEmail=
+q('wLoginEmail')
+.value.trim()
+.toLowerCase();
+
+
+const password=
+q('wPassword').value;
+
+
+if(
+!loginId||
+!loginEmail||
+!password
+){
+
+return toast(
+'Login ID, Email और Password तीनों जरूरी हैं'
+);
+
 }
 
-/*
-IMPORTANT:
-Password को workers table में save नहीं किया जा रहा।
-यहाँ केवल worker profile save होगी।
-Actual Auth account बनाने के लिए Supabase Edge Function/RPC लगाना चाहिए।
-*/
 
-const {data:existing}=await sb
+if(password.length<6){
+
+return toast(
+'Password कम से कम 6 characters का होना चाहिए'
+);
+
+}
+
+
+try{
+
+
+const {
+data:existing,
+error:checkError
+}=await sb
 .from('workers')
 .select('id')
-.or(`login_id.eq.${loginId},login_email.eq.${loginEmail}`)
+.or(
+`login_id.eq.${loginId},login_email.eq.${loginEmail}`
+)
 .limit(1);
 
+
+if(checkError)
+throw checkError;
+
+
 if(existing?.length){
-return toast('यह Login ID या Email पहले से मौजूद है');
+
+return toast(
+'यह Login ID या Email पहले से मौजूद है'
+);
+
 }
 
-const {error}=await sb
+
+/* Worker profile */
+
+const {
+data:worker,
+error:workerError
+}=await sb
 .from('workers')
 .insert({
 
@@ -1592,7 +3812,9 @@ name:q('wName').value.trim(),
 phone:q('wPhone').value.trim(),
 village:q('wVillage').value.trim(),
 work_role:q('wRole').value.trim(),
-daily_rate:Number(q('wRate').value||0),
+daily_rate:Number(
+q('wRate').value||0
+),
 notes:q('wNotes').value.trim(),
 
 login_id:loginId,
@@ -1603,22 +3825,79 @@ active:true,
 
 created_by:user.id
 
-});
+})
+.select()
+.single();
 
-if(error){
 
-return toast(
-'Worker save नहीं हुआ: '+error.message+
-' — यदि login_id आदि columns नहीं हैं तो पहले SQL setup करें।'
+if(workerError)
+throw workerError;
+
+
+/* Supabase Auth Account */
+
+const {
+data:authResult,
+error:authError
+}=await sb.functions.invoke(
+'create-worker-account',
+{
+body:{
+worker_id:worker.id,
+email:loginEmail,
+password:password
+}
+}
+);
+
+
+if(authError){
+
+await sb
+.from('workers')
+.delete()
+.eq('id',worker.id);
+
+throw authError;
+
+}
+
+
+if(authResult?.error){
+
+await sb
+.from('workers')
+.delete()
+.eq('id',worker.id);
+
+throw new Error(
+authResult.error
 );
 
 }
 
+
 e.target.reset();
 
-toast('Worker saved successfully');
+
+toast(
+'✅ Worker और Login Account दोनों बन गए'
+);
+
 
 await refreshAll();
+
+
+}catch(err){
+
+console.error(err);
+
+toast(
+'Worker account नहीं बना: '+
+(err.message||String(err))
+);
+
+}
 
 }
 
@@ -1629,126 +3908,236 @@ WORKER EDIT
 
 async function editWorker(id){
 
-const {data:w,error}=await sb
+const {
+data:w,
+error
+}=await sb
 .from('workers')
 .select('*')
 .eq('id',id)
 .maybeSingle();
 
+
 if(error)return toast(error.message);
 
 if(!w)return toast('Worker नहीं मिला');
 
+
 q('workerEditContent').innerHTML=`
 
-<form onsubmit="saveWorkerEdit(event,'${esc(id)}')">
+<form
+onsubmit="saveWorkerEdit(event,'${esc(id)}')">
+
 
 <div class="forms">
 
-<div>
-<label>Name</label>
-<input id="ewName" value="${esc(w.name||'')}" required>
-</div>
 
 <div>
-<label>Phone</label>
-<input id="ewPhone" value="${esc(w.phone||'')}">
+
+<label>
+Name
+</label>
+
+<input
+id="ewName"
+value="${esc(w.name||'')}"
+required>
+
 </div>
 
-<div>
-<label>काम / Role</label>
-<input id="ewRole" value="${esc(w.work_role||'')}">
-</div>
 
 <div>
-<label>Daily Rate</label>
-<input id="ewRate" type="number" value="${Number(w.daily_rate||0)}">
+
+<label>
+Phone
+</label>
+
+<input
+id="ewPhone"
+value="${esc(w.phone||'')}">
+
 </div>
 
-<div>
-<label>Village</label>
-<input id="ewVillage" value="${esc(w.village||'')}">
-</div>
 
 <div>
-<label>Worker Login ID</label>
-<input id="ewLoginId" value="${esc(w.login_id||'')}">
+
+<label>
+काम / Role
+</label>
+
+<input
+id="ewRole"
+value="${esc(w.work_role||'')}">
+
 </div>
 
-<div>
-<label>Worker Login Email</label>
-<input id="ewEmail" type="email" value="${esc(w.login_email||'')}">
-</div>
 
 <div>
-<label>Account Status</label>
+
+<label>
+Daily Rate
+</label>
+
+<input
+id="ewRate"
+type="number"
+value="${Number(w.daily_rate||0)}">
+
+</div>
+
+
+<div>
+
+<label>
+Village
+</label>
+
+<input
+id="ewVillage"
+value="${esc(w.village||'')}">
+
+</div>
+
+
+<div>
+
+<label>
+Worker Login ID
+</label>
+
+<input
+id="ewLoginId"
+value="${esc(w.login_id||'')}">
+
+</div>
+
+
+<div>
+
+<label>
+Worker Login Email
+</label>
+
+<input
+id="ewEmail"
+type="email"
+value="${esc(w.login_email||'')}">
+
+</div>
+
+
+<div>
+
+<label>
+Account Status
+</label>
 
 <select id="ewActive">
 
-<option value="true" ${w.active!==false?'selected':''}>
+<option
+value="true"
+${w.active!==false?'selected':''}>
+
 Active
+
 </option>
 
-<option value="false" ${w.active===false?'selected':''}>
+<option
+value="false"
+${w.active===false?'selected':''}>
+
 Disabled
+
 </option>
 
 </select>
 
 </div>
 
+
 <div class="full">
-<label>Notes</label>
+
+<label>
+Notes
+</label>
+
 <textarea id="ewNotes">${esc(w.notes||'')}</textarea>
-</div>
 
 </div>
 
-<div class="actions" style="margin-top:18px">
 
-<button class="btn primary">
+</div>
+
+
+<div
+class="actions"
+style="margin-top:18px">
+
+<button
+class="btn primary">
+
 💾 Save Changes
+
 </button>
 
-<button type="button"
+
+<button
+type="button"
 class="btn secondary"
 onclick="closeWorkerModal()">
+
 Cancel
+
 </button>
 
 </div>
+
 
 </form>
 
-<div class="face-box" style="margin-top:18px">
+
+<div
+class="face-box"
+style="margin-top:18px">
+
 
 <div class="face-status">
 
 ${
 w.face_registered
-?'🟢 Face Registered'
-:'🔴 Face Not Registered'
+?
+'🟢 Face Registered'
+:
+'🔴 Face Not Registered'
 }
 
 </div>
 
-<button class="btn info"
+
+<button
+class="btn info"
 onclick="registerWorkerFace('${esc(id)}')">
 
 📷 Face Registration
 
 </button>
 
+
 </div>
+
 `;
 
-q('workerModal').classList.add('open');
+
+q('workerModal')
+.classList.add('open');
 
 }
+
 
 async function saveWorkerEdit(e,id){
 
 e.preventDefault();
+
 
 const {error}=await sb
 .from('workers')
@@ -1757,7 +4146,9 @@ const {error}=await sb
 name:q('ewName').value.trim(),
 phone:q('ewPhone').value.trim(),
 work_role:q('ewRole').value.trim(),
-daily_rate:Number(q('ewRate').value||0),
+daily_rate:Number(
+q('ewRate').value||0
+),
 village:q('ewVillage').value.trim(),
 login_id:q('ewLoginId').value.trim(),
 login_email:q('ewEmail').value.trim(),
@@ -1768,7 +4159,9 @@ updated_at:new Date().toISOString()
 })
 .eq('id',id);
 
+
 if(error)return toast(error.message);
+
 
 toast('Worker updated');
 
@@ -1778,22 +4171,31 @@ await refreshAll();
 
 }
 
+
 async function deleteWorker(id){
 
-const {data:w}=await sb
+const {
+data:w
+}=await sb
 .from('workers')
 .select('name')
 .eq('id',id)
 .maybeSingle();
 
-if(!confirm(`"${w?.name||'Worker'}" delete करें?`))return;
+
+if(!confirm(
+`"${w?.name||'Worker'}" delete करें?`
+))return;
+
 
 const {error}=await sb
 .from('workers')
 .delete()
 .eq('id',id);
 
+
 if(error)return toast(error.message);
+
 
 toast('Worker deleted');
 
@@ -1801,33 +4203,32 @@ await refreshAll();
 
 }
 
+
 function closeWorkerModal(){
-q('workerModal').classList.remove('open');
+
+q('workerModal')
+.classList.remove('open');
+
 }
 
 
 /* =========================================================
-FACE REGISTRATION
+FACE STATUS
 ========================================================= */
 
 async function registerWorkerFace(id){
 
-/*
-Face data को localStorage में नहीं रखा जा रहा।
-यह button worker-login.html को face registration flow के लिए
-तैयार रखता है।
-
-Actual biometric verification के लिए Web Camera + face
-embedding service/Edge Function की जरूरत होगी।
-*/
-
 const {error}=await sb
 .from('workers')
 .update({
+
 face_registered:true,
-face_registered_at:new Date().toISOString()
+face_registered_at:
+new Date().toISOString()
+
 })
 .eq('id',id);
+
 
 if(error){
 
@@ -1838,9 +4239,11 @@ error.message
 
 }
 
+
 toast(
-'Face Registration status ON कर दिया गया। वास्तविक face verification worker-login.html में होगा।'
+'Face Registration ON कर दिया गया।'
 );
+
 
 await refreshAll();
 
@@ -1853,8 +4256,12 @@ ATTENDANCE
 
 async function loadAttendance(){
 
-const date=q('attDate').value||today();
-const workerId=q('attWorkerFilter').value||'';
+const date=
+q('attDate').value||today();
+
+const workerId=
+q('attWorkerFilter').value||'';
+
 
 let query=sb
 .from('worker_attendance')
@@ -1862,41 +4269,77 @@ let query=sb
 .eq('attendance_date',date)
 .order('check_in',{ascending:false});
 
+
 if(workerId){
-query=query.eq('worker_id',workerId);
+
+query=query.eq(
+'worker_id',
+workerId
+);
+
 }
 
-const {data,error}=await query;
+
+const {
+data,
+error
+}=await query;
+
 
 if(error){
 
 q('attendanceList').innerHTML=`
+
 <div class="notice">
+
 Attendance table load नहीं हुई।
+
 <br><br>
-<b>${esc(error.message)}</b>
+
+<b>
+${esc(error.message)}
+</b>
+
 <br><br>
-पहले Supabase में worker_attendance table बनाएं।
-</div>`;
+
+Supabase में worker_attendance table/RLS check करें।
+
+</div>
+
+`;
 
 return;
 
 }
 
+
 const rows=data||[];
 
-q('attTotal').textContent=rows.length;
+
+q('attTotal').textContent=
+rows.length;
+
 
 q('attPresent').textContent=
-rows.filter(x=>x.status==='present').length;
+rows.filter(
+x=>x.status==='present'
+).length;
+
 
 q('attAbsent').textContent=
-rows.filter(x=>x.status==='absent').length;
+rows.filter(
+x=>x.status==='absent'
+).length;
+
 
 q('attOut').textContent=
-rows.filter(x=>x.check_out).length;
+rows.filter(
+x=>x.check_out
+).length;
 
-q('attendanceList').innerHTML=table(
+
+q('attendanceList').innerHTML=
+table(
 
 [
 'Worker',
@@ -1911,153 +4354,288 @@ q('attendanceList').innerHTML=table(
 
 rows.map(x=>{
 
-const w=workersCache.find(y=>y.id===x.worker_id)||{};
+const w=
+workersCache.find(
+y=>y.id===x.worker_id
+)||{};
+
 
 return `
+
 <tr>
 
+
 <td>
-<b>${esc(w.name||x.worker_id||'Worker')}</b>
+
+<b>
+${esc(
+w.name||
+x.worker_id||
+'Worker'
+)}
+</b>
+
 <br>
+
 <span class="small">
-${esc(w.login_id||'')}
+
+${esc(
+w.login_id||
+''
+)}
+
 </span>
+
 </td>
 
-<td>${esc(x.attendance_date||'')}</td>
-
-<td>${esc(formatDateTime(x.check_in))}</td>
-
-<td>${esc(formatDateTime(x.check_out))}</td>
 
 <td>
-<span class="pill ${
-x.status==='absent'?'absent':'present'
+${esc(
+x.attendance_date||''
+)}
+</td>
+
+
+<td>
+${esc(
+formatDateTime(x.check_in)
+)}
+</td>
+
+
+<td>
+${esc(
+formatDateTime(x.check_out)
+)}
+</td>
+
+
+<td>
+
+<span
+class="pill ${
+x.status==='absent'
+?'absent'
+:'present'
 }">
-${esc(x.status||'present')}
+
+${esc(
+x.status||'present'
+)}
+
 </span>
+
 </td>
 
-<td>${esc(x.source||'worker')}</td>
 
 <td>
+${esc(x.source||'worker')}
+</td>
+
+
+<td>
+
 ${
 x.face_verified
-?'<span class="pill present">Verified</span>'
-:'<span class="pill pending">No</span>'
+?
+'<span class="pill present">Verified</span>'
+:
+'<span class="pill pending">No</span>'
 }
+
 </td>
+
 
 <td>
 
 <div class="action-buttons">
 
-<button class="btn edit-btn info"
+
+<button
+class="btn info"
 onclick="editAttendance('${esc(x.id)}')">
+
 ✏️ Edit
+
 </button>
 
-<button class="btn danger"
+
+<button
+class="btn danger"
 onclick="deleteAttendance('${esc(x.id)}')">
+
 🗑️ Delete
+
 </button>
+
 
 </div>
 
 </td>
 
-</tr>`;
+
+</tr>
+
+`;
+
 })
 
 );
 
 }
 
+
 function formatDateTime(v){
 
 if(!v)return '—';
 
 try{
-return new Date(v).toLocaleString('en-IN');
+
+return new Date(v)
+.toLocaleString('en-IN');
+
 }catch{
+
 return v;
+
 }
 
 }
+
+
+/* =========================================================
+ATTENDANCE EDIT
+========================================================= */
 
 async function editAttendance(id){
 
-const {data:a,error}=await sb
+const {
+data:a,
+error
+}=await sb
 .from('worker_attendance')
 .select('*')
 .eq('id',id)
 .maybeSingle();
 
+
 if(error)return toast(error.message);
 
-if(!a)return toast('Attendance नहीं मिली');
+if(!a)return toast(
+'Attendance नहीं मिली'
+);
 
-const workers=workersCache;
 
 q('attendanceEditContent').innerHTML=`
 
-<form onsubmit="saveAttendanceEdit(event,'${esc(id)}')">
+<form
+onsubmit="saveAttendanceEdit(event,'${esc(id)}')">
+
 
 <div class="forms">
 
-<div>
-<label>Attendance Date</label>
-<input id="eaDate" type="date"
-value="${esc(a.attendance_date||'')}">
-</div>
 
 <div>
-<label>Status</label>
+
+<label>
+Attendance Date
+</label>
+
+<input
+id="eaDate"
+type="date"
+value="${esc(a.attendance_date||'')}">
+
+</div>
+
+
+<div>
+
+<label>
+Status
+</label>
 
 <select id="eaStatus">
 
-<option value="present"
+
+<option
+value="present"
 ${a.status==='present'?'selected':''}>
+
 Present
+
 </option>
 
-<option value="absent"
+
+<option
+value="absent"
 ${a.status==='absent'?'selected':''}>
+
 Absent
+
 </option>
+
 
 </select>
 
 </div>
 
+
 <div>
-<label>Check-in</label>
-<input id="eaIn" type="datetime-local"
+
+<label>
+Check-in
+</label>
+
+<input
+id="eaIn"
+type="datetime-local"
 value="${toLocalInput(a.check_in)}">
+
 </div>
+
 
 <div>
-<label>Check-out</label>
-<input id="eaOut" type="datetime-local"
+
+<label>
+Check-out
+</label>
+
+<input
+id="eaOut"
+type="datetime-local"
 value="${toLocalInput(a.check_out)}">
-</div>
 
 </div>
 
-<div class="actions" style="margin-top:18px">
 
-<button class="btn primary">
+</div>
+
+
+<div
+class="actions"
+style="margin-top:18px">
+
+<button
+class="btn primary">
+
 💾 Save Attendance
+
 </button>
 
 </div>
 
+
 </form>
+
 `;
 
-q('attendanceModal').classList.add('open');
+
+q('attendanceModal')
+.classList.add('open');
 
 }
+
 
 function toLocalInput(v){
 
@@ -2065,38 +4643,65 @@ if(!v)return '';
 
 const d=new Date(v);
 
-const pad=n=>String(n).padStart(2,'0');
+const pad=n=>
+String(n).padStart(2,'0');
+
 
 return d.getFullYear()+
-'-'+pad(d.getMonth()+1)+
-'-'+pad(d.getDate())+
-'T'+pad(d.getHours())+
-':'+pad(d.getMinutes());
+'-'+
+pad(d.getMonth()+1)+
+'-'+
+pad(d.getDate())+
+'T'+
+pad(d.getHours())+
+':'+
+pad(d.getMinutes());
 
 }
+
 
 async function saveAttendanceEdit(e,id){
 
 e.preventDefault();
 
+
 const inValue=q('eaIn').value;
 const outValue=q('eaOut').value;
+
 
 const {error}=await sb
 .from('worker_attendance')
 .update({
 
-attendance_date:q('eaDate').value,
-status:q('eaStatus').value,
-check_in:inValue?new Date(inValue).toISOString():null,
-check_out:outValue?new Date(outValue).toISOString():null,
-updated_at:new Date().toISOString(),
+attendance_date:
+q('eaDate').value,
+
+status:
+q('eaStatus').value,
+
+check_in:
+inValue
+?
+new Date(inValue).toISOString()
+:null,
+
+check_out:
+outValue
+?
+new Date(outValue).toISOString()
+:null,
+
+updated_at:
+new Date().toISOString(),
+
 updated_by:user.id
 
 })
 .eq('id',id);
 
+
 if(error)return toast(error.message);
+
 
 toast('Attendance updated');
 
@@ -2106,18 +4711,22 @@ await loadAttendance();
 
 }
 
+
 async function deleteAttendance(id){
 
 if(!confirm(
 'क्या आप यह attendance record delete करना चाहते हैं?'
 ))return;
 
+
 const {error}=await sb
 .from('worker_attendance')
 .delete()
 .eq('id',id);
 
+
 if(error)return toast(error.message);
+
 
 toast('Attendance deleted');
 
@@ -2125,13 +4734,24 @@ await loadAttendance();
 
 }
 
+
 function closeAttendanceModal(){
-q('attendanceModal').classList.remove('open');
+
+q('attendanceModal')
+.classList.remove('open');
+
 }
 
-q('attDate').addEventListener('change',loadAttendance);
 
-q('attWorkerFilter').addEventListener(
+q('attDate')
+.addEventListener(
+'change',
+loadAttendance
+);
+
+
+q('attWorkerFilter')
+.addEventListener(
 'change',
 loadAttendance
 );
@@ -2145,6 +4765,7 @@ async function addWork(e){
 
 e.preventDefault();
 
+
 const {error}=await sb
 .from('work_logs')
 .insert({
@@ -2153,16 +4774,24 @@ project_id:q('lProject').value,
 worker_id:q('lWorker').value||null,
 work_date:q('lDate').value||today(),
 work_description:q('lDesc').value,
-days:Number(q('lDays').value||1),
-amount:Number(q('lAmount').value||0),
+days:Number(
+q('lDays').value||1
+),
+amount:Number(
+q('lAmount').value||0
+),
 notes:q('lNotes').value,
 created_by:user.id
 
 });
 
+
 if(error)return toast(error.message);
 
+
 e.target.reset();
+
+q('lDate').value=today();
 
 toast('Work saved');
 
@@ -2170,18 +4799,29 @@ await refreshAll();
 
 }
 
+
 async function editWork(id){
 
-const {data:w,error}=await sb
+const {
+data:w,
+error
+}=await sb
 .from('work_logs')
 .select('*')
 .eq('id',id)
 .maybeSingle();
 
+
 if(error)return toast(error.message);
 
-const date=prompt('Date',w.work_date||'');
+
+const date=prompt(
+'Date',
+w.work_date||''
+);
+
 if(date===null)return;
+
 
 const desc=prompt(
 'Work Description',
@@ -2190,46 +4830,73 @@ w.work_description||''
 
 if(desc===null)return;
 
-const days=prompt('Days',w.days||1);
+
+const days=prompt(
+'Days',
+w.days||1
+);
+
 if(days===null)return;
 
-const amount=prompt('Amount',w.amount||0);
+
+const amount=prompt(
+'Amount',
+w.amount||0
+);
+
 if(amount===null)return;
 
-const notes=prompt('Notes',w.notes||'');
+
+const notes=prompt(
+'Notes',
+w.notes||''
+);
+
 if(notes===null)return;
+
 
 const {error:ue}=await sb
 .from('work_logs')
 .update({
+
 work_date:date,
 work_description:desc,
 days:Number(days||0),
 amount:Number(amount||0),
-notes:notes,
-updated_at:new Date().toISOString()
+notes,
+updated_at:
+new Date().toISOString()
+
 })
 .eq('id',id);
+
 
 if(ue)return toast(ue.message);
 
 toast('Work updated');
+
 await refreshAll();
 
 }
 
+
 async function deleteWork(id){
 
-if(!confirm('यह work entry delete करें?'))return;
+if(!confirm(
+'यह work entry delete करें?'
+))return;
+
 
 const {error}=await sb
 .from('work_logs')
 .delete()
 .eq('id',id);
 
+
 if(error)return toast(error.message);
 
 toast('Work deleted');
+
 await refreshAll();
 
 }
@@ -2243,23 +4910,33 @@ async function addPayment(e){
 
 e.preventDefault();
 
+
 const {error}=await sb
 .from('payments')
 .insert({
 
 project_id:q('payProject').value,
 payment_date:q('payDate').value||today(),
-amount:Number(q('payAmount').value),
-payment_method:q('payMethod').value,
-reference_no:q('payRef').value,
-notes:q('payNotes').value,
+amount:Number(
+q('payAmount').value
+),
+payment_method:
+q('payMethod').value,
+reference_no:
+q('payRef').value,
+notes:
+q('payNotes').value,
 created_by:user.id
 
 });
 
+
 if(error)return toast(error.message);
 
+
 e.target.reset();
+
+q('payDate').value=today();
 
 toast('Payment saved');
 
@@ -2267,21 +4944,37 @@ await refreshAll();
 
 }
 
+
 async function editPayment(id){
 
-const {data:p,error}=await sb
+const {
+data:p,
+error
+}=await sb
 .from('payments')
 .select('*')
 .eq('id',id)
 .maybeSingle();
 
+
 if(error)return toast(error.message);
 
-const date=prompt('Payment Date',p.payment_date||'');
+
+const date=prompt(
+'Payment Date',
+p.payment_date||''
+);
+
 if(date===null)return;
 
-const amount=prompt('Amount',p.amount||0);
+
+const amount=prompt(
+'Amount',
+p.amount||0
+);
+
 if(amount===null)return;
+
 
 const method=prompt(
 'Payment Method',
@@ -2290,6 +4983,7 @@ p.payment_method||''
 
 if(method===null)return;
 
+
 const ref=prompt(
 'Reference No.',
 p.reference_no||''
@@ -2297,40 +4991,57 @@ p.reference_no||''
 
 if(ref===null)return;
 
-const notes=prompt('Notes',p.notes||'');
+
+const notes=prompt(
+'Notes',
+p.notes||''
+);
+
 if(notes===null)return;
+
 
 const {error:ue}=await sb
 .from('payments')
 .update({
+
 payment_date:date,
 amount:Number(amount||0),
 payment_method:method,
 reference_no:ref,
 notes,
-updated_at:new Date().toISOString()
+updated_at:
+new Date().toISOString()
+
 })
 .eq('id',id);
+
 
 if(ue)return toast(ue.message);
 
 toast('Payment updated');
+
 await refreshAll();
 
 }
 
+
 async function deletePayment(id){
 
-if(!confirm('यह payment delete करें?'))return;
+if(!confirm(
+'यह payment delete करें?'
+))return;
+
 
 const {error}=await sb
 .from('payments')
 .delete()
 .eq('id',id);
 
+
 if(error)return toast(error.message);
 
 toast('Payment deleted');
+
 await refreshAll();
 
 }
@@ -2344,23 +5055,40 @@ async function addExpense(e){
 
 e.preventDefault();
 
+
 const {error}=await sb
 .from('expenses')
 .insert({
 
-project_id:q('eProject').value||null,
-expense_date:q('eDate').value||today(),
-category:q('eCategory').value,
-description:q('eDesc').value,
-amount:Number(q('eAmount').value),
-notes:q('eNotes').value,
+project_id:
+q('eProject').value||null,
+
+expense_date:
+q('eDate').value||today(),
+
+category:
+q('eCategory').value,
+
+description:
+q('eDesc').value,
+
+amount:
+Number(q('eAmount').value),
+
+notes:
+q('eNotes').value,
+
 created_by:user.id
 
 });
 
+
 if(error)return toast(error.message);
 
+
 e.target.reset();
+
+q('eDate').value=today();
 
 toast('Expense saved');
 
@@ -2368,21 +5096,37 @@ await refreshAll();
 
 }
 
+
 async function editExpense(id){
 
-const {data:x,error}=await sb
+const {
+data:x,
+error
+}=await sb
 .from('expenses')
 .select('*')
 .eq('id',id)
 .maybeSingle();
 
+
 if(error)return toast(error.message);
 
-const date=prompt('Expense Date',x.expense_date||'');
+
+const date=prompt(
+'Expense Date',
+x.expense_date||''
+);
+
 if(date===null)return;
 
-const category=prompt('Category',x.category||'');
+
+const category=prompt(
+'Category',
+x.category||''
+);
+
 if(category===null)return;
+
 
 const description=prompt(
 'Description',
@@ -2391,43 +5135,65 @@ x.description||''
 
 if(description===null)return;
 
-const amount=prompt('Amount',x.amount||0);
+
+const amount=prompt(
+'Amount',
+x.amount||0
+);
+
 if(amount===null)return;
 
-const notes=prompt('Notes',x.notes||'');
+
+const notes=prompt(
+'Notes',
+x.notes||''
+);
+
 if(notes===null)return;
+
 
 const {error:ue}=await sb
 .from('expenses')
 .update({
+
 expense_date:date,
 category,
 description,
 amount:Number(amount||0),
 notes,
-updated_at:new Date().toISOString()
+updated_at:
+new Date().toISOString()
+
 })
 .eq('id',id);
+
 
 if(ue)return toast(ue.message);
 
 toast('Expense updated');
+
 await refreshAll();
 
 }
 
+
 async function deleteExpense(id){
 
-if(!confirm('यह expense delete करें?'))return;
+if(!confirm(
+'यह expense delete करें?'
+))return;
+
 
 const {error}=await sb
 .from('expenses')
 .delete()
 .eq('id',id);
 
+
 if(error)return toast(error.message);
 
 toast('Expense deleted');
+
 await refreshAll();
 
 }
@@ -2441,87 +5207,169 @@ async function loadEnquiries(){
 
 const box=q('enquiriesList');
 
-box.innerHTML='<div class="notice">Load हो रहा है...</div>';
+box.innerHTML=
+'<div class="loading">Load हो रहा है...</div>';
 
-const {data:req,error}=await sb
+
+const {
+data:req,
+error
+}=await sb
 .from('contract_requests')
 .select('*')
 .order('created_at',{ascending:false});
 
+
 if(error){
 
 box.innerHTML=`
+
 <div class="notice">
+
 ${esc(error.message)}
-</div>`;
+
+</div>
+
+`;
 
 return;
 
 }
 
+
 const rows=(req||[]).map(x=>{
 
-const c=customerCache[x.customer_user_id]||{};
+const c=
+customerCache[
+x.customer_user_id
+]||{};
+
 
 return `
+
 <tr>
 
-<td>
-${new Date(x.created_at).toLocaleString('en-IN')}
-</td>
 
 <td>
-<b>${esc(c.name||'Customer')}</b>
+
+${new Date(
+x.created_at
+).toLocaleString('en-IN')}
+
+</td>
+
+
+<td>
+
+<b>
+${esc(
+c.name||
+'Customer'
+)}
+</b>
+
 <br>
+
 ${esc(c.phone||'')}
+
 </td>
 
-<td>
-${esc(x.request_type||'')}
-</td>
 
 <td>
-${esc(x.site_location||'')}
+${esc(
+x.request_type||''
+)}
+</td>
+
+
+<td>
+
+${esc(
+x.site_location||''
+)}
+
 <br>
-${esc(x.details||'')}
+
+${esc(
+x.details||''
+)}
+
 </td>
 
-<td>${money(x.budget)}</td>
 
 <td>
-<span class="pill">
-${esc(x.status||'pending')}
-</span>
+${money(x.budget)}
 </td>
+
+
+<td>
+
+<span class="pill">
+
+${esc(
+x.status||'pending'
+)}
+
+</span>
+
+</td>
+
 
 <td>
 
 <div class="action-buttons">
 
-<button class="btn success"
-onclick="setEnquiryStatus('${esc(x.id)}','approved')">
+
+<button
+class="btn success"
+onclick="setEnquiryStatus(
+'${esc(x.id)}',
+'approved'
+)">
+
 Approve
+
 </button>
 
-<button class="btn warning"
-onclick="setEnquiryStatus('${esc(x.id)}','contacted')">
+
+<button
+class="btn warning"
+onclick="setEnquiryStatus(
+'${esc(x.id)}',
+'contacted'
+)">
+
 Contacted
+
 </button>
 
-<button class="btn danger"
-onclick="setEnquiryStatus('${esc(x.id)}','rejected')">
+
+<button
+class="btn danger"
+onclick="setEnquiryStatus(
+'${esc(x.id)}',
+'rejected'
+)">
+
 Reject
+
 </button>
+
 
 </div>
 
 </td>
 
-</tr>`;
+
+</tr>
+
+`;
 
 });
 
+
 box.innerHTML=table(
+
 [
 'Date',
 'Customer',
@@ -2531,23 +5379,34 @@ box.innerHTML=table(
 'Status',
 'Action'
 ],
+
 rows
+
 );
 
 }
 
-async function setEnquiryStatus(id,status){
+
+async function setEnquiryStatus(
+id,
+status
+){
 
 const {error}=await sb
 .from('contract_requests')
 .update({status})
 .eq('id',id);
 
-if(error)return toast(error.message);
+
+if(error)return toast(
+error.message
+);
+
 
 toast('Enquiry status updated');
 
 await loadEnquiries();
+
 await refreshAll();
 
 }
@@ -2561,7 +5420,9 @@ async function refreshAll(){
 
 if(!user)return;
 
+
 try{
+
 
 const [
 cs,
@@ -2573,28 +5434,43 @@ exps
 ]=await Promise.all([
 
 getAll('customers'),
+
 getAll('projects'),
+
 getAll('workers'),
+
 getAll('work_logs'),
+
 getAll('payments'),
+
 getAll('expenses')
 
 ]);
 
+
 customersCache=cs;
+
 projectsCache=ps;
+
 workersCache=ws;
+
 
 customerCache={};
 
+
 cs.forEach(c=>{
-if(c.user_id)customerCache[c.user_id]=c;
+
+if(c.user_id)
+customerCache[c.user_id]=c;
+
 });
 
 
 /* ENQUIRIES */
 
-const {data:req}=await sb
+const {
+data:req
+}=await sb
 .from('contract_requests')
 .select('*')
 .order('created_at',{ascending:false});
@@ -2602,13 +5478,23 @@ const {data:req}=await sb
 
 /* COUNTS */
 
-q('mCustomers').textContent=cs.length;
-q('mProjects').textContent=ps.length;
-q('mWorkers').textContent=ws.length;
+q('mCustomers')
+.textContent=cs.length;
 
-q('mEnquiries').textContent=
-(req||[]).filter(x=>
-!['approved','rejected'].includes(x.status)
+q('mProjects')
+.textContent=ps.length;
+
+q('mWorkers')
+.textContent=ws.length;
+
+
+q('mEnquiries')
+.textContent=
+(req||[]).filter(
+x=>![
+'approved',
+'rejected'
+].includes(x.status)
 ).length;
 
 
@@ -2616,26 +5502,40 @@ q('mEnquiries').textContent=
 
 try{
 
-const {data:ta}=await sb
+const {
+data:ta
+}=await sb
 .from('worker_attendance')
 .select('id,status')
-.eq('attendance_date',today());
+.eq(
+'attendance_date',
+today()
+);
+
 
 q('mPresent').textContent=
-(ta||[]).filter(x=>x.status==='present').length;
+(ta||[]).filter(
+x=>x.status==='present'
+).length;
+
 
 }catch{
+
 q('mPresent').textContent='0';
+
 }
 
 
-/* CUSTOMER LIST */
+/* ======================================================
+CUSTOMER LIST
+====================================================== */
 
-q('customersList').innerHTML=table(
+q('customersList').innerHTML=
+table(
 
 [
 'Customer',
-'Phone',
+'Mobile',
 'Email',
 'Address',
 'Action'
@@ -2645,38 +5545,109 @@ cs.map(x=>`
 
 <tr>
 
+
 <td>
-<b>${esc(x.name||'')}</b>
+
+<div class="customer-profile">
+
+
+${
+x.photo_url
+?
+`
+<img
+src="${esc(x.photo_url)}"
+onclick="openPhoto('${esc(x.photo_url)}')"
+loading="lazy"
+title="Photo बड़ी देखें">
+`
+:
+`
+<div
+class="photo"
+style="
+display:grid;
+place-items:center;
+font-size:25px">
+
+👤
+
+</div>
+`
+}
+
+
+<div>
+
+<b>
+${esc(x.name||'')}
+</b>
+
+<br>
+
+<span class="small">
+Customer
+</span>
+
+</div>
+
+
+</div>
+
 </td>
 
-<td>${esc(x.phone||'')}</td>
 
-<td>${esc(x.email||'')}</td>
+<td>
+${esc(x.phone||'')}
+</td>
 
-<td>${esc(x.address||'')}</td>
+
+<td>
+${esc(x.email||'')}
+</td>
+
+
+<td>
+${esc(x.address||'')}
+</td>
+
 
 <td>
 
 <div class="action-buttons">
 
-<button class="btn info"
+
+<button
+class="btn info"
 onclick="viewCustomer('${esc(x.id)}')">
+
 👁️ View
+
 </button>
 
-<button class="btn info"
+
+<button
+class="btn info"
 onclick="editCustomer('${esc(x.id)}')">
+
 ✏️ Edit
+
 </button>
 
-<button class="btn danger"
+
+<button
+class="btn danger"
 onclick="deleteCustomer('${esc(x.id)}')">
+
 🗑️ Delete
+
 </button>
+
 
 </div>
 
 </td>
+
 
 </tr>
 
@@ -2685,65 +5656,137 @@ onclick="deleteCustomer('${esc(x.id)}')">
 );
 
 
-/* PROJECT LIST */
+/* ======================================================
+PROJECT LIST
+====================================================== */
 
-q('projectsList').innerHTML=table(
-
-[
-'Project',
-'Type',
-'Location',
-'Status',
-'Amount',
-'Action'
-],
-
+q('projectsList').innerHTML=
 ps.map(x=>`
 
-<tr>
+<div
+class="project-card"
+onclick="openProjectProgress('${esc(x.id)}')">
 
-<td>
-<b>${esc(x.project_name||'')}</b>
-</td>
 
-<td>${esc(x.work_type||'')}</td>
+<div
+class="row"
+style="justify-content:space-between">
 
-<td>${esc(x.location||'')}</td>
+<div>
 
-<td>
-<span class="pill">${esc(x.status||'')}</span>
-</td>
+<h3
+style="
+margin:0 0 5px">
 
-<td>${money(x.agreed_amount)}</td>
+${esc(
+x.project_name||''
+)}
 
-<td>
+</h3>
 
-<div class="action-buttons">
+<div class="muted">
 
-<button class="btn info"
-onclick="editProject('${esc(x.id)}')">
-✏️ Edit
-</button>
-
-<button class="btn danger"
-onclick="deleteProject('${esc(x.id)}')">
-🗑️ Delete
-</button>
+${esc(
+x.work_type||''
+)}
 
 </div>
 
-</td>
-
-</tr>
-
-`)
-
-);
+</div>
 
 
-/* WORKER LIST */
+<span class="pill">
 
-q('workersList').innerHTML=table(
+${esc(
+x.status||''
+)}
+
+</span>
+
+</div>
+
+
+<div
+class="muted"
+style="margin-top:10px">
+
+📍 ${esc(
+x.location||''
+)}
+
+</div>
+
+
+<div
+style="
+margin-top:13px;
+font-weight:900;
+font-size:19px">
+
+${money(
+x.agreed_amount
+)}
+
+</div>
+
+
+<div
+class="action-buttons"
+style="margin-top:13px"
+onclick="event.stopPropagation()">
+
+
+<button
+class="btn info"
+onclick="editProject('${esc(x.id)}')">
+
+✏️ Edit
+
+</button>
+
+
+<button
+class="btn success"
+onclick="openProjectProgress('${esc(x.id)}')">
+
+📈 Progress
+
+</button>
+
+
+<button
+class="btn danger"
+onclick="deleteProject('${esc(x.id)}')">
+
+🗑️ Delete
+
+</button>
+
+
+</div>
+
+
+<div
+class="muted"
+style="margin-top:10px">
+
+👆 Project पर click करके progress देखें
+
+</div>
+
+
+</div>
+
+`).join('')||
+'<div class="empty">कोई Project नहीं है।</div>';
+
+
+/* ======================================================
+WORKER LIST
+====================================================== */
+
+q('workersList').innerHTML=
+table(
 
 [
 'Worker',
@@ -2761,66 +5804,112 @@ ws.map(x=>`
 
 <tr>
 
+
 <td>
-<b>${esc(x.name||'')}</b>
+
+<b>
+${esc(x.name||'')}
+</b>
+
 </td>
 
-<td>${esc(x.phone||'')}</td>
 
-<td>${esc(x.work_role||'')}</td>
+<td>
+${esc(x.phone||'')}
+</td>
 
-<td>${money(x.daily_rate)}</td>
+
+<td>
+${esc(x.work_role||'')}
+</td>
+
+
+<td>
+${money(x.daily_rate)}
+</td>
+
 
 <td>
 ${esc(x.login_id||'—')}
 </td>
 
+
 <td>
 ${esc(x.login_email||'—')}
 </td>
+
 
 <td>
 
 ${
 x.face_registered
-?'<span class="pill present">Registered</span>'
-:'<span class="pill pending">Pending</span>'
+?
+'<span class="pill present">Registered</span>'
+:
+'<span class="pill pending">Pending</span>'
 }
 
 </td>
 
+
 <td>
 
-<span class="pill ${
-x.active===false?'absent':'present'
+<span
+class="pill ${
+x.active===false
+?'absent'
+:'present'
 }">
-${x.active===false?'Disabled':'Active'}
+
+${
+x.active===false
+?
+'Disabled'
+:
+'Active'
+}
+
 </span>
 
 </td>
+
 
 <td>
 
 <div class="action-buttons">
 
-<button class="btn info"
+
+<button
+class="btn info"
 onclick="editWorker('${esc(x.id)}')">
+
 ✏️ Edit
+
 </button>
 
-<button class="btn success"
+
+<button
+class="btn success"
 onclick="registerWorkerFace('${esc(x.id)}')">
+
 📷 Face
+
 </button>
 
-<button class="btn danger"
+
+<button
+class="btn danger"
 onclick="deleteWorker('${esc(x.id)}')">
+
 🗑️ Delete
+
 </button>
+
 
 </div>
 
 </td>
+
 
 </tr>
 
@@ -2829,9 +5918,12 @@ onclick="deleteWorker('${esc(x.id)}')">
 );
 
 
-/* WORK LIST */
+/* ======================================================
+WORK LIST
+====================================================== */
 
-q('workList').innerHTML=table(
+q('workList').innerHTML=
+table(
 
 [
 'Date',
@@ -2845,46 +5937,95 @@ q('workList').innerHTML=table(
 
 logs.map(x=>{
 
-const p=ps.find(y=>y.id===x.project_id)||{};
-const w=ws.find(y=>y.id===x.worker_id)||{};
+const p=
+ps.find(
+y=>y.id===x.project_id
+)||{};
+
+const w=
+ws.find(
+y=>y.id===x.worker_id
+)||{};
+
 
 return `
+
 <tr>
 
-<td>${esc(x.work_date||'')}</td>
-<td>${esc(p.project_name||'')}</td>
-<td>${esc(w.name||'')}</td>
-<td>${esc(x.work_description||'')}</td>
-<td>${esc(x.days||0)}</td>
-<td>${money(x.amount)}</td>
+
+<td>
+${esc(x.work_date||'')}
+</td>
+
+
+<td>
+${esc(p.project_name||'')}
+</td>
+
+
+<td>
+${esc(w.name||'')}
+</td>
+
+
+<td>
+${esc(x.work_description||'')}
+</td>
+
+
+<td>
+${esc(x.days||0)}
+</td>
+
+
+<td>
+${money(x.amount)}
+</td>
+
 
 <td>
 
 <div class="action-buttons">
 
-<button class="btn info"
+
+<button
+class="btn info"
 onclick="editWork('${esc(x.id)}')">
+
 ✏️ Edit
+
 </button>
 
-<button class="btn danger"
+
+<button
+class="btn danger"
 onclick="deleteWork('${esc(x.id)}')">
+
 🗑️ Delete
+
 </button>
+
 
 </div>
 
 </td>
 
-</tr>`;
+
+</tr>
+
+`;
+
 })
 
 );
 
 
-/* PAYMENT LIST */
+/* ======================================================
+PAYMENTS
+====================================================== */
 
-q('paymentsList').innerHTML=table(
+q('paymentsList').innerHTML=
+table(
 
 [
 'Date',
@@ -2897,45 +6038,85 @@ q('paymentsList').innerHTML=table(
 
 pays.map(x=>{
 
-const p=ps.find(y=>y.id===x.project_id)||{};
+const p=
+ps.find(
+y=>y.id===x.project_id
+)||{};
+
 
 return `
+
 <tr>
 
-<td>${esc(x.payment_date||'')}</td>
-<td>${esc(p.project_name||'')}</td>
-<td>${money(x.amount)}</td>
-<td>${esc(x.payment_method||'')}</td>
-<td>${esc(x.reference_no||'')}</td>
+
+<td>
+${esc(x.payment_date||'')}
+</td>
+
+
+<td>
+${esc(p.project_name||'')}
+</td>
+
+
+<td>
+${money(x.amount)}
+</td>
+
+
+<td>
+${esc(x.payment_method||'')}
+</td>
+
+
+<td>
+${esc(x.reference_no||'')}
+</td>
+
 
 <td>
 
 <div class="action-buttons">
 
-<button class="btn info"
+
+<button
+class="btn info"
 onclick="editPayment('${esc(x.id)}')">
+
 ✏️ Edit
+
 </button>
 
-<button class="btn danger"
+
+<button
+class="btn danger"
 onclick="deletePayment('${esc(x.id)}')">
+
 🗑️ Delete
+
 </button>
+
 
 </div>
 
 </td>
 
-</tr>`;
+
+</tr>
+
+`;
 
 })
 
 );
 
 
-/* EXPENSE LIST */
+/* ======================================================
+EXPENSES
+====================================================== */
 
-q('expensesList').innerHTML=table(
+q('expensesList').innerHTML=
+table(
 
 [
 'Date',
@@ -2948,130 +6129,263 @@ q('expensesList').innerHTML=table(
 
 exps.map(x=>{
 
-const p=ps.find(y=>y.id===x.project_id)||{};
+const p=
+ps.find(
+y=>y.id===x.project_id
+)||{};
+
 
 return `
+
 <tr>
 
-<td>${esc(x.expense_date||'')}</td>
-<td>${esc(p.project_name||'General')}</td>
-<td>${esc(x.category||'')}</td>
-<td>${esc(x.description||'')}</td>
-<td>${money(x.amount)}</td>
+
+<td>
+${esc(x.expense_date||'')}
+</td>
+
+
+<td>
+${esc(p.project_name||'General')}
+</td>
+
+
+<td>
+${esc(x.category||'')}
+</td>
+
+
+<td>
+${esc(x.description||'')}
+</td>
+
+
+<td>
+${money(x.amount)}
+</td>
+
 
 <td>
 
 <div class="action-buttons">
 
-<button class="btn info"
+
+<button
+class="btn info"
 onclick="editExpense('${esc(x.id)}')">
+
 ✏️ Edit
+
 </button>
 
-<button class="btn danger"
+
+<button
+class="btn danger"
 onclick="deleteExpense('${esc(x.id)}')">
+
 🗑️ Delete
+
 </button>
+
 
 </div>
 
 </td>
 
-</tr>`;
+
+</tr>
+
+`;
 
 })
 
 );
 
 
-/* DROPDOWNS */
+/* ======================================================
+DROPDOWNS
+====================================================== */
 
 q('pCustomer').innerHTML=
-'<option value="">Select</option>'+
+`
+<option value="">
+Select
+</option>
+`+
 cs.map(x=>
-`<option value="${esc(x.id)}">${esc(x.name)}</option>`
+`
+<option value="${esc(x.id)}">
+${esc(x.name)}
+</option>
+`
 ).join('');
 
 
-['lProject','payProject','eProject'].forEach(id=>{
+['lProject','payProject','eProject']
+.forEach(id=>{
 
 q(id).innerHTML=
 (
 id==='eProject'
-?'<option value="">General</option>'
-:'<option value="">Select Project</option>'
-)+
+?
+'<option value="">General</option>'
+:
+'<option value="">Select Project</option>'
+)
++
 ps.map(x=>
-`<option value="${esc(x.id)}">${esc(x.project_name)}</option>`
+`
+<option value="${esc(x.id)}">
+${esc(x.project_name)}
+</option>
+`
 ).join('');
 
 });
 
 
 q('lWorker').innerHTML=
-'<option value="">Select Worker</option>'+
+`
+<option value="">
+Select Worker
+</option>
+`
++
 ws.map(x=>
-`<option value="${esc(x.id)}">${esc(x.name)}</option>`
+`
+<option value="${esc(x.id)}">
+${esc(x.name)}
+</option>
+`
 ).join('');
 
 
 q('attWorkerFilter').innerHTML=
-'<option value="">सभी Worker</option>'+
+`
+<option value="">
+सभी Worker
+</option>
+`
++
 ws.map(x=>
-`<option value="${esc(x.id)}">${esc(x.name)}</option>`
+`
+<option value="${esc(x.id)}">
+${esc(x.name)}
+</option>
+`
 ).join('');
 
 
-/* REPORT */
+/* ======================================================
+REPORT
+====================================================== */
 
-const totalP=pays.reduce(
-(a,x)=>a+Number(x.amount||0),0
-);
-
-const totalE=exps.reduce(
-(a,x)=>a+Number(x.amount||0),0
-);
-
-const totalW=logs.reduce(
-(a,x)=>a+Number(x.amount||0),0
-);
-
-q('rPayments').textContent=money(totalP);
-q('rExpenses').textContent=money(totalE);
-q('rNet').textContent=money(totalP-totalE);
-q('rWork').textContent=money(totalW);
-
-
-/* RECENT PROJECTS */
-
-q('recentProjects').innerHTML=table(
-
-[
-'Project',
-'Location',
-'Status',
-'Amount'
-],
-
-ps.slice(0,8).map(x=>`
-
-<tr>
-
-<td>${esc(x.project_name||'')}</td>
-<td>${esc(x.location||'')}</td>
-<td><span class="pill">${esc(x.status||'')}</span></td>
-<td>${money(x.agreed_amount)}</td>
-
-</tr>
-
-`)
-
+const totalP=
+pays.reduce(
+(a,x)=>
+a+Number(x.amount||0),
+0
 );
 
 
-/* RECENT ENQUIRIES */
+const totalE=
+exps.reduce(
+(a,x)=>
+a+Number(x.amount||0),
+0
+);
 
-q('recentEnquiries').innerHTML=table(
+
+const totalW=
+logs.reduce(
+(a,x)=>
+a+Number(x.amount||0),
+0
+);
+
+
+q('rPayments')
+.textContent=money(totalP);
+
+q('rExpenses')
+.textContent=money(totalE);
+
+q('rNet')
+.textContent=
+money(totalP-totalE);
+
+q('rWork')
+.textContent=money(totalW);
+
+
+/* ======================================================
+RECENT PROJECT CARDS
+====================================================== */
+
+q('recentProjects').innerHTML=
+ps.slice(0,6).map(x=>`
+
+<div
+class="project-card"
+onclick="openProjectProgress('${esc(x.id)}')">
+
+
+<div
+class="row"
+style="justify-content:space-between">
+
+<b>
+${esc(x.project_name||'')}
+</b>
+
+<span class="pill">
+${esc(x.status||'')}
+</span>
+
+</div>
+
+
+<div
+class="muted"
+style="margin-top:7px">
+
+📍 ${esc(x.location||'')}
+
+</div>
+
+
+<div
+style="
+font-size:20px;
+font-weight:900;
+margin-top:12px">
+
+${money(x.agreed_amount)}
+
+</div>
+
+
+<div
+class="muted"
+style="margin-top:8px">
+
+📈 Progress देखने के लिए tap/click करें
+
+</div>
+
+
+</div>
+
+`).join('')||
+'<div class="empty">कोई Project नहीं है।</div>';
+
+
+/* ======================================================
+RECENT ENQUIRIES
+====================================================== */
+
+q('recentEnquiries').innerHTML=
+table(
 
 [
 'Date',
@@ -3084,25 +6398,47 @@ q('recentEnquiries').innerHTML=table(
 
 <tr>
 
-<td>
-${new Date(x.created_at).toLocaleDateString('en-IN')}
-</td>
 
 <td>
-${esc(
-(customerCache[x.customer_user_id]||{}).name||'Customer'
-)}
+
+${new Date(
+x.created_at
+).toLocaleDateString('en-IN')}
+
 </td>
+
+
+<td>
+
+${esc(
+(
+customerCache[
+x.customer_user_id
+]||{}
+).name||
+'Customer'
+)}
+
+</td>
+
 
 <td>
 ${esc(x.request_type||'')}
 </td>
 
+
 <td>
+
 <span class="pill">
-${esc(x.status||'pending')}
+
+${esc(
+x.status||'pending'
+)}
+
 </span>
+
 </td>
+
 
 </tr>
 
@@ -3111,9 +6447,12 @@ ${esc(x.status||'pending')}
 );
 
 
-/* REPORT PROJECTS */
+/* ======================================================
+REPORT PROJECTS
+====================================================== */
 
-q('reportProjects').innerHTML=table(
+q('reportProjects').innerHTML=
+table(
 
 [
 'Project',
@@ -3126,86 +6465,124 @@ q('reportProjects').innerHTML=table(
 
 ps.map(p=>{
 
-const received=pays
-.filter(x=>x.project_id===p.id)
-.reduce((a,x)=>a+Number(x.amount||0),0);
+const received=
+pays
+.filter(
+x=>x.project_id===p.id
+)
+.reduce(
+(a,x)=>
+a+Number(x.amount||0),
+0
+);
 
-const expense=exps
-.filter(x=>x.project_id===p.id)
-.reduce((a,x)=>a+Number(x.amount||0),0);
 
-const work=logs
-.filter(x=>x.project_id===p.id)
-.reduce((a,x)=>a+Number(x.amount||0),0);
+const expense=
+exps
+.filter(
+x=>x.project_id===p.id
+)
+.reduce(
+(a,x)=>
+a+Number(x.amount||0),
+0
+);
+
+
+const work=
+logs
+.filter(
+x=>x.project_id===p.id
+)
+.reduce(
+(a,x)=>
+a+Number(x.amount||0),
+0
+);
+
 
 return `
+
 <tr>
 
-<td>${esc(p.project_name||'')}</td>
-
-<td>${money(p.agreed_amount)}</td>
-
-<td>${money(received)}</td>
-
-<td>${money(expense)}</td>
-
-<td>${money(work)}</td>
 
 <td>
-${money(Number(p.agreed_amount||0)-received)}
+${esc(p.project_name||'')}
 </td>
 
-</tr>`;
+
+<td>
+${money(p.agreed_amount)}
+</td>
+
+
+<td>
+${money(received)}
+</td>
+
+
+<td>
+${money(expense)}
+</td>
+
+
+<td>
+${money(work)}
+</td>
+
+
+<td>
+${money(
+Number(p.agreed_amount||0)-received
+)}
+</td>
+
+
+</tr>
+
+`;
 
 })
 
 );
 
 
-/* ATTENDANCE */
+/* ======================================================
+PROGRESS PAGE
+====================================================== */
 
-if(q('attendance').classList.contains('active')){
-await loadAttendance();
+if(
+q('progress').classList.contains('active')
+){
+
+await renderProgressCards();
+
 }
+
+
+/* ======================================================
+ATTENDANCE
+====================================================== */
+
+if(
+q('attendance').classList.contains('active')
+){
+
+await loadAttendance();
+
+}
+
 
 }catch(err){
 
 console.error(err);
 
 toast(
-err.message||'Data load error'
+err.message||
+'Data load error'
 );
 
 }
-
-}
-
-
-/* =========================================================
-CUSTOMER VIEW
-========================================================= */
-
-async function viewCustomer(id){
-
-const {data:c,error}=await sb
-.from('customers')
-.select('*')
-.eq('id',id)
-.maybeSingle();
-
-if(error)return toast(error.message);
-
-if(!c)return toast('Customer नहीं मिला');
-
-alert(
-`Customer Profile
-
-Name: ${c.name||''}
-Phone: ${c.phone||''}
-Email: ${c.email||''}
-Address: ${c.address||''}
-Notes: ${c.notes||''}`
-);
 
 }
 
