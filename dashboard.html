@@ -623,13 +623,30 @@ td strong{
   color:var(--orange);
 }
 
-.photoPreview{
+ .photoPreview{
   width:100%;
   max-height:260px;
   object-fit:cover;
   border-radius:13px;
   margin-top:12px;
 }
+
+.globalSearch{background:#fff;border:1px solid var(--border);border-radius:18px;padding:18px;margin-bottom:22px;box-shadow:0 7px 24px rgba(15,23,42,.05)}
+.globalSearch h3{margin:0 0 6px;font-size:20px}
+.globalSearch p{margin:0 0 12px;color:var(--muted)}
+.globalSearch input{width:100%;padding:13px 14px;border:1px solid #d9e1e9;border-radius:12px;outline:none}
+.globalSearch input:focus{border-color:var(--orange)}
+.searchResults{margin-top:12px;display:grid;gap:8px}
+.searchResult{padding:11px 13px;background:#f8fafc;border:1px solid #e5ebf1;border-radius:12px}
+.searchResult b{display:block;margin-bottom:3px}
+.customerCell{display:flex;align-items:center;gap:10px;min-width:220px}
+.customerThumb{width:48px;height:48px;border-radius:12px;object-fit:cover;border:1px solid var(--border);background:#eef2f7;flex:0 0 48px}
+.customerPlaceholder{width:48px;height:48px;border-radius:12px;display:grid;place-items:center;background:#eef2f7;border:1px solid var(--border);font-size:22px;flex:0 0 48px}
+.customerEmail{color:var(--muted);font-size:12px;margin-top:3px;word-break:break-word}
+.uploadRow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.uploadHint{font-size:12px;color:var(--muted)}
+.progressUploadPreview{max-width:180px;max-height:120px;border-radius:12px;object-fit:cover;border:1px solid var(--border);margin-top:8px;display:none}
+@media(max-width:700px){.globalSearch{padding:15px}.customerCell{min-width:180px}}
 
 /* TOAST */
 
@@ -849,6 +866,12 @@ td strong{
 
 <div class="content">
 
+<div class="globalSearch">
+  <h3>🔎 Global Search</h3>
+  <p>Customer, Project या Worker की name, phone, email, address, village, location आदि से search करें।</p>
+  <input id="globalSearchInput" type="search" placeholder="Customer / Project / Worker search..." autocomplete="off" oninput="renderGlobalSearch()">
+  <div id="globalSearchResults" class="searchResults"></div>
+</div>
 
 <!-- ================= OVERVIEW ================= -->
 
@@ -971,9 +994,10 @@ td strong{
 
         <thead>
           <tr>
+            <th>Photo</th>
             <th>Name</th>
+            <th>Email</th>
             <th>Phone</th>
-            <th>Village</th>
             <th>Address</th>
             <th>Actions</th>
           </tr>
@@ -1301,6 +1325,11 @@ td strong{
       </div>
 
       <div class="field">
+        <label>Email</label>
+        <input id="customerEmail" type="email">
+      </div>
+
+      <div class="field">
         <label>Phone</label>
         <input id="customerPhone">
       </div>
@@ -1313,6 +1342,15 @@ td strong{
       <div class="field">
         <label>Address</label>
         <input id="customerAddress">
+      </div>
+
+      <div class="field full">
+        <label>Customer Photo</label>
+        <div class="uploadRow">
+          <input id="customerPhotoFile" type="file" accept="image/*">
+          <span class="uploadHint">Photo select करें — dashboard इसे छोटा करके save करेगा।</span>
+        </div>
+        <input id="customerPhotoUrl" type="hidden">
       </div>
 
       <div class="field full">
@@ -1388,6 +1426,21 @@ td strong{
       <div class="field">
         <label>Daily Wage</label>
         <input id="workerWage" type="number" min="0">
+      </div>
+
+      <div class="field">
+        <label>Village</label>
+        <input id="workerVillage">
+      </div>
+
+      <div class="field">
+        <label>आज की Attendance</label>
+        <select id="workerAttendanceStatus">
+          <option value="">No change</option>
+          <option value="present">Present</option>
+          <option value="absent">Absent</option>
+        </select>
+        <span class="uploadHint">Present/Absent चुनने पर आज की attendance worker_attendance में save/update होगी।</span>
       </div>
 
     </div>
@@ -1563,6 +1616,13 @@ td strong{
                placeholder="https://...">
       </div>
 
+      <div class="field full">
+        <label>या Photo Upload करें</label>
+        <input id="updatePhotoFile" type="file" accept="image/*">
+        <img id="progressUploadPreview" class="progressUploadPreview" alt="Selected Photo Preview">
+        <div class="uploadHint">Upload की गई photo project_updates.photo_url में save होगी।</div>
+      </div>
+
     </div>
 
 
@@ -1619,6 +1679,8 @@ let workers = [];
 let payments = [];
 let enquiries = [];
 let projectUpdates = [];
+let profileMap = {};
+let workerAttendanceMap = {};
 
 let currentPage = 'overview';
 
@@ -2015,36 +2077,23 @@ async function loadProjects(){
 
 async function loadCustomers(){
 
-  const {
-    data,
-    error
-  } =
-  await sb
-    .from('customers')
-    .select('*')
-    .order(
-      'created_at',
-      {
-        ascending:false
-      }
-    );
+  const {data,error}=await sb.from('customers').select('*').order('created_at',{ascending:false});
 
+  if(error){console.error('customers:',error);customers=[];return;}
 
-  if(error){
-
-    console.error(
-      'customers:',
-      error
-    );
-
-    customers = [];
-
-    return;
-
+  customers=data||[];
+  profileMap={};
+  const ids=customers.map(c=>c.user_id).filter(Boolean);
+  if(ids.length){
+    try{
+      const pr=await sb.from('profiles').select('id,email,phone,full_name').in('id',ids);
+      if(!pr.error)(pr.data||[]).forEach(x=>profileMap[x.id]=x);
+    }catch(e){console.warn('Customer profile lookup failed',e);}
+    try{
+      const av=await sb.from('profiles').select('id,avatar_url').in('id',ids);
+      if(!av.error)(av.data||[]).forEach(x=>{profileMap[x.id]={...(profileMap[x.id]||{}),avatar_url:x.avatar_url};});
+    }catch(e){console.warn('Profile avatar lookup unavailable',e);}
   }
-
-
-  customers = data || [];
 
 }
 
@@ -2055,36 +2104,23 @@ async function loadCustomers(){
 
 async function loadWorkers(){
 
-  const {
-    data,
-    error
-  } =
-  await sb
-    .from('workers')
-    .select('*')
-    .order(
-      'created_at',
-      {
-        ascending:false
-      }
-    );
-
-
-  if(error){
-
-    console.error(
-      'workers:',
-      error
-    );
-
-    workers = [];
-
-    return;
-
-  }
-
-
-  workers = data || [];
+  const {data,error}=await sb.from('workers').select('*').order('created_at',{ascending:false});
+  if(error){console.error('workers:',error);workers=[];return;}
+  workers=data||[];
+  workerAttendanceMap={};
+  try{
+    const ar=await sb.from('worker_attendance').select('*');
+    if(!ar.error){
+      (ar.data||[]).forEach(a=>{
+        const wid=a.worker_id||a.workerId;if(!wid)return;
+        if(!workerAttendanceMap[wid])workerAttendanceMap[wid]={present:0,absent:0,total:0};
+        const st=String(a.status||a.attendance||'').toLowerCase();
+        workerAttendanceMap[wid].total++;
+        if(['present','p','yes','1','full day','half day'].includes(st))workerAttendanceMap[wid].present++;
+        else if(['absent','a','no','0'].includes(st))workerAttendanceMap[wid].absent++;
+      });
+    }
+  }catch(e){console.warn('Worker attendance unavailable',e);}
 
 }
 
@@ -2263,6 +2299,8 @@ function populateSelects(){
 
 }
 
+
+document.getElementById('paymentProject').addEventListener('change',()=>{const p=getProject(document.getElementById('paymentProject').value);document.getElementById('paymentCustomer').value=p?.customer_id||'';});
 
 /* =========================================================
    PROGRESS CALCULATION
@@ -2996,106 +3034,54 @@ async function deleteProject(id){
 }
 
 
+async function imageFileToDataUrl(file,maxW=1000,maxH=1000,quality=.75){
+  if(!file)return null;
+  if(!file.type.startsWith('image/'))throw new Error('केवल image file चुनें');
+  const src=await new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(new Error('File read failed'));r.readAsDataURL(file);});
+  const img=await new Promise((resolve,reject)=>{const i=new Image();i.onload=()=>resolve(i);i.onerror=()=>reject(new Error('Image load failed'));i.src=src;});
+  const scale=Math.min(1,maxW/img.width,maxH/img.height);
+  const c=document.createElement('canvas');c.width=Math.max(1,Math.round(img.width*scale));c.height=Math.max(1,Math.round(img.height*scale));
+  c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+  return c.toDataURL('image/jpeg',quality);
+}
+
+function renderGlobalSearch(){
+  const term=String(document.getElementById('globalSearchInput')?.value||'').trim().toLowerCase();
+  const box=document.getElementById('globalSearchResults');if(!box)return;
+  if(!term){box.innerHTML='';return;}
+  const results=[];
+  customers.forEach(c=>{const email=customerEmail(c);const hay=[c.name,c.customer_name,c.phone,c.mobile,c.email,email,c.village,c.address,c.notes].filter(Boolean).join(' ').toLowerCase();if(hay.includes(term))results.push(`<div class="searchResult"><b>👤 Customer: ${esc(c.name||c.customer_name||'Customer')}</b><span>${esc(email||'')} ${email?'• ':''}${esc(c.phone||c.mobile||'')} ${c.address?'• '+esc(c.address):''}</span></div>`);});
+  projects.forEach(p=>{const c=getCustomer(p.customer_id);const hay=[p.project_name,p.work_type,p.location,p.status,p.notes,c?.name].filter(Boolean).join(' ').toLowerCase();if(hay.includes(term))results.push(`<div class="searchResult"><b>🏗️ Project: ${esc(p.project_name||'Project')}</b><span>${esc(c?.name||'')} ${p.location?'• '+esc(p.location):''} ${p.status?'• '+esc(p.status):''}</span></div>`);});
+  workers.forEach(w=>{const hay=[w.name,w.worker_name,w.phone,w.mobile,w.work_role,w.role,w.designation,w.village,w.notes,w.daily_rate,w.daily_wage].filter(Boolean).join(' ').toLowerCase();if(hay.includes(term))results.push(`<div class="searchResult"><b>👷 Worker: ${esc(w.name||w.worker_name||'Worker')}</b><span>${esc(w.phone||w.mobile||'')} • ${esc(w.work_role||w.role||w.designation||'')} • ${esc(w.village||'')}</span></div>`);});
+  box.innerHTML=results.length?results.slice(0,20).join(''):`<div class="searchResult">कोई matching Customer / Project / Worker नहीं मिला।</div>`;
+}
+
 /* =========================================================
    CUSTOMERS
 ========================================================= */
 
+function customerPhoto(c){
+  return c.photo_url || c.image_url || c.photo || c.profile_photo || c.customer_image || c.avatar_url || profileMap[c.user_id]?.avatar_url || '';
+}
+
+function customerEmail(c){
+  return c.email || c.email_id || c.customer_email || profileMap[c.user_id]?.email || '';
+}
+
 function renderCustomers(){
-
-  const tbody =
-    document.getElementById(
-      'customersTable'
-    );
-
-
-  if(!customers.length){
-
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="5">
-          <div class="empty">
-            कोई Customer नहीं मिला।
-          </div>
-        </td>
-      </tr>
-    `;
-
-    return;
-
-  }
-
-
-  tbody.innerHTML =
-    customers.map(c=>{
-
-      const name =
-        c.name ||
-        c.customer_name ||
-        '—';
-
-
-      return `
-
-        <tr>
-
-          <td>
-            <strong>
-              ${esc(name)}
-            </strong>
-          </td>
-
-          <td>
-            ${esc(
-              c.phone ||
-              c.mobile ||
-              '—'
-            )}
-          </td>
-
-          <td>
-            ${esc(
-              c.village ||
-              '—'
-            )}
-          </td>
-
-          <td>
-            ${esc(
-              c.address ||
-              '—'
-            )}
-          </td>
-
-          <td>
-
-            <div class="actions">
-
-              <button
-                class="btn btn-blue btn-sm"
-                onclick="editCustomer('${esc(c.id)}')">
-
-                ✏️ Edit
-
-              </button>
-
-              <button
-                class="btn btn-red btn-sm"
-                onclick="deleteCustomer('${esc(c.id)}')">
-
-                🗑️ Delete
-
-              </button>
-
-            </div>
-
-          </td>
-
-        </tr>
-
-      `;
-
-    }).join('');
-
+  const tbody=document.getElementById('customersTable');
+  if(!customers.length){tbody.innerHTML='<tr><td colspan="6"><div class="empty">कोई Customer नहीं मिला।</div></td></tr>';return;}
+  tbody.innerHTML=customers.map(c=>{
+    const name=c.name||c.customer_name||'—',photo=customerPhoto(c),email=customerEmail(c),phone=c.phone||c.mobile||'—',address=c.address||'—';
+    return `<tr>
+      <td>${photo?`<img class="customerThumb" src="${esc(photo)}" alt="Customer Photo" loading="lazy" onerror="this.style.display='none'">`:`<span class="customerPlaceholder">👤</span>`}</td>
+      <td><strong>${esc(name)}</strong></td>
+      <td>${esc(email||'—')}</td>
+      <td>${esc(phone)}</td>
+      <td>${esc(address)}</td>
+      <td><div class="actions"><button class="btn btn-blue btn-sm" onclick="editCustomer('${esc(c.id)}')">✏️ Edit</button><button class="btn btn-red btn-sm" onclick="deleteCustomer('${esc(c.id)}')">🗑️ Delete</button></div></td>
+    </tr>`;
+  }).join('');
 }
 
 
@@ -3104,6 +3090,7 @@ function openCustomerModal(id=''){
   document.getElementById(
     'customerForm'
   ).reset();
+  document.getElementById('customerPhotoUrl').value='';
 
 
   document.getElementById(
@@ -3146,6 +3133,8 @@ function openCustomerModal(id=''){
       '';
 
 
+    document.getElementById('customerEmail').value = customerEmail(c);
+
     document.getElementById(
       'customerPhone'
     ).value =
@@ -3167,6 +3156,8 @@ function openCustomerModal(id=''){
       c.address ||
       '';
 
+
+    document.getElementById('customerPhotoUrl').value = customerPhoto(c);
 
     document.getElementById(
       'customerNotes'
@@ -3206,12 +3197,21 @@ document.getElementById(
       ).value;
 
 
+    let photoUrl=document.getElementById('customerPhotoUrl').value||null;
+    const photoFile=document.getElementById('customerPhotoFile').files[0];
+    if(photoFile){
+      try{photoUrl=await imageFileToDataUrl(photoFile,900,900,.72);}catch(err){return toast('❌ Customer photo process नहीं हुई: '+err.message);}
+    }
+
     const payload = {
 
       name:
         document.getElementById(
           'customerName'
         ).value.trim(),
+
+      email:
+        document.getElementById('customerEmail').value.trim(),
 
       phone:
         document.getElementById(
@@ -3231,8 +3231,9 @@ document.getElementById(
       notes:
         document.getElementById(
           'customerNotes'
-        ).value.trim()
+        ).value.trim(),
 
+      photo_url:photoUrl
     };
 
 
@@ -3355,145 +3356,23 @@ async function deleteCustomer(id){
 ========================================================= */
 
 function renderWorkers(){
-
-  const box =
-    document.getElementById(
-      'workersList'
-    );
-
-
-  if(!workers.length){
-
-    box.innerHTML =
-      '<div class="empty">कोई Worker नहीं मिला।</div>';
-
-    return;
-
-  }
-
-
-  box.innerHTML =
-    workers.map(w=>{
-
-      const name =
-        w.name ||
-        w.worker_name ||
-        'Worker';
-
-
-      const role =
-        w.role ||
-        w.designation ||
-        '—';
-
-
-      const wage =
-        num(
-          w.daily_wage ??
-          w.wage ??
-          w.daily_salary
-        );
-
-
-      return `
-
-        <div class="workerCard">
-
-          <div class="workerHead">
-
-            <div class="avatar">
-              ${esc(
-                name.charAt(0)
-              ).toUpperCase()}
-            </div>
-
-            <div>
-
-              <h3>
-                ${esc(name)}
-              </h3>
-
-              <p>
-                ${esc(role)}
-              </p>
-
-            </div>
-
-          </div>
-
-
-          <div class="workerInfo">
-
-            <div class="workerRow">
-
-              <span>Mobile</span>
-
-              <strong>
-                ${esc(
-                  w.mobile ||
-                  w.phone ||
-                  '—'
-                )}
-              </strong>
-
-            </div>
-
-
-            <div class="workerRow">
-
-              <span>Daily Wage</span>
-
-              <strong>
-                ${money(wage)}
-              </strong>
-
-            </div>
-
-
-            <div class="workerRow">
-
-              <span>Attendance</span>
-
-              <strong>
-                ${esc(
-                  w.present_days ??
-                  w.attendance ??
-                  '—'
-                )}
-              </strong>
-
-            </div>
-
-
-            <div class="actions"
-                 style="margin-top:15px">
-
-              <button
-                class="btn btn-blue btn-sm"
-                onclick="editWorker('${esc(w.id)}')">
-
-                ✏️ Edit
-
-              </button>
-
-              <button
-                class="btn btn-red btn-sm"
-                onclick="deleteWorker('${esc(w.id)}')">
-
-                🗑️ Delete
-
-              </button>
-
-            </div>
-
-          </div>
-
-        </div>
-
-      `;
-
-    }).join('');
-
+  const box=document.getElementById('workersList');
+  if(!workers.length){box.innerHTML='<div class="empty">कोई Worker नहीं मिला।</div>';return;}
+  box.innerHTML=workers.map(w=>{
+    const name=w.name||w.worker_name||'Worker';
+    const role=w.work_role||w.role||w.designation||'—';
+    const wage=num(w.daily_rate ?? w.daily_wage ?? w.wage ?? w.daily_salary);
+    const phone=w.phone||w.mobile||'—';
+    const a=workerAttendanceMap[w.id];
+    const attendance=a?`${a.present}/${a.total} days`:(w.present_days ?? w.attendance ?? w.attendance_status ?? '—');
+    return `<div class="workerCard"><div class="workerHead"><div class="avatar">${esc(name.charAt(0)).toUpperCase()}</div><div><h3>${esc(name)}</h3><p>${esc(role)}</p></div></div><div class="workerInfo">
+      <div class="workerRow"><span>Mobile</span><strong>${esc(phone)}</strong></div>
+      <div class="workerRow"><span>Daily Wage</span><strong>${money(wage)}</strong></div>
+      <div class="workerRow"><span>Attendance</span><strong>${esc(attendance)}</strong></div>
+      <div class="workerRow"><span>Village</span><strong>${esc(w.village||'—')}</strong></div>
+      <div class="actions" style="margin-top:15px"><button class="btn btn-blue btn-sm" onclick="editWorker('${esc(w.id)}')">✏️ Edit</button><button class="btn btn-red btn-sm" onclick="deleteWorker('${esc(w.id)}')">🗑️ Delete</button></div>
+    </div></div>`;
+  }).join('');
 }
 
 
@@ -3552,6 +3431,7 @@ function openWorkerModal(id=''){
     document.getElementById(
       'workerRole'
     ).value =
+      w.work_role ||
       w.role ||
       w.designation ||
       '';
@@ -3560,18 +3440,23 @@ function openWorkerModal(id=''){
     document.getElementById(
       'workerMobile'
     ).value =
-      w.mobile ||
       w.phone ||
+      w.mobile ||
       '';
 
 
     document.getElementById(
       'workerWage'
     ).value =
+      w.daily_rate ??
       w.daily_wage ??
       w.wage ??
       w.daily_salary ??
       '';
+
+    document.getElementById('workerVillage').value=w.village||'';
+    const wa=workerAttendanceMap[w.id];
+    document.getElementById('workerAttendanceStatus').value='';
 
   }
 
@@ -3612,25 +3497,29 @@ document.getElementById(
           'workerName'
         ).value.trim(),
 
-      role:
+      work_role:
         document.getElementById(
           'workerRole'
         ).value.trim(),
 
-      mobile:
+      phone:
         document.getElementById(
           'workerMobile'
         ).value.trim(),
 
-      daily_wage:
+      daily_rate:
         num(
           document.getElementById(
             'workerWage'
           ).value
-        )
+        ),
+
+      village:
+        document.getElementById('workerVillage').value.trim()
 
     };
 
+    const attendanceStatus=document.getElementById('workerAttendanceStatus').value;
 
     let result;
 
@@ -3664,6 +3553,9 @@ document.getElementById(
 
     }
 
+    if(attendanceStatus && id){
+      await saveWorkerAttendance(id,attendanceStatus);
+    }
 
     closeModal(
       'workerModal'
@@ -3682,6 +3574,27 @@ document.getElementById(
   }
 );
 
+
+async function saveWorkerAttendance(workerId,status){
+  try{
+    const todayDate=new Date().toISOString().slice(0,10);
+    const {data:rows,error:findErr}=await sb.from('worker_attendance').select('*').eq('worker_id',workerId);
+    if(findErr){toast('Worker details save हो गईं, लेकिन attendance update नहीं हुई: '+findErr.message);return;}
+    const dateRow=(rows||[]).find(r=>{const d=r.attendance_date||r.date||r.work_date||r.day;return d?String(d).slice(0,10)===todayDate:false;});
+    if(dateRow){
+      const {error}=await sb.from('worker_attendance').update({status}).eq('id',dateRow.id);
+      if(error)toast('Attendance update नहीं हुई: '+error.message);
+      return;
+    }
+    const payload={worker_id:workerId,status};
+    if((rows||[]).some(r=>'attendance_date' in r))payload.attendance_date=todayDate;
+    else if((rows||[]).some(r=>'date' in r))payload.date=todayDate;
+    else if((rows||[]).some(r=>'work_date' in r))payload.work_date=todayDate;
+    else if((rows||[]).some(r=>'day' in r))payload.day=todayDate;
+    const {error}=await sb.from('worker_attendance').insert(payload);
+    if(error)toast('Attendance save नहीं हुई: '+error.message);
+  }catch(err){console.warn(err);toast('Worker details save हो गईं, लेकिन attendance update नहीं हुई।');}
+}
 
 async function deleteWorker(id){
 
@@ -3950,10 +3863,11 @@ function openPaymentModal(id=''){
       p.project_id || '';
 
 
+    const paymentProjectRecord=getProject(p.project_id);
     document.getElementById(
       'paymentCustomer'
     ).value =
-      p.customer_id || '';
+      paymentProjectRecord?.customer_id || '';
 
 
     document.getElementById(
@@ -4019,11 +3933,6 @@ document.getElementById(
       project_id:
         document.getElementById(
           'paymentProject'
-        ).value || null,
-
-      customer_id:
-        document.getElementById(
-          'paymentCustomer'
         ).value || null,
 
       amount:
@@ -4295,6 +4204,7 @@ function openProgressModal(projectId,updateId=''){
   document.getElementById(
     'progressForm'
   ).reset();
+  document.getElementById('progressUploadPreview').style.display='none';
 
 
   document.getElementById(
@@ -4417,6 +4327,10 @@ document.getElementById(
         ).value
       );
 
+    let photoUrl=document.getElementById('updatePhoto').value.trim()||null;
+    const photoFile=document.getElementById('updatePhotoFile').files[0];
+    if(photoFile){try{photoUrl=await imageFileToDataUrl(photoFile,1200,900,.72);}catch(err){return toast('❌ Photo process नहीं हुई: '+err.message);}}
+
 
     const payload = {
 
@@ -4441,11 +4355,7 @@ document.getElementById(
       progress_percent:
         progress,
 
-      photo_url:
-        document.getElementById(
-          'updatePhoto'
-        ).value.trim() ||
-        null
+      photo_url:photoUrl
 
     };
 
@@ -4504,6 +4414,8 @@ document.getElementById(
   }
 );
 
+
+document.getElementById('updatePhotoFile').addEventListener('change',e=>{const f=e.target.files[0],img=document.getElementById('progressUploadPreview');if(!f){img.style.display='none';return;}const r=new FileReader();r.onload=()=>{img.src=r.result;img.style.display='block';};r.readAsDataURL(f);});
 
 /* =========================================================
    EDIT / DELETE PROJECT UPDATE
