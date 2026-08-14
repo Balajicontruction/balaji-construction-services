@@ -1,4 +1,4 @@
-
+```html
 <!doctype html>
 <html lang="hi">
 <head>
@@ -9,605 +9,748 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-:root{
---n:#0b1f33;
---o:#f58220;
---g:#16a34a;
---bg:#f4f7fb;
---c:#fff;
---t:#142235;
---m:#6b7788;
---l:#e4e9f0;
---r:#dc2626;
-}
-
 *{box-sizing:border-box}
 
-body{
-margin:0;
-font-family:Arial,"Noto Sans Devanagari",sans-serif;
-background:var(--bg);
-color:var(--t);
+:root{
+  --navy:#0b2238;
+  --navy2:#102d46;
+  --orange:#ff7f1f;
+  --green:#16a34a;
+  --red:#dc2626;
+  --blue:#2563eb;
+  --bg:#f4f7fb;
+  --text:#10233b;
+  --muted:#60738a;
+  --white:#fff;
+  --border:#e3e9f0;
 }
 
-button,input,select,textarea{font:inherit}
-button{cursor:pointer}
-.hidden{display:none!important}
-
-.shell{
-display:grid;
-grid-template-columns:250px 1fr;
-min-height:100vh;
+html,body{
+  margin:0;
+  padding:0;
+  font-family:Arial,"Noto Sans Devanagari",sans-serif;
+  background:var(--bg);
+  color:var(--text);
 }
 
-.side{
-background:var(--n);
-color:#fff;
-padding:24px 15px;
-position:sticky;
-top:0;
-height:100vh;
+button,input,select,textarea{
+  font:inherit;
 }
 
-.logo{
-width:56px;
-height:56px;
-border-radius:18px;
-background:linear-gradient(135deg,#ffb34f,#f47718);
-display:grid;
-place-items:center;
-color:#fff;
-font-weight:900;
-font-size:22px;
+button{
+  cursor:pointer;
+}
+
+.app{
+  min-height:100vh;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+  position:fixed;
+  left:0;
+  top:0;
+  bottom:0;
+  width:260px;
+  background:var(--navy);
+  color:white;
+  padding:22px 18px;
+  overflow-y:auto;
+  z-index:100;
 }
 
 .brand{
-display:flex;
-gap:14px;
-align-items:center;
-margin-bottom:24px;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  margin-bottom:30px;
 }
 
-.brand h1{
-margin:0;
-font-size:21px;
+.logo{
+  width:64px;
+  height:64px;
+  border-radius:18px;
+  background:linear-gradient(135deg,#ff9b2f,#ff7517);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:27px;
+  font-weight:900;
 }
 
-.brand p{
-margin:3px 0;
-color:#9fb0c0;
-font-size:12px;
+.brand h2{
+  margin:0;
+  font-size:21px;
 }
 
-.side nav button{
-width:100%;
-text-align:left;
-background:transparent;
-color:#dbe7f1;
-border:0;
-padding:11px 13px;
-border-radius:11px;
-margin:2px 0;
-font-weight:750;
+.brand small{
+  color:#a9bdd0;
+  display:block;
+  margin-top:4px;
 }
 
-.side nav button.active,
-.side nav button:hover{
-background:#ffffff12;
-color:#fff;
+.nav{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
 }
+
+.nav button{
+  width:100%;
+  border:0;
+  background:transparent;
+  color:#d9e4ee;
+  padding:14px 13px;
+  border-radius:13px;
+  text-align:left;
+  font-weight:700;
+  font-size:16px;
+}
+
+.nav button:hover,
+.nav button.active{
+  background:#1d354c;
+  color:#fff;
+}
+
+.logout{
+  margin-top:25px;
+  width:100%;
+  padding:14px;
+  border:0;
+  border-radius:14px;
+  background:#f1f5f9;
+  color:#0b2238;
+  font-weight:900;
+}
+
+/* MAIN */
 
 .main{
-padding:28px;
-min-width:0;
+  margin-left:260px;
+  min-height:100vh;
 }
 
-.top{
-display:flex;
-justify-content:space-between;
-align-items:center;
-gap:15px;
-margin-bottom:22px;
+.topbar{
+  height:82px;
+  background:#fff;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 34px;
+  position:sticky;
+  top:0;
+  z-index:50;
 }
 
-.top h1{
-margin:0;
-font-size:28px;
+.topTitle{
+  display:flex;
+  align-items:center;
+  gap:12px;
 }
 
-.muted{
-color:var(--m);
-font-size:13px;
+.topTitle h1{
+  margin:0;
+  font-size:27px;
 }
 
-.userbox,
-.row,
-.actions{
-display:flex;
-gap:9px;
-align-items:center;
-flex-wrap:wrap;
+.userBox{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  color:var(--muted);
+  font-weight:700;
+}
+
+.adminBadge{
+  background:#eaf8ef;
+  color:#16803a;
+  border-radius:20px;
+  padding:7px 13px;
+}
+
+.mobileMenu{
+  display:none;
+  border:0;
+  background:#eaf0f6;
+  padding:10px 13px;
+  border-radius:10px;
+}
+
+.content{
+  padding:30px;
+  max-width:1450px;
+  margin:auto;
+}
+
+/* COMMON */
+
+.page{
+  display:none;
+}
+
+.page.active{
+  display:block;
+}
+
+.sectionHead{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin-bottom:24px;
+}
+
+.sectionHead h2{
+  margin:0;
+  font-size:32px;
+}
+
+.sectionHead p{
+  margin:7px 0 0;
+  color:var(--muted);
+}
+
+.card{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:24px;
+  box-shadow:0 7px 24px rgba(15,23,42,.05);
+  margin-bottom:22px;
 }
 
 .grid{
-display:grid;
-grid-template-columns:repeat(5,1fr);
-gap:15px;
+  display:grid;
+  gap:20px;
 }
 
-.stat,
-.panel{
-background:var(--c);
-border:1px solid var(--l);
-border-radius:19px;
-padding:19px;
+.grid2{
+  grid-template-columns:repeat(2,minmax(0,1fr));
 }
 
-.stat small{
-color:var(--m);
+.grid3{
+  grid-template-columns:repeat(3,minmax(0,1fr));
 }
 
-.stat .num{
-font-size:27px;
-font-weight:900;
-margin-top:4px;
+.grid4{
+  grid-template-columns:repeat(4,minmax(0,1fr));
 }
 
-.panel{
-margin-top:17px;
-}
-
-.panel h2{
-margin:0 0 14px;
-font-size:19px;
-}
-
-.forms{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:13px;
-}
-
-.full{
-grid-column:1/-1;
-}
-
-label{
-display:block;
-font-weight:800;
-font-size:13px;
-margin:13px 0 6px;
-}
-
-input,
-select,
-textarea{
-width:100%;
-padding:12px 13px;
-border:1px solid var(--l);
-border-radius:11px;
-background:#fff;
-}
-
-textarea{
-min-height:90px;
-}
+/* BUTTONS */
 
 .btn{
-border:0;
-border-radius:12px;
-padding:12px 16px;
-font-weight:800;
+  border:0;
+  border-radius:12px;
+  padding:11px 17px;
+  font-weight:800;
 }
 
-.primary{
-background:var(--o);
-color:#fff;
+.btn-primary{
+  background:var(--orange);
+  color:#fff;
 }
 
-.secondary{
-background:#eef2f7;
-color:var(--t);
+.btn-green{
+  background:var(--green);
+  color:#fff;
 }
 
-.danger{
-background:#fee2e2;
-color:#991b1b;
+.btn-red{
+  background:#fee2e2;
+  color:#b91c1c;
 }
 
-.tablewrap{
-overflow:auto;
+.btn-blue{
+  background:#e8f0ff;
+  color:#1d4ed8;
 }
 
-.table{
-width:100%;
-border-collapse:collapse;
-min-width:850px;
+.btn-dark{
+  background:var(--navy);
+  color:#fff;
 }
 
-.table th,
-.table td{
-padding:11px 9px;
-border-bottom:1px solid var(--l);
-text-align:left;
-font-size:13px;
-vertical-align:top;
+.btn-light{
+  background:#edf2f7;
+  color:var(--navy);
 }
 
-.table th{
-color:var(--m);
-font-size:12px;
-white-space:nowrap;
+.btn-sm{
+  padding:8px 11px;
+  font-size:13px;
 }
 
-.pill{
-display:inline-block;
-padding:4px 8px;
-border-radius:99px;
-background:#e8f5ed;
-color:#15803d;
-font-weight:800;
-font-size:11px;
+.actions{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
 }
 
-.pill.pending{
-background:#fff7ed;
-color:#c2410c;
-}
-
-.pill.rejected{
-background:#fee2e2;
-color:#991b1b;
-}
-
-.pill.contacted{
-background:#fef3c7;
-color:#92400e;
-}
-
-.pill.approved{
-background:#dcfce7;
-color:#166534;
-}
-
-.section{
-display:none;
-}
-
-.section.active{
-display:block;
-}
-
-.report{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:15px;
-}
-
-.big{
-font-size:29px;
-font-weight:900;
-}
-
-.notice{
-padding:13px;
-border-radius:12px;
-background:#fff7ed;
-margin-top:12px;
-}
-
-.toast{
-position:fixed;
-right:20px;
-bottom:20px;
-background:#111827;
-color:#fff;
-padding:13px 17px;
-border-radius:12px;
-z-index:999;
-}
-
-.small{
-font-size:12px;
-}
-
-.enquiry-card{
-border-left:4px solid var(--o);
-}
-
-.enquiry-actions{
-display:flex;
-gap:7px;
-flex-wrap:wrap;
-min-width:330px;
-}
-
-.enquiry-actions .btn{
-padding:8px 10px;
-font-size:12px;
-}
-
-.approve-btn{
-background:#dcfce7;
-color:#166534;
-}
-
-.contact-btn{
-background:#fef3c7;
-color:#92400e;
-}
-
-.reject-btn{
-background:#fee2e2;
-color:#991b1b;
-}
-
-.note-btn{
-background:#eef2f7;
-color:#142235;
-}
-
-.enquiry-error{
-background:#fff1f2;
-color:#9f1239;
-border:1px solid #fecdd3;
-padding:13px;
-border-radius:12px;
-margin-top:10px;
-}
-
-.action-buttons{
-display:flex;
-gap:6px;
-flex-wrap:wrap;
-}
-
-.action-buttons .btn{
-padding:7px 10px;
-font-size:12px;
-}
-
-.view-btn{
-background:#eef2ff;
-color:#3730a3;
-}
-
-.edit-btn{
-background:#e0f2fe;
-color:#075985;
-}
-
-.delete-btn{
-background:#fee2e2;
-color:#991b1b;
-}
-
-.customer-mini-photo{
-width:48px;
-height:48px;
-border-radius:12px;
-object-fit:cover;
-vertical-align:middle;
-margin-right:8px;
-border:1px solid var(--l);
-background:#eef2f7;
-}
-
-.customer-mini-placeholder{
-width:48px;
-height:48px;
-border-radius:12px;
-background:#eef2f7;
-display:inline-grid;
-place-items:center;
-vertical-align:middle;
-margin-right:8px;
-font-size:22px;
-}
-
-.profile-overlay{
-position:fixed;
-inset:0;
-background:#061525aa;
-display:none;
-align-items:center;
-justify-content:center;
-padding:20px;
-z-index:100;
-}
-
-.profile-overlay.open{
-display:flex;
-}
-
-.profile-modal{
-width:min(760px,100%);
-max-height:90vh;
-overflow:auto;
-background:#fff;
-border-radius:24px;
-padding:24px;
-box-shadow:0 30px 90px #0006;
-}
-
-.profile-head{
-display:flex;
-gap:18px;
-align-items:center;
-padding-bottom:18px;
-border-bottom:1px solid var(--l);
-}
-
-.profile-big-photo{
-width:120px;
-height:120px;
-border-radius:22px;
-object-fit:cover;
-border:1px solid var(--l);
-background:#eef2f7;
-}
-
-.profile-big-placeholder{
-width:120px;
-height:120px;
-border-radius:22px;
-background:#eef2f7;
-display:grid;
-place-items:center;
-font-size:48px;
-}
-
-.profile-fields{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:12px;
-margin-top:18px;
-}
-
-.profile-field{
-background:#f8fafc;
-border:1px solid var(--l);
-border-radius:14px;
-padding:13px;
-}
-
-.profile-field small{
-display:block;
-color:var(--m);
-margin-bottom:5px;
-}
-
-.profile-field b{
-word-break:break-word;
-}
-
-.project-click{
-cursor:pointer;
-color:#075985;
-}
-
-.project-progress-box{
-margin-top:18px;
-padding:16px;
-border:1px solid var(--l);
-border-radius:16px;
-background:#f8fafc;
-}
-
-.project-progress-bar{
-height:13px;
-background:#e5e7eb;
-border-radius:99px;
-overflow:hidden;
-margin:9px 0;
-}
-
-.project-progress-bar span{
-display:block;
-height:100%;
-background:var(--o);
-}
-
-.project-update{
-padding:15px 0;
-border-bottom:1px solid var(--l);
-}
-
-.project-update:last-child{
-border-bottom:0;
-}
-
-.project-update-photo{
-width:180px;
-max-width:100%;
-height:120px;
-object-fit:cover;
-border-radius:12px;
-margin-top:9px;
-border:1px solid var(--l);
-}
-
-@media(max-width:1100px){
-.grid{
-grid-template-columns:repeat(3,1fr);
-}
-}
-
-@media(max-width:950px){
-
-.shell{
-grid-template-columns:1fr;
-}
-
-.side{
-position:static;
-height:auto;
-}
-
-.side nav{
-display:grid;
-grid-template-columns:repeat(3,1fr);
-}
-
-.grid{
-grid-template-columns:repeat(2,1fr);
-}
-}
-
-@media(max-width:600px){
-
-.main{
-padding:15px;
-}
-
-.side nav{
-grid-template-columns:repeat(2,1fr);
-}
-
-.grid,
-.forms,
-.report,
-.profile-fields{
-grid-template-columns:1fr;
-}
-
-.full{
-grid-column:auto;
-}
-
-.top{
-align-items:flex-start;
-flex-direction:column;
-}
-
-.enquiry-actions{
-min-width:0;
-}
-
-.profile-head{
-align-items:flex-start;
-flex-direction:column;
-}
-}
-
-@media print{
-
-.side,
-.top button,
-.enquiry-actions,
-.action-buttons,
-.forms{
-display:none!important;
-}
-
-.main{
-padding:0;
-}
+/* STATS */
 
-.panel,
 .stat{
-box-shadow:none;
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:25px;
+  min-height:150px;
+  box-shadow:0 7px 24px rgba(15,23,42,.05);
 }
+
+.statTitle{
+  color:var(--muted);
+  font-weight:800;
+}
+
+.statValue{
+  font-size:37px;
+  font-weight:900;
+  margin-top:24px;
+}
+
+.orange{color:var(--orange)}
+.green{color:var(--green)}
+.red{color:var(--red)}
+.blue{color:var(--blue)}
+.purple{color:#7c3aed}
+
+/* TABLE */
+
+.tableWrap{
+  overflow-x:auto;
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:760px;
+}
+
+th{
+  text-align:left;
+  background:#f2f5f8;
+  color:#5b7188;
+  padding:15px;
+  font-size:13px;
+  text-transform:uppercase;
+}
+
+td{
+  padding:15px;
+  border-bottom:1px solid #e8edf2;
+  vertical-align:middle;
+}
+
+td strong{
+  color:#12243a;
+}
+
+.status{
+  display:inline-block;
+  border-radius:20px;
+  padding:6px 11px;
+  font-size:13px;
+  font-weight:800;
+}
+
+.status.active,
+.status.ongoing,
+.status.received,
+.status.completed{
+  background:#eaf8ef;
+  color:#15803d;
+}
+
+.status.pending,
+.status.lead{
+  background:#fff4e8;
+  color:#ea720f;
+}
+
+.status.cancelled{
+  background:#feecec;
+  color:#dc2626;
+}
+
+/* PROJECT */
+
+.projectCard{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:25px;
+  box-shadow:0 7px 24px rgba(15,23,42,.05);
+}
+
+.projectTop{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+}
+
+.projectTop h3{
+  margin:0 0 8px;
+  font-size:24px;
+}
+
+.projectMeta{
+  color:var(--muted);
+  margin-bottom:20px;
+}
+
+.progressLabel{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:7px;
+  font-weight:800;
+}
+
+.progressBar{
+  height:12px;
+  background:#e3e9ef;
+  border-radius:20px;
+  overflow:hidden;
+}
+
+.progressFill{
+  height:100%;
+  background:var(--orange);
+  border-radius:20px;
+}
+
+.moneyGrid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin-top:20px;
+}
+
+.money{
+  background:#f4f7fa;
+  padding:15px;
+  border-radius:14px;
+}
+
+.money.received{
+  background:#effcf3;
+}
+
+.money.pending{
+  background:#fff1f1;
+}
+
+.money span{
+  display:block;
+  color:var(--muted);
+  margin-bottom:7px;
+}
+
+.money strong{
+  font-size:21px;
+}
+
+/* WORKERS */
+
+.workerCard{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:25px;
+  box-shadow:0 7px 24px rgba(15,23,42,.05);
+}
+
+.workerHead{
+  display:flex;
+  align-items:center;
+  gap:15px;
+}
+
+.avatar{
+  width:62px;
+  height:62px;
+  border-radius:50%;
+  background:var(--orange);
+  color:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+  font-weight:900;
+}
+
+.workerHead h3{
+  margin:0 0 5px;
+}
+
+.workerHead p{
+  margin:0;
+  color:var(--muted);
+}
+
+.workerInfo{
+  margin-top:20px;
+}
+
+.workerRow{
+  display:flex;
+  justify-content:space-between;
+  padding:10px 0;
+  border-bottom:1px solid #edf1f4;
+}
+
+/* MODAL */
+
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(3,15,28,.6);
+  z-index:500;
+  padding:20px;
+  overflow-y:auto;
+}
+
+.modal.show{
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+}
+
+.modalBox{
+  width:100%;
+  max-width:760px;
+  background:#fff;
+  border-radius:22px;
+  padding:25px;
+  margin:30px auto;
+}
+
+.modalHead{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
+
+.modalHead h3{
+  margin:0;
+  font-size:24px;
+}
+
+.close{
+  border:0;
+  background:#edf2f7;
+  border-radius:10px;
+  width:40px;
+  height:40px;
+  font-size:22px;
+}
+
+.formGrid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:16px;
+}
+
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+
+.field.full{
+  grid-column:1/-1;
+}
+
+.field label{
+  font-weight:800;
+}
+
+.field input,
+.field select,
+.field textarea{
+  width:100%;
+  padding:12px 13px;
+  border:1px solid #d9e1e9;
+  border-radius:11px;
+  outline:none;
+  background:#fff;
+}
+
+.field textarea{
+  min-height:100px;
+  resize:vertical;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus{
+  border-color:var(--orange);
+}
+
+.modalActions{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  margin-top:22px;
+}
+
+/* DAILY UPDATE */
+
+.updateCard{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:22px;
+  padding:23px;
+  box-shadow:0 7px 24px rgba(15,23,42,.05);
+}
+
+.updateCard h3{
+  margin:0 0 6px;
+  font-size:22px;
+}
+
+.updateMeta{
+  color:var(--muted);
+  margin-bottom:18px;
+}
+
+.progressBig{
+  font-size:26px;
+  font-weight:900;
+  color:var(--orange);
+}
+
+.photoPreview{
+  width:100%;
+  max-height:260px;
+  object-fit:cover;
+  border-radius:13px;
+  margin-top:12px;
+}
+
+/* TOAST */
+
+#toast{
+  position:fixed;
+  right:22px;
+  bottom:22px;
+  z-index:1000;
+  display:none;
+  max-width:420px;
+  padding:15px 18px;
+  border-radius:13px;
+  background:#102a43;
+  color:#fff;
+  font-weight:800;
+  box-shadow:0 10px 30px rgba(0,0,0,.2);
+}
+
+#toast.show{
+  display:block;
+}
+
+/* LOADING */
+
+.loading{
+  padding:35px;
+  text-align:center;
+  color:var(--muted);
+}
+
+.empty{
+  padding:35px;
+  text-align:center;
+  color:var(--muted);
+  background:#f8fafc;
+  border-radius:15px;
+}
+
+/* MOBILE */
+
+@media(max-width:1000px){
+
+  .sidebar{
+    transform:translateX(-100%);
+    transition:.25s;
+  }
+
+  .sidebar.open{
+    transform:translateX(0);
+  }
+
+  .main{
+    margin-left:0;
+  }
+
+  .mobileMenu{
+    display:block;
+  }
+
+  .topbar{
+    padding:0 16px;
+  }
+
+  .content{
+    padding:18px;
+  }
+
+  .grid4{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+}
+
+@media(max-width:700px){
+
+  .topTitle h1{
+    font-size:20px;
+  }
+
+  .userBox{
+    display:none;
+  }
+
+  .grid2,
+  .grid3,
+  .grid4{
+    grid-template-columns:1fr;
+  }
+
+  .formGrid{
+    grid-template-columns:1fr;
+  }
+
+  .field.full{
+    grid-column:auto;
+  }
+
+  .moneyGrid{
+    grid-template-columns:1fr;
+  }
+
+  .projectTop{
+    flex-direction:column;
+  }
+
+  .sectionHead{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .sectionHead h2{
+    font-size:27px;
+  }
+
+  .card,
+  .projectCard,
+  .workerCard,
+  .updateCard{
+    padding:18px;
+  }
 
 }
 </style>
@@ -615,1022 +758,837 @@ box-shadow:none;
 
 <body>
 
-<div id="loadingScreen"
-style="
-min-height:100vh;
-display:grid;
-place-items:center;
-background:#0b1f33;
-color:#fff;
-font-family:Arial,sans-serif;
-text-align:center;
-padding:25px;
-">
+<div class="app">
 
-<div>
+<!-- SIDEBAR -->
 
-<div style="
-width:70px;
-height:70px;
-border-radius:20px;
-background:#f58220;
-display:grid;
-place-items:center;
-font-weight:900;
-font-size:25px;
-margin:auto auto 18px;
-">
-BC
-</div>
+<aside class="sidebar" id="sidebar">
 
-<h2 style="margin:0 0 8px">
-BALAJI Construction
-</h2>
+  <div class="brand">
+    <div class="logo">BC</div>
+    <div>
+      <h2>BALAJI</h2>
+      <small>Admin Dashboard</small>
+    </div>
+  </div>
 
-<div style="opacity:.8">
-Admin session verify हो रही है...
-</div>
+  <nav class="nav">
 
-</div>
-</div>
+    <button class="active" data-page="overview">
+      📊 Overview
+    </button>
 
+    <button data-page="projects">
+      🏗️ Projects
+    </button>
 
-<div id="app" class="shell hidden">
+    <button data-page="customers">
+      👥 Customers
+    </button>
 
-<aside class="side">
+    <button data-page="enquiries">
+      📩 Customer Enquiries
+    </button>
 
-<div class="brand">
+    <button data-page="workers">
+      👷 Workers
+    </button>
 
-<div class="logo">
-BC
-</div>
+    <button data-page="payments">
+      💰 Payments
+    </button>
 
-<div>
+    <button data-page="updates">
+      📅 Daily Update
+    </button>
 
-<h1 style="color:#fff;font-size:17px">
-BALAJI
-</h1>
+  </nav>
 
-<p style="color:#9fb0c0">
-Private Management
-</p>
-
-</div>
-
-</div>
-
-
-<nav>
-
-<button data-s="dashboard" class="active">
-📊 Dashboard
-</button>
-
-<button data-s="enquiries">
-📩 Customer Enquiries
-</button>
-
-<button data-s="customers">
-👥 Customers
-</button>
-
-<button data-s="projects">
-🏗️ Projects
-</button>
-
-<button data-s="progress">
-📈 Project Progress
-</button>
-
-<button data-s="workers">
-👷 Workers
-</button>
-
-<button data-s="work">
-📝 Work Entry
-</button>
-
-<button data-s="payments">
-💰 Payments
-</button>
-
-<button data-s="expenses">
-🧾 Expenses
-</button>
-
-<button data-s="reports">
-📈 Reports
-</button>
-
-</nav>
-
-
-<button
-class="btn secondary"
-style="width:100%;margin-top:18px"
-onclick="logout()">
-Logout
-</button>
+  <button class="logout" onclick="logout()">
+    Logout
+  </button>
 
 </aside>
 
 
+<!-- MAIN -->
+
 <main class="main">
 
-<div class="top">
+<header class="topbar">
 
-<div>
+  <div class="topTitle">
 
-<h1 id="title">
-Dashboard
-</h1>
+    <button class="mobileMenu" onclick="toggleSidebar()">
+      ☰
+    </button>
 
-<div class="muted">
-BALAJI Construction Services • Secure Management
-</div>
+    <div>
+      <h1 id="pageTitle">📊 Overview</h1>
+    </div>
 
-</div>
+  </div>
 
+  <div class="userBox">
 
-<div class="userbox">
+    <span class="adminBadge">
+      Admin
+    </span>
 
-<span id="userRole" class="pill">
-Admin
-</span>
+    <span id="userEmail">
+      Loading...
+    </span>
 
-<span id="userEmail" class="muted">
-</span>
+    <button class="btn btn-light" onclick="reloadCurrent()">
+      ↻ Refresh
+    </button>
 
-<button
-class="btn secondary"
-onclick="refreshAll()">
-↻ Refresh
-</button>
+  </div>
 
-</div>
-
-</div>
+</header>
 
 
-<!-- DASHBOARD -->
-
-<section id="dashboard" class="section active">
-
-<div class="grid">
-
-<div class="stat">
-<small>Customers</small>
-<div class="num" id="mCustomers">0</div>
-</div>
-
-<div class="stat">
-<small>Projects</small>
-<div class="num" id="mProjects">0</div>
-</div>
-
-<div class="stat">
-<small>Workers</small>
-<div class="num" id="mWorkers">0</div>
-</div>
-
-<div class="stat">
-<small>Pending Enquiries</small>
-<div class="num" id="mEnquiries">0</div>
-</div>
-
-<div class="stat">
-<small>Total Expenses</small>
-<div class="num" id="mExpenses">₹0</div>
-</div>
-
-</div>
+<div class="content">
 
 
-<div class="panel">
+<!-- ================= OVERVIEW ================= -->
 
-<h2>
-Recent Projects
-</h2>
+<section id="page-overview" class="page active">
 
-<div id="recentProjects" class="tablewrap">
-</div>
-
-</div>
-
-
-<div class="panel enquiry-card">
-
-<h2>
-📩 Latest Customer Enquiries
-</h2>
-
-<div id="recentEnquiries" class="tablewrap">
-</div>
-
-</div>
-
-</section>
+  <div class="sectionHead">
+    <div>
+      <h2>Dashboard Overview</h2>
+      <p>BALAJI Construction Services • Secure Management</p>
+    </div>
+  </div>
 
 
-<!-- ENQUIRIES -->
+  <div class="grid grid4">
 
-<section id="enquiries" class="section">
+    <div class="stat">
+      <div class="statTitle">🏗️ Total Projects</div>
+      <div id="statProjects" class="statValue">0</div>
+    </div>
 
-<div class="panel">
+    <div class="stat">
+      <div class="statTitle">⏳ Ongoing</div>
+      <div id="statOngoing" class="statValue orange">0</div>
+    </div>
 
-<div class="row" style="justify-content:space-between">
+    <div class="stat">
+      <div class="statTitle">✅ Completed</div>
+      <div id="statCompleted" class="statValue green">0</div>
+    </div>
 
-<div>
+    <div class="stat">
+      <div class="statTitle">👷 Total Workers</div>
+      <div id="statWorkers" class="statValue purple">0</div>
+    </div>
 
-<h2>
-📩 Customer Enquiries / Contract Requests
-</h2>
+  </div>
 
-<div class="muted">
-Customer द्वारा भेजी गई enquiry यहाँ दिखाई देगी।
-</div>
 
-</div>
+  <div class="grid grid3" style="margin-top:20px">
 
-<button
-class="btn primary"
-onclick="loadEnquiries()">
-↻ Refresh Enquiries
-</button>
+    <div class="stat">
+      <div class="statTitle">💰 Total Budget</div>
+      <div id="statBudget" class="statValue">₹0</div>
+    </div>
 
-</div>
+    <div class="stat">
+      <div class="statTitle">✅ Amount Received</div>
+      <div id="statReceived" class="statValue green">₹0</div>
+    </div>
 
-<div
-id="enquiriesList"
-class="tablewrap"
-style="margin-top:15px">
-</div>
+    <div class="stat">
+      <div class="statTitle">⏳ Amount Pending</div>
+      <div id="statPending" class="statValue red">₹0</div>
+    </div>
 
-</div>
+  </div>
+
+
+  <div class="card" style="margin-top:20px">
+
+    <h2>🏗️ Recent Projects</h2>
+
+    <div id="overviewProjects" class="grid grid2">
+      <div class="loading">Loading...</div>
+    </div>
+
+  </div>
 
 </section>
 
 
-<!-- CUSTOMERS -->
+<!-- ================= PROJECTS ================= -->
 
-<section id="customers" class="section">
+<section id="page-projects" class="page">
 
-<div class="panel">
+  <div class="sectionHead">
 
-<h2>
-Customer जोड़ें
-</h2>
+    <div>
+      <h2>🏗️ All Projects</h2>
+      <p>Project records, progress और management</p>
+    </div>
 
-<form
-class="forms"
-onsubmit="addCustomer(event)">
+    <button class="btn btn-primary" onclick="openProjectModal()">
+      + New Project
+    </button>
 
-<div>
-<label>Name *</label>
-<input id="cName" required>
-</div>
-
-<div>
-<label>Phone</label>
-<input id="cPhone">
-</div>
-
-<div>
-<label>Email</label>
-<input id="cEmail" type="email">
-</div>
-
-<div>
-<label>Address</label>
-<input id="cAddress">
-</div>
-
-<div class="full">
-<label>Notes</label>
-<textarea id="cNotes"></textarea>
-</div>
-
-<div>
-<button class="btn primary">
-Save Customer
-</button>
-</div>
-
-</form>
-
-</div>
+  </div>
 
 
-<div class="panel">
-
-<div class="row" style="justify-content:space-between">
-
-<div>
-
-<h2>
-👥 Customers List
-</h2>
-
-<div class="muted">
-Customer की पूरी profile यहाँ देखें।
-</div>
-
-</div>
-
-<button
-class="btn secondary"
-onclick="refreshAll()">
-↻ Refresh
-</button>
-
-</div>
-
-<div id="customersList" class="tablewrap">
-</div>
-
-</div>
+  <div id="projectsList" class="grid grid2">
+    <div class="loading">Loading projects...</div>
+  </div>
 
 </section>
 
 
-<!-- PROJECTS -->
+<!-- ================= CUSTOMERS ================= -->
 
-<section id="projects" class="section">
+<section id="page-customers" class="page">
 
-<div class="panel">
+  <div class="sectionHead">
 
-<h2>
-Project जोड़ें
-</h2>
+    <div>
+      <h2>👥 Customers</h2>
+      <p>Customer records को edit या delete करें</p>
+    </div>
 
-<form
-class="forms"
-onsubmit="addProject(event)">
+    <button class="btn btn-primary" onclick="openCustomerModal()">
+      + Add Customer
+    </button>
 
-<div>
-<label>Project Name *</label>
-<input id="pName" required>
-</div>
-
-<div>
-<label>Customer</label>
-<select id="pCustomer">
-<option value="">Select</option>
-</select>
-</div>
-
-<div>
-<label>Work Type</label>
-<input id="pType">
-</div>
-
-<div>
-<label>Location</label>
-<input id="pLocation">
-</div>
-
-<div>
-<label>Start Date</label>
-<input id="pStart" type="date">
-</div>
-
-<div>
-<label>Expected End</label>
-<input id="pEnd" type="date">
-</div>
-
-<div>
-
-<label>Status</label>
-
-<select id="pStatus">
-
-<option value="lead">
-Lead
-</option>
-
-<option value="active">
-Active
-</option>
-
-<option value="completed">
-Completed
-</option>
-
-<option value="cancelled">
-Cancelled
-</option>
-
-</select>
-
-</div>
-
-<div>
-
-<label>Agreed Amount</label>
-
-<input
-id="pAmount"
-type="number"
-min="0">
-
-</div>
-
-<div class="full">
-
-<label>Notes</label>
-
-<textarea id="pNotes"></textarea>
-
-</div>
-
-<div>
-
-<button class="btn primary">
-Save Project
-</button>
-
-</div>
-
-</form>
-
-</div>
+  </div>
 
 
-<div class="panel">
+  <div class="card">
 
-<h2>
-Projects List
-</h2>
+    <div class="tableWrap">
 
-<div class="muted">
-Project के नाम पर click करके progress देखें।
-</div>
+      <table>
 
-<div id="projectsList" class="tablewrap">
-</div>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Village</th>
+            <th>Address</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
 
-</div>
+        <tbody id="customersTable">
+          <tr>
+            <td colspan="5" class="loading">
+              Loading...
+            </td>
+          </tr>
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
 
 </section>
 
 
-<!-- PROGRESS -->
+<!-- ================= ENQUIRIES ================= -->
 
-<section id="progress" class="section">
+<section id="page-enquiries" class="page">
 
-<div
-class="panel"
-style="padding:0;overflow:hidden">
+  <div class="sectionHead">
 
-<iframe
-src="project-progress.html"
-title="Project Progress"
-style="
-display:block;
-width:100%;
-height:900px;
-border:0;
-">
-</iframe>
+    <div>
+      <h2>📩 Customer Enquiries</h2>
+      <p>Customer enquiries manage करें</p>
+    </div>
 
-</div>
-
-</section>
+  </div>
 
 
-<!-- WORKERS -->
+  <div class="card">
 
-<section id="workers" class="section">
+    <div class="tableWrap">
 
-<div class="panel">
+      <table>
 
-<h2>
-Worker जोड़ें
-</h2>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Message</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
 
-<form
-class="forms"
-onsubmit="addWorker(event)">
+        <tbody id="enquiriesTable">
+          <tr>
+            <td colspan="5" class="loading">
+              Loading...
+            </td>
+          </tr>
+        </tbody>
 
-<div>
-<label>Name *</label>
-<input id="wName" required>
-</div>
+      </table>
 
-<div>
-<label>Phone</label>
-<input id="wPhone">
-</div>
+    </div>
 
-<div>
-<label>काम / Role</label>
-<input id="wRole">
-</div>
-
-<div>
-<label>Daily Rate</label>
-<input id="wRate" type="number" min="0">
-</div>
-
-<div>
-<label>Village</label>
-<input id="wVillage">
-</div>
-
-<div class="full">
-<label>Notes</label>
-<textarea id="wNotes"></textarea>
-</div>
-
-<div>
-<button class="btn primary">
-Save Worker
-</button>
-</div>
-
-</form>
-
-</div>
-
-
-<div class="panel">
-
-<h2>
-Workers List
-</h2>
-
-<div id="workersList" class="tablewrap">
-</div>
-
-</div>
+  </div>
 
 </section>
 
 
-<!-- WORK -->
+<!-- ================= WORKERS ================= -->
 
-<section id="work" class="section">
+<section id="page-workers" class="page">
 
-<div class="panel">
+  <div class="sectionHead">
 
-<h2>
-Daily Work Entry
-</h2>
+    <div>
+      <h2>👷 Workers Management</h2>
+      <p>Workers, wages और attendance</p>
+    </div>
 
-<form
-class="forms"
-onsubmit="addWork(event)">
+    <button class="btn btn-green" onclick="openWorkerModal()">
+      + Add Worker
+    </button>
 
-<div>
-
-<label>Project *</label>
-
-<select id="lProject" required>
-<option value="">Select Project</option>
-</select>
-
-</div>
-
-<div>
-
-<label>Worker</label>
-
-<select id="lWorker">
-<option value="">Select Worker</option>
-</select>
-
-</div>
-
-<div>
-<label>Date</label>
-<input id="lDate" type="date">
-</div>
-
-<div>
-<label>Days</label>
-<input
-id="lDays"
-type="number"
-step="0.5"
-value="1">
-</div>
-
-<div>
-<label>Work Description</label>
-<input id="lDesc">
-</div>
-
-<div>
-<label>Amount</label>
-<input
-id="lAmount"
-type="number"
-min="0">
-</div>
-
-<div class="full">
-<label>Notes</label>
-<textarea id="lNotes"></textarea>
-</div>
-
-<div>
-<button class="btn primary">
-Save Work Entry
-</button>
-</div>
-
-</form>
-
-</div>
+  </div>
 
 
-<div class="panel">
-
-<h2>
-Recent Work
-</h2>
-
-<div id="workList" class="tablewrap">
-</div>
-
-</div>
+  <div id="workersList" class="grid grid2">
+    <div class="loading">Loading...</div>
+  </div>
 
 </section>
 
 
-<!-- PAYMENTS -->
+<!-- ================= PAYMENTS ================= -->
 
-<section id="payments" class="section">
+<section id="page-payments" class="page">
 
-<div class="panel">
+  <div class="sectionHead">
 
-<h2>
-Payment / ग्राहक से प्राप्त राशि
-</h2>
+    <div>
+      <h2>💰 Payment Records</h2>
+      <p>Received और pending payments</p>
+    </div>
 
-<form
-class="forms"
-onsubmit="addPayment(event)">
+    <button class="btn btn-primary" onclick="openPaymentModal()">
+      + Add Payment
+    </button>
 
-<div>
-
-<label>Project *</label>
-
-<select id="payProject" required>
-<option value="">Select Project</option>
-</select>
-
-</div>
-
-<div>
-<label>Date</label>
-<input id="payDate" type="date">
-</div>
-
-<div>
-<label>Amount *</label>
-<input
-id="payAmount"
-type="number"
-min="0"
-required>
-</div>
-
-<div>
-
-<label>Method</label>
-
-<select id="payMethod">
-
-<option>Cash</option>
-<option>UPI</option>
-<option>Bank Transfer</option>
-<option>Cheque</option>
-
-</select>
-
-</div>
-
-<div>
-<label>Reference No.</label>
-<input id="payRef">
-</div>
-
-<div>
-<label>Notes</label>
-<input id="payNotes">
-</div>
-
-<div>
-<button class="btn primary">
-Save Payment
-</button>
-</div>
-
-</form>
-
-</div>
+  </div>
 
 
-<div class="panel">
+  <div class="grid grid2">
 
-<h2>
-Payment History
-</h2>
+    <div class="stat">
+      <div class="statTitle">✅ Total Received</div>
+      <div id="paymentReceived" class="statValue green">
+        ₹0
+      </div>
+    </div>
 
-<div id="paymentsList" class="tablewrap">
-</div>
+    <div class="stat">
+      <div class="statTitle">⏳ Total Pending</div>
+      <div id="paymentPending" class="statValue red">
+        ₹0
+      </div>
+    </div>
 
-</div>
+  </div>
+
+
+  <div class="card" style="margin-top:20px">
+
+    <div class="tableWrap">
+
+      <table>
+
+        <thead>
+          <tr>
+            <th>Project</th>
+            <th>Customer</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody id="paymentsTable">
+          <tr>
+            <td colspan="6" class="loading">
+              Loading...
+            </td>
+          </tr>
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
 
 </section>
 
 
-<!-- EXPENSES -->
+<!-- ================= DAILY UPDATE ================= -->
 
-<section id="expenses" class="section">
+<section id="page-updates" class="page">
 
-<div class="panel">
+  <div class="sectionHead">
 
-<h2>
-Expense जोड़ें
-</h2>
+    <div>
+      <h2>📅 Daily Progress Update</h2>
+      <p>किसी भी project की daily progress यहाँ से update करें</p>
+    </div>
 
-<form
-class="forms"
-onsubmit="addExpense(event)">
-
-<div>
-
-<label>Project</label>
-
-<select id="eProject">
-<option value="">General</option>
-</select>
-
-</div>
-
-<div>
-<label>Date</label>
-<input id="eDate" type="date">
-</div>
-
-<div>
-
-<label>Category *</label>
-
-<select id="eCategory">
-
-<option>Material</option>
-<option>Labour</option>
-<option>Transport</option>
-<option>Machine</option>
-<option>Other</option>
-
-</select>
-
-</div>
-
-<div>
-
-<label>Amount *</label>
-
-<input
-id="eAmount"
-type="number"
-min="0"
-required>
-
-</div>
-
-<div class="full">
-
-<label>Description</label>
-<input id="eDesc">
-
-</div>
-
-<div class="full">
-
-<label>Notes</label>
-<textarea id="eNotes"></textarea>
-
-</div>
-
-<div>
-
-<button class="btn primary">
-Save Expense
-</button>
-
-</div>
-
-</form>
-
-</div>
+  </div>
 
 
-<div class="panel">
-
-<h2>
-Expense History
-</h2>
-
-<div id="expensesList" class="tablewrap">
-</div>
-
-</div>
+  <div id="updatesProjects" class="grid grid2">
+    <div class="loading">Loading projects...</div>
+  </div>
 
 </section>
 
 
-<!-- REPORTS -->
-
-<section id="reports" class="section">
-
-<div
-class="row"
-style="justify-content:space-between">
-
-<h2>
-Financial & Project Report
-</h2>
-
-<button
-class="btn primary"
-onclick="window.print()">
-🖨️ Print Report
-</button>
-
 </div>
-
-
-<div class="report">
-
-<div class="stat">
-
-<small>
-Total Payments
-</small>
-
-<div
-class="big"
-id="rPayments">
-₹0
-</div>
-
-</div>
-
-
-<div class="stat">
-
-<small>
-Total Expenses
-</small>
-
-<div
-class="big"
-id="rExpenses">
-₹0
-</div>
-
-</div>
-
-
-<div class="stat">
-
-<small>
-Net Cash Flow
-</small>
-
-<div
-class="big"
-id="rNet">
-₹0
-</div>
-
-</div>
-
-
-<div class="stat">
-
-<small>
-Work Value
-</small>
-
-<div
-class="big"
-id="rWork">
-₹0
-</div>
-
-</div>
-
-</div>
-
-
-<div class="panel">
-
-<h2>
-Project-wise Summary
-</h2>
-
-<div
-id="reportProjects"
-class="tablewrap">
-</div>
-
-</div>
-
-</section>
-
 </main>
 </div>
 
 
-<div
-id="toast"
-class="toast hidden">
+<!-- ================= PROJECT MODAL ================= -->
+
+<div class="modal" id="projectModal">
+
+<div class="modalBox">
+
+  <div class="modalHead">
+
+    <h3 id="projectModalTitle">
+      Add Project
+    </h3>
+
+    <button class="close" onclick="closeModal('projectModal')">
+      ×
+    </button>
+
+  </div>
+
+
+  <form id="projectForm">
+
+    <input type="hidden" id="projectId">
+
+
+    <div class="formGrid">
+
+      <div class="field">
+        <label>Project Name *</label>
+        <input id="projectName" required>
+      </div>
+
+      <div class="field">
+        <label>Customer</label>
+        <select id="projectCustomer">
+          <option value="">Select Customer</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Work Type</label>
+        <input id="projectType" placeholder="RCC / छत / Boundary Wall">
+      </div>
+
+      <div class="field">
+        <label>Location</label>
+        <input id="projectLocation">
+      </div>
+
+      <div class="field">
+        <label>Status</label>
+        <select id="projectStatus">
+          <option value="lead">Lead</option>
+          <option value="ongoing">Ongoing</option>
+          <option value="active">Active</option>
+          <option value="completed">Completed</option>
+          <option value="pending">Pending</option>
+          <option value="cancelled">Cancelled</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Agreed Amount</label>
+        <input id="projectAmount" type="number" min="0">
+      </div>
+
+      <div class="field">
+        <label>Start Date</label>
+        <input id="projectStart" type="date">
+      </div>
+
+      <div class="field">
+        <label>End Date</label>
+        <input id="projectEnd" type="date">
+      </div>
+
+      <div class="field full">
+        <label>Notes</label>
+        <textarea id="projectNotes"></textarea>
+      </div>
+
+    </div>
+
+
+    <div class="modalActions">
+
+      <button type="button"
+              class="btn btn-light"
+              onclick="closeModal('projectModal')">
+        Cancel
+      </button>
+
+      <button type="submit"
+              class="btn btn-primary">
+        Save Project
+      </button>
+
+    </div>
+
+  </form>
+
+</div>
 </div>
 
 
-<!-- CUSTOMER PROFILE -->
+<!-- ================= CUSTOMER MODAL ================= -->
 
-<div
-id="customerProfileOverlay"
-class="profile-overlay"
-onclick="if(event.target===this)closeCustomerProfile()">
+<div class="modal" id="customerModal">
 
-<div class="profile-modal">
+<div class="modalBox">
 
-<div
-class="row"
-style="justify-content:space-between;margin-bottom:16px">
+  <div class="modalHead">
 
-<h2 style="margin:0">
-👤 Customer Profile
-</h2>
+    <h3 id="customerModalTitle">
+      Add Customer
+    </h3>
 
-<button
-class="btn secondary"
-onclick="closeCustomerProfile()">
-✕ Close
-</button>
+    <button class="close" onclick="closeModal('customerModal')">
+      ×
+    </button>
 
-</div>
-
-<div id="customerProfileContent">
-</div>
-
-</div>
-
-</div>
+  </div>
 
 
-<!-- PROJECT PROGRESS -->
+  <form id="customerForm">
 
-<div
-id="projectProgressOverlay"
-class="profile-overlay"
-onclick="if(event.target===this)closeProjectProgress()">
+    <input type="hidden" id="customerId">
 
-<div class="profile-modal">
 
-<div
-class="row"
-style="justify-content:space-between;margin-bottom:16px">
+    <div class="formGrid">
 
-<div>
+      <div class="field">
+        <label>Name *</label>
+        <input id="customerName" required>
+      </div>
 
-<h2 style="margin:0">
-📈 Project Progress Record
-</h2>
+      <div class="field">
+        <label>Phone</label>
+        <input id="customerPhone">
+      </div>
 
-<div
-id="projectProgressSubtitle"
-class="muted">
-</div>
+      <div class="field">
+        <label>Village</label>
+        <input id="customerVillage">
+      </div>
 
-</div>
+      <div class="field">
+        <label>Address</label>
+        <input id="customerAddress">
+      </div>
 
-<button
-class="btn secondary"
-onclick="closeProjectProgress()">
-✕ Close
-</button>
+      <div class="field full">
+        <label>Notes</label>
+        <textarea id="customerNotes"></textarea>
+      </div>
 
-</div>
+    </div>
 
-<div id="projectProgressContent">
-<div class="notice">
-Loading...
-</div>
-</div>
+
+    <div class="modalActions">
+
+      <button type="button"
+              class="btn btn-light"
+              onclick="closeModal('customerModal')">
+        Cancel
+      </button>
+
+      <button type="submit"
+              class="btn btn-primary">
+        Save Customer
+      </button>
+
+    </div>
+
+  </form>
 
 </div>
+</div>
+
+
+<!-- ================= WORKER MODAL ================= -->
+
+<div class="modal" id="workerModal">
+
+<div class="modalBox">
+
+  <div class="modalHead">
+
+    <h3 id="workerModalTitle">
+      Add Worker
+    </h3>
+
+    <button class="close" onclick="closeModal('workerModal')">
+      ×
+    </button>
+
+  </div>
+
+
+  <form id="workerForm">
+
+    <input type="hidden" id="workerId">
+
+
+    <div class="formGrid">
+
+      <div class="field">
+        <label>Name *</label>
+        <input id="workerName" required>
+      </div>
+
+      <div class="field">
+        <label>Role</label>
+        <input id="workerRole">
+      </div>
+
+      <div class="field">
+        <label>Mobile</label>
+        <input id="workerMobile">
+      </div>
+
+      <div class="field">
+        <label>Daily Wage</label>
+        <input id="workerWage" type="number" min="0">
+      </div>
+
+    </div>
+
+
+    <div class="modalActions">
+
+      <button type="button"
+              class="btn btn-light"
+              onclick="closeModal('workerModal')">
+        Cancel
+      </button>
+
+      <button type="submit"
+              class="btn btn-green">
+        Save Worker
+      </button>
+
+    </div>
+
+  </form>
 
 </div>
+</div>
+
+
+<!-- ================= PAYMENT MODAL ================= -->
+
+<div class="modal" id="paymentModal">
+
+<div class="modalBox">
+
+  <div class="modalHead">
+
+    <h3>Add Payment</h3>
+
+    <button class="close" onclick="closeModal('paymentModal')">
+      ×
+    </button>
+
+  </div>
+
+
+  <form id="paymentForm">
+
+    <input type="hidden" id="paymentId">
+
+
+    <div class="formGrid">
+
+      <div class="field">
+        <label>Project</label>
+        <select id="paymentProject">
+          <option value="">Select Project</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Customer</label>
+        <select id="paymentCustomer">
+          <option value="">Select Customer</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Amount *</label>
+        <input id="paymentAmount" type="number" min="0" required>
+      </div>
+
+      <div class="field">
+        <label>Date</label>
+        <input id="paymentDate" type="date">
+      </div>
+
+      <div class="field">
+        <label>Status</label>
+        <select id="paymentStatus">
+          <option value="received">Received</option>
+          <option value="pending">Pending</option>
+        </select>
+      </div>
+
+      <div class="field full">
+        <label>Notes</label>
+        <textarea id="paymentNotes"></textarea>
+      </div>
+
+    </div>
+
+
+    <div class="modalActions">
+
+      <button type="button"
+              class="btn btn-light"
+              onclick="closeModal('paymentModal')">
+        Cancel
+      </button>
+
+      <button type="submit"
+              class="btn btn-primary">
+        Save Payment
+      </button>
+
+    </div>
+
+  </form>
+
+</div>
+</div>
+
+
+<!-- ================= PROGRESS MODAL ================= -->
+
+<div class="modal" id="progressModal">
+
+<div class="modalBox">
+
+  <div class="modalHead">
+
+    <h3>📅 आज की Progress Update</h3>
+
+    <button class="close" onclick="closeModal('progressModal')">
+      ×
+    </button>
+
+  </div>
+
+
+  <form id="progressForm">
+
+    <input type="hidden" id="updateProjectId">
+    <input type="hidden" id="updateId">
+
+
+    <div class="formGrid">
+
+      <div class="field">
+        <label>Project</label>
+        <input id="updateProjectName" readonly>
+      </div>
+
+      <div class="field">
+        <label>Date *</label>
+        <input id="updateDate" type="date" required>
+      </div>
+
+      <div class="field full">
+        <label>काम / Update Title *</label>
+        <input id="updateTitle"
+               placeholder="आज क्या काम हुआ?"
+               required>
+      </div>
+
+      <div class="field full">
+        <label>Details</label>
+        <textarea id="updateDetails"
+                  placeholder="आज के काम की पूरी जानकारी..."></textarea>
+      </div>
+
+      <div class="field">
+        <label>Current Progress %</label>
+        <input id="updateProgress"
+               type="number"
+               min="0"
+               max="100"
+               value="0"
+               required>
+      </div>
+
+      <div class="field">
+        <label>Photo URL</label>
+        <input id="updatePhoto"
+               placeholder="https://...">
+      </div>
+
+    </div>
+
+
+    <div class="modalActions">
+
+      <button type="button"
+              class="btn btn-light"
+              onclick="closeModal('progressModal')">
+        Cancel
+      </button>
+
+      <button type="submit"
+              class="btn btn-primary">
+        Save Progress
+      </button>
+
+    </div>
+
+  </form>
+
+</div>
+</div>
+
+
+<div id="toast"></div>
 
 
 <script>
@@ -1639,218 +1597,156 @@ Loading...
    SUPABASE
 ========================================================= */
 
-const sb = window.supabase.createClient(
-'https://iefxfyjmyssuiuyncfqz.supabase.co',
-'sb_publishable_45zaRM5LLByFABddU5hm9g_4UwfnT7t'
-);
+const SUPABASE_URL =
+'https://iefxfyjmyssuiuyncfqz.supabase.co';
 
-let user=null;
-let role=null;
-let customerCache={};
+const SUPABASE_KEY =
+'sb_publishable_45zaRM5LLByFABddU5hm9g_4UwfnT7t';
 
-const q=id=>document.getElementById(id);
-
-const money=n =>
-'₹'+Number(n||0).toLocaleString(
-'en-IN',
-{maximumFractionDigits:2}
+const sb =
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
 );
 
 
 /* =========================================================
-   SECURITY / SESSION
+   GLOBAL DATA
 ========================================================= */
 
-async function checkAdminSession(){
+let projects = [];
+let customers = [];
+let workers = [];
+let payments = [];
+let enquiries = [];
+let projectUpdates = [];
 
-try{
-
-const {
-data:{session},
-error
-}=await sb.auth.getSession();
-
-if(error)throw error;
-
-if(!session){
-
-window.location.replace('index.html');
-return;
-}
-
-user=session.user;
-
-
-const {
-data:p,
-error:pe
-}=await sb
-.from('profiles')
-.select('full_name,role')
-.eq('id',user.id)
-.maybeSingle();
-
-if(pe)throw pe;
-
-if(!p){
-
-await sb.auth.signOut();
-window.location.replace('index.html');
-return;
-}
-
-role=String(p.role||'').toLowerCase();
-
-
-if(
-!['owner','manager','staff','admin'].includes(role)
-){
-
-await sb.auth.signOut();
-window.location.replace('index.html');
-return;
-}
-
-
-q('loadingScreen').classList.add('hidden');
-q('app').classList.remove('hidden');
-
-q('userEmail').textContent=user.email||'';
-
-q('userRole').textContent=
-role==='owner'?'Admin':role;
-
-await refreshAll();
-
-}catch(err){
-
-console.error(err);
-
-q('loadingScreen').innerHTML=`
-
-<div>
-
-<h2>
-Dashboard खुल नहीं पाया
-</h2>
-
-<p style="opacity:.8">
-${esc(err.message||String(err))}
-</p>
-
-<button
-class="btn primary"
-onclick="location.href='index.html'">
-← वापस Admin Login
-</button>
-
-</div>
-
-`;
-
-}
-
-}
+let currentPage = 'overview';
 
 
 /* =========================================================
-   LOGOUT
+   HELPERS
 ========================================================= */
 
-async function logout(){
+function esc(value){
 
-await sb.auth.signOut();
+  return String(value ?? '')
+    .replace(/[&<>"']/g,c=>({
 
-window.location.replace('index.html');
+      '&':'&amp;',
+      '<':'&lt;',
+      '>':'&gt;',
+      '"':'&quot;',
+      "'":'&#39;'
 
-}
-
-
-sb.auth.onAuthStateChange(
-(event,session)=>{
-
-if(event==='SIGNED_OUT'){
-window.location.replace('index.html');
-}
-
-});
-
-
-/* =========================================================
-   ESCAPE
-========================================================= */
-
-function esc(v){
-
-return String(v??'')
-.replace(/[&<>"']/g,c=>({
-
-'&':'&amp;',
-'<':'&lt;',
-'>':'&gt;',
-'"':'&quot;',
-"'":'&#39;'
-
-}[c]));
+    }[c]));
 
 }
 
 
-/* =========================================================
-   TOAST
-========================================================= */
+function money(value){
 
-function toast(t){
-
-q('toast').textContent=t;
-
-q('toast').classList.remove('hidden');
-
-setTimeout(
-()=>q('toast').classList.add('hidden'),
-2500
-);
+  return '₹' +
+    Number(value || 0)
+    .toLocaleString('en-IN');
 
 }
 
 
-/* =========================================================
-   TABLE
-========================================================= */
+function num(value){
 
-function table(headers,rows){
+  return Number(value || 0);
 
-const hs=headers
-.map(h=>'<th>'+esc(h)+'</th>')
-.join('');
-
-return `
-
-<table class="table">
-
-<thead>
-<tr>${hs}</tr>
-</thead>
-
-<tbody>
-
-${
-rows&&rows.length
-?rows.join('')
-:`
-<tr>
-<td colspan="${headers.length}"
-class="muted">
-कोई रिकॉर्ड नहीं मिला।
-</td>
-</tr>
-`
 }
 
-</tbody>
 
-</table>
-`;
+function clampProgress(value){
+
+  return Math.max(
+    0,
+    Math.min(
+      100,
+      Number(value || 0)
+    )
+  );
+
+}
+
+
+function toast(text){
+
+  const el =
+    document.getElementById('toast');
+
+  el.textContent = text;
+
+  el.classList.add('show');
+
+  setTimeout(()=>{
+    el.classList.remove('show');
+  },3000);
+
+}
+
+
+function toggleSidebar(){
+
+  document
+    .getElementById('sidebar')
+    .classList.toggle('open');
+
+}
+
+
+function closeModal(id){
+
+  document
+    .getElementById(id)
+    .classList.remove('show');
+
+}
+
+
+function openModal(id){
+
+  document
+    .getElementById(id)
+    .classList.add('show');
+
+}
+
+
+function today(){
+
+  const d = new Date();
+
+  const m =
+    String(d.getMonth()+1)
+    .padStart(2,'0');
+
+  const day =
+    String(d.getDate())
+    .padStart(2,'0');
+
+  return `${d.getFullYear()}-${m}-${day}`;
+
+}
+
+
+function getCustomer(id){
+
+  return customers.find(
+    c => String(c.id) === String(id)
+  );
+
+}
+
+
+function getProject(id){
+
+  return projects.find(
+    p => String(p.id) === String(id)
+  );
 
 }
 
@@ -1860,2677 +1756,3071 @@ class="muted">
 ========================================================= */
 
 document
-.querySelectorAll('.side nav button')
-.forEach(b=>{
+  .querySelectorAll('.nav button')
+  .forEach(button=>{
 
-b.onclick=()=>{
+    button.addEventListener(
+      'click',
+      ()=>{
 
-document
-.querySelectorAll('.section')
-.forEach(s=>s.classList.remove('active'));
+        const page =
+          button.dataset.page;
 
-q(b.dataset.s).classList.add('active');
+        showPage(page);
 
-document
-.querySelectorAll('.side nav button')
-.forEach(x=>x.classList.remove('active'));
+      }
+    );
 
-b.classList.add('active');
+  });
 
-q('title').textContent=
-b.textContent.replace(/^\S+\s*/,'');
 
-if(b.dataset.s==='enquiries')
-loadEnquiries();
+function showPage(page){
 
-};
+  currentPage = page;
 
-});
+  document
+    .querySelectorAll('.nav button')
+    .forEach(btn=>{
+
+      btn.classList.toggle(
+        'active',
+        btn.dataset.page === page
+      );
+
+    });
+
+
+  document
+    .querySelectorAll('.page')
+    .forEach(section=>{
+
+      section.classList.remove('active');
+
+    });
+
+
+  const target =
+    document.getElementById(
+      'page-'+page
+    );
+
+  if(target)
+    target.classList.add('active');
+
+
+  const titles = {
+
+    overview:'📊 Overview',
+    projects:'🏗️ Projects',
+    customers:'👥 Customers',
+    enquiries:'📩 Customer Enquiries',
+    workers:'👷 Workers',
+    payments:'💰 Payments',
+    updates:'📅 Daily Update'
+
+  };
+
+
+  document.getElementById(
+    'pageTitle'
+  ).textContent =
+    titles[page] || 'Admin Dashboard';
+
+
+  if(window.innerWidth < 1000){
+
+    document
+      .getElementById('sidebar')
+      .classList.remove('open');
+
+  }
+
+
+  if(page === 'overview')
+    renderOverview();
+
+  if(page === 'projects')
+    renderProjects();
+
+  if(page === 'customers')
+    renderCustomers();
+
+  if(page === 'enquiries')
+    renderEnquiries();
+
+  if(page === 'workers')
+    renderWorkers();
+
+  if(page === 'payments')
+    renderPayments();
+
+  if(page === 'updates')
+    renderDailyUpdates();
+
+}
+
+
+function reloadCurrent(){
+
+  loadAll();
+
+}
 
 
 /* =========================================================
-   GET ALL
+   AUTH
 ========================================================= */
 
-async function getAll(t){
+async function loadUser(){
 
-const r=await sb
-.from(t)
-.select('*')
-.order('created_at',{ascending:false});
+  try{
 
-if(r.error)throw r.error;
+    const {
+      data
+    } =
+    await sb.auth.getUser();
 
-return Array.isArray(r.data)?r.data:[];
+    if(data?.user){
+
+      document.getElementById(
+        'userEmail'
+      ).textContent =
+        data.user.email || 'Admin';
+
+    }
+
+  }catch(e){
+
+    console.log(e);
+
+  }
+
+}
+
+
+async function logout(){
+
+  try{
+
+    await sb.auth.signOut();
+
+  }catch(e){
+
+    console.log(e);
+
+  }
+
+  window.location.href =
+    'index.html';
 
 }
 
 
 /* =========================================================
-   CUSTOMER ADD
+   LOAD ALL DATA
 ========================================================= */
 
-async function addCustomer(e){
+async function loadAll(){
 
-e.preventDefault();
+  try{
 
-const r=await sb
-.from('customers')
-.insert({
+    await Promise.all([
 
-name:q('cName').value.trim(),
-phone:q('cPhone').value.trim(),
-email:q('cEmail').value.trim(),
-address:q('cAddress').value.trim(),
-notes:q('cNotes').value.trim(),
-created_by:user.id
+      loadProjects(),
+      loadCustomers(),
+      loadWorkers(),
+      loadPayments(),
+      loadEnquiries(),
+      loadProjectUpdates()
 
-});
+    ]);
 
-if(r.error)
-return toast(r.error.message);
+    populateSelects();
 
-e.target.reset();
+    renderOverview();
 
-toast('Customer saved');
+    if(currentPage === 'projects')
+      renderProjects();
 
-await refreshAll();
+    if(currentPage === 'customers')
+      renderCustomers();
+
+    if(currentPage === 'enquiries')
+      renderEnquiries();
+
+    if(currentPage === 'workers')
+      renderWorkers();
+
+    if(currentPage === 'payments')
+      renderPayments();
+
+    if(currentPage === 'updates')
+      renderDailyUpdates();
+
+  }catch(error){
+
+    console.error(error);
+
+    toast(
+      '❌ Data load करने में समस्या हुई'
+    );
+
+  }
 
 }
 
 
 /* =========================================================
-   CUSTOMER EDIT
+   PROJECTS LOAD
 ========================================================= */
 
-async function editCustomer(id){
+async function loadProjects(){
 
-const {data:c,error}=await sb
-.from('customers')
-.select('id,name,phone,email,address,notes')
-.eq('id',id)
-.maybeSingle();
+  const {
+    data,
+    error
+  } =
+  await sb
+    .from('projects')
+    .select('*')
+    .order(
+      'created_at',
+      {
+        ascending:false
+      }
+    );
 
-if(error)return toast(error.message);
 
-if(!c)return toast('Customer नहीं मिला');
+  if(error){
 
-const name=prompt('Customer Name',c.name||'');
-if(name===null)return;
+    console.error(
+      'projects:',
+      error
+    );
 
-const phone=prompt('Phone',c.phone||'');
-if(phone===null)return;
+    projects = [];
 
-const email=prompt('Email',c.email||'');
-if(email===null)return;
+    return;
 
-const address=prompt('Address',c.address||'');
-if(address===null)return;
+  }
 
-const notes=prompt('Notes',c.notes||'');
-if(notes===null)return;
 
-const {error:ue}=await sb
-.from('customers')
-.update({
-
-name:name.trim(),
-phone:phone.trim(),
-email:email.trim(),
-address:address.trim(),
-notes:notes.trim(),
-updated_at:new Date().toISOString()
-
-})
-.eq('id',id);
-
-if(ue)
-return toast('Customer update नहीं हुआ: '+ue.message);
-
-toast('Customer updated successfully');
-
-await refreshAll();
+  projects = data || [];
 
 }
 
 
 /* =========================================================
-   CUSTOMER DELETE
+   CUSTOMERS LOAD
 ========================================================= */
 
-async function deleteCustomer(id){
+async function loadCustomers(){
 
-const {data:c,error}=await sb
-.from('customers')
-.select('id,name')
-.eq('id',id)
-.maybeSingle();
+  const {
+    data,
+    error
+  } =
+  await sb
+    .from('customers')
+    .select('*')
+    .order(
+      'created_at',
+      {
+        ascending:false
+      }
+    );
 
-if(error)return toast(error.message);
 
-if(!c)return toast('Customer नहीं मिला');
+  if(error){
 
-if(!confirm(
-'क्या आप "'+
-(c.name||'Customer')+
-'" को delete करना चाहते हैं?\n\nयह action वापस नहीं लिया जा सकता।'
-))
-return;
+    console.error(
+      'customers:',
+      error
+    );
 
-const {error:de}=await sb
-.from('customers')
-.delete()
-.eq('id',id);
+    customers = [];
 
-if(de)
-return toast('Customer delete नहीं हुआ: '+de.message);
+    return;
 
-toast('Customer deleted successfully');
+  }
 
-await refreshAll();
+
+  customers = data || [];
 
 }
 
 
 /* =========================================================
-   PROJECT ADD
+   WORKERS LOAD
 ========================================================= */
 
-async function addProject(e){
+async function loadWorkers(){
 
-e.preventDefault();
+  const {
+    data,
+    error
+  } =
+  await sb
+    .from('workers')
+    .select('*')
+    .order(
+      'created_at',
+      {
+        ascending:false
+      }
+    );
 
-const r=await sb
-.from('projects')
-.insert({
 
-project_name:q('pName').value,
-customer_id:q('pCustomer').value||null,
-work_type:q('pType').value,
-location:q('pLocation').value,
-start_date:q('pStart').value||null,
-expected_end_date:q('pEnd').value||null,
-status:q('pStatus').value,
-agreed_amount:Number(q('pAmount').value||0),
-notes:q('pNotes').value,
-created_by:user.id
+  if(error){
 
-});
+    console.error(
+      'workers:',
+      error
+    );
 
-if(r.error)
-return toast(r.error.message);
+    workers = [];
 
-e.target.reset();
+    return;
 
-toast('Project saved');
+  }
 
-await refreshAll();
+
+  workers = data || [];
 
 }
 
 
 /* =========================================================
-   PROJECT EDIT
+   PAYMENTS LOAD
 ========================================================= */
 
-async function editProject(id){
+async function loadPayments(){
 
-const {data:p,error}=await sb
-.from('projects')
-.select(
-'id,project_name,work_type,location,status,agreed_amount,notes'
-)
-.eq('id',id)
-.maybeSingle();
+  const {
+    data,
+    error
+  } =
+  await sb
+    .from('payments')
+    .select('*')
+    .order(
+      'payment_date',
+      {
+        ascending:false
+      }
+    );
 
-if(error)return toast(error.message);
 
-if(!p)return toast('Project नहीं मिला');
+  if(error){
 
-const name=prompt('Project Name',p.project_name||'');
-if(name===null)return;
+    console.error(
+      'payments:',
+      error
+    );
 
-const type=prompt('Work Type',p.work_type||'');
-if(type===null)return;
+    payments = [];
 
-const location=prompt('Location',p.location||'');
-if(location===null)return;
+    return;
 
-const status=prompt(
-'Status (lead / active / completed / cancelled)',
-p.status||'active'
-);
+  }
 
-if(status===null)return;
 
-const amount=prompt(
-'Agreed Amount',
-p.agreed_amount??0
-);
-
-if(amount===null)return;
-
-const notes=prompt('Notes',p.notes||'');
-if(notes===null)return;
-
-const {error:ue}=await sb
-.from('projects')
-.update({
-
-project_name:name.trim(),
-work_type:type.trim(),
-location:location.trim(),
-status:status.trim(),
-agreed_amount:Number(amount||0),
-notes:notes.trim(),
-updated_at:new Date().toISOString()
-
-})
-.eq('id',id);
-
-if(ue)
-return toast('Project update नहीं हुआ: '+ue.message);
-
-toast('Project updated successfully');
-
-await refreshAll();
+  payments = data || [];
 
 }
 
 
 /* =========================================================
-   PROJECT DELETE
-========================================================= */
-
-async function deleteProject(id){
-
-const {data:p,error}=await sb
-.from('projects')
-.select('id,project_name')
-.eq('id',id)
-.maybeSingle();
-
-if(error)return toast(error.message);
-
-if(!p)return toast('Project नहीं मिला');
-
-if(!confirm(
-'क्या आप "'+
-(p.project_name||'Project')+
-'" को delete करना चाहते हैं?'
-))
-return;
-
-const {error:de}=await sb
-.from('projects')
-.delete()
-.eq('id',id);
-
-if(de)
-return toast('Project delete नहीं हुआ: '+de.message);
-
-toast('Project deleted successfully');
-
-await refreshAll();
-
-}
-
-
-/* =========================================================
-   WORKER ADD
-========================================================= */
-
-async function addWorker(e){
-
-e.preventDefault();
-
-const r=await sb
-.from('workers')
-.insert({
-
-name:q('wName').value,
-phone:q('wPhone').value,
-village:q('wVillage').value,
-work_role:q('wRole').value,
-daily_rate:Number(q('wRate').value||0),
-notes:q('wNotes').value,
-created_by:user.id
-
-});
-
-if(r.error)
-return toast(r.error.message);
-
-e.target.reset();
-
-toast('Worker saved');
-
-await refreshAll();
-
-}
-
-
-/* =========================================================
-   WORKER EDIT
-========================================================= */
-
-async function editWorker(id){
-
-const {data:w,error}=await sb
-.from('workers')
-.select(
-'id,name,phone,village,work_role,daily_rate,notes'
-)
-.eq('id',id)
-.maybeSingle();
-
-if(error)return toast(error.message);
-
-if(!w)return toast('Worker नहीं मिला');
-
-const name=prompt('Worker Name',w.name||'');
-if(name===null)return;
-
-const phone=prompt('Phone',w.phone||'');
-if(phone===null)return;
-
-const workRole=prompt(
-'काम / Role',
-w.work_role||''
-);
-
-if(workRole===null)return;
-
-const rate=prompt(
-'Daily Rate',
-w.daily_rate??0
-);
-
-if(rate===null)return;
-
-const village=prompt(
-'Village',
-w.village||''
-);
-
-if(village===null)return;
-
-const notes=prompt(
-'Notes',
-w.notes||''
-);
-
-if(notes===null)return;
-
-const {error:ue}=await sb
-.from('workers')
-.update({
-
-name:name.trim(),
-phone:phone.trim(),
-work_role:workRole.trim(),
-daily_rate:Number(rate||0),
-village:village.trim(),
-notes:notes.trim(),
-updated_at:new Date().toISOString()
-
-})
-.eq('id',id);
-
-if(ue)
-return toast('Worker update नहीं हुआ: '+ue.message);
-
-toast('Worker updated successfully');
-
-await refreshAll();
-
-}
-
-
-/* =========================================================
-   WORKER DELETE
-========================================================= */
-
-async function deleteWorker(id){
-
-const {data:w,error}=await sb
-.from('workers')
-.select('id,name')
-.eq('id',id)
-.maybeSingle();
-
-if(error)return toast(error.message);
-
-if(!w)return toast('Worker नहीं मिला');
-
-if(!confirm(
-'क्या आप "'+
-(w.name||'Worker')+
-'" को delete करना चाहते हैं?'
-))
-return;
-
-const {error:de}=await sb
-.from('workers')
-.delete()
-.eq('id',id);
-
-if(de)
-return toast('Worker delete नहीं हुआ: '+de.message);
-
-toast('Worker deleted successfully');
-
-await refreshAll();
-
-}
-
-
-/* =========================================================
-   WORK ADD
-========================================================= */
-
-async function addWork(e){
-
-e.preventDefault();
-
-const r=await sb
-.from('work_logs')
-.insert({
-
-project_id:q('lProject').value,
-worker_id:q('lWorker').value||null,
-work_date:
-q('lDate').value||
-new Date().toISOString().slice(0,10),
-work_description:q('lDesc').value,
-days:Number(q('lDays').value||1),
-amount:Number(q('lAmount').value||0),
-notes:q('lNotes').value,
-created_by:user.id
-
-});
-
-if(r.error)
-return toast(r.error.message);
-
-e.target.reset();
-
-toast('Work entry saved');
-
-await refreshAll();
-
-}
-
-
-/* =========================================================
-   WORK EDIT
-========================================================= */
-
-async function editWork(id){
-
-const {data:w,error}=await sb
-.from('work_logs')
-.select(
-'id,project_id,worker_id,work_date,work_description,days,amount,notes'
-)
-.eq('id',id)
-.maybeSingle();
-
-if(error)return toast(error.message);
-
-if(!w)return toast('Work entry नहीं मिली');
-
-const date=prompt(
-'Date',
-w.work_date||''
-);
-
-if(date===null)return;
-
-const desc=prompt(
-'Work Description',
-w.work_description||''
-);
-
-if(desc===null)return;
-
-const days=prompt(
-'Days',
-w.days??1
-);
-
-if(days===null)return;
-
-const amount=prompt(
-'Amount',
-w.amount??0
-);
-
-if(amount===null)return;
-
-const notes=prompt(
-'Notes',
-w.notes||''
-);
-
-if(notes===null)return;
-
-const {error:ue}=await sb
-.from('work_logs')
-.update({
-
-work_date:date.trim(),
-work_description:desc.trim(),
-days:Number(days||0),
-amount:Number(amount||0),
-notes:notes.trim(),
-updated_at:new Date().toISOString()
-
-})
-.eq('id',id);
-
-if(ue)
-return toast('Work update नहीं हुई: '+ue.message);
-
-toast('Work entry updated successfully');
-
-await refreshAll();
-
-}
-
-
-/* =========================================================
-   WORK DELETE
-========================================================= */
-
-async function deleteWork(id){
-
-const {data:w,error}=await sb
-.from('work_logs')
-.select('id,work_description,amount')
-.eq('id',id)
-.maybeSingle();
-
-if(error)return toast(error.message);
-
-if(!w)return toast('Work entry नहीं मिली');
-
-if(!confirm(
-'क्या आप यह work entry delete करना चाहते हैं?\n\n'+
-(w.work_description||'Work Entry')
-))
-return;
-
-const {error:de}=await sb
-.from('work_logs')
-.delete()
-.eq('id',id);
-
-if(de)
-return toast('Work delete नहीं हुई: '+de.message);
-
-toast('Work entry deleted successfully');
-
-await refreshAll();
-
-}
-
-
-/* =========================================================
-   PAYMENT ADD
-========================================================= */
-
-async function addPayment(e){
-
-e.preventDefault();
-
-const r=await sb
-.from('payments')
-.insert({
-
-project_id:q('payProject').value,
-payment_date:
-q('payDate').value||
-new Date().toISOString().slice(0,10),
-amount:Number(q('payAmount').value),
-payment_method:q('payMethod').value,
-reference_no:q('payRef').value,
-notes:q('payNotes').value,
-created_by:user.id
-
-});
-
-if(r.error)
-return toast(r.error.message);
-
-e.target.reset();
-
-toast('Payment saved');
-
-await refreshAll();
-
-}
-
-
-/* =========================================================
-   PAYMENT EDIT
-========================================================= */
-
-async function editPayment(id){
-
-const {data:p,error}=await sb
-.from('payments')
-.select(
-'id,payment_date,amount,payment_method,reference_no,notes'
-)
-.eq('id',id)
-.maybeSingle();
-
-if(error)return toast(error.message);
-
-if(!p)return toast('Payment नहीं मिला');
-
-const date=prompt(
-'Payment Date',
-p.payment_date||''
-);
-
-if(date===null)return;
-
-const amount=prompt(
-'Amount',
-p.amount??0
-);
-
-if(amount===null)return;
-
-const method=prompt(
-'Payment Method',
-p.payment_method||''
-);
-
-if(method===null)return;
-
-const ref=prompt(
-'Reference No.',
-p.reference_no||''
-);
-
-if(ref===null)return;
-
-const notes=prompt(
-'Notes',
-p.notes||''
-);
-
-if(notes===null)return;
-
-const {error:ue}=await sb
-.from('payments')
-.update({
-
-payment_date:date.trim(),
-amount:Number(amount||0),
-payment_method:method.trim(),
-reference_no:ref.trim(),
-notes:notes.trim(),
-updated_at:new Date().toISOString()
-
-})
-.eq('id',id);
-
-if(ue)
-return toast('Payment update नहीं हुआ: '+ue.message);
-
-toast('Payment updated successfully');
-
-await refreshAll();
-
-}
-
-
-/* =========================================================
-   PAYMENT DELETE
-========================================================= */
-
-async function deletePayment(id){
-
-const {data:p,error}=await sb
-.from('payments')
-.select('id,amount,payment_date')
-.eq('id',id)
-.maybeSingle();
-
-if(error)return toast(error.message);
-
-if(!p)return toast('Payment नहीं मिला');
-
-if(!confirm(
-'क्या आप यह payment delete करना चाहते हैं?\n\n'+
-money(p.amount)
-))
-return;
-
-const {error:de}=await sb
-.from('payments')
-.delete()
-.eq('id',id);
-
-if(de)
-return toast('Payment delete नहीं हुआ: '+de.message);
-
-toast('Payment deleted successfully');
-
-await refreshAll();
-
-}
-
-
-/* =========================================================
-   EXPENSE ADD
-========================================================= */
-
-async function addExpense(e){
-
-e.preventDefault();
-
-const r=await sb
-.from('expenses')
-.insert({
-
-project_id:q('eProject').value||null,
-expense_date:
-q('eDate').value||
-new Date().toISOString().slice(0,10),
-category:q('eCategory').value,
-description:q('eDesc').value,
-amount:Number(q('eAmount').value),
-notes:q('eNotes').value,
-created_by:user.id
-
-});
-
-if(r.error)
-return toast(r.error.message);
-
-e.target.reset();
-
-toast('Expense saved');
-
-await refreshAll();
-
-}
-
-
-/* =========================================================
-   EXPENSE EDIT
-========================================================= */
-
-async function editExpense(id){
-
-const {data:x,error}=await sb
-.from('expenses')
-.select(
-'id,expense_date,category,description,amount,notes'
-)
-.eq('id',id)
-.maybeSingle();
-
-if(error)return toast(error.message);
-
-if(!x)return toast('Expense नहीं मिला');
-
-const date=prompt(
-'Expense Date',
-x.expense_date||''
-);
-
-if(date===null)return;
-
-const category=prompt(
-'Category',
-x.category||''
-);
-
-if(category===null)return;
-
-const description=prompt(
-'Description',
-x.description||''
-);
-
-if(description===null)return;
-
-const amount=prompt(
-'Amount',
-x.amount??0
-);
-
-if(amount===null)return;
-
-const notes=prompt(
-'Notes',
-x.notes||''
-);
-
-if(notes===null)return;
-
-const {error:ue}=await sb
-.from('expenses')
-.update({
-
-expense_date:date.trim(),
-category:category.trim(),
-description:description.trim(),
-amount:Number(amount||0),
-notes:notes.trim(),
-updated_at:new Date().toISOString()
-
-})
-.eq('id',id);
-
-if(ue)
-return toast('Expense update नहीं हुआ: '+ue.message);
-
-toast('Expense updated successfully');
-
-await refreshAll();
-
-}
-
-
-/* =========================================================
-   EXPENSE DELETE
-========================================================= */
-
-async function deleteExpense(id){
-
-const {data:x,error}=await sb
-.from('expenses')
-.select('id,amount,category')
-.eq('id',id)
-.maybeSingle();
-
-if(error)return toast(error.message);
-
-if(!x)return toast('Expense नहीं मिला');
-
-if(!confirm(
-'क्या आप यह expense delete करना चाहते हैं?\n\n'+
-(x.category||'Expense')+
-' — '+
-money(x.amount)
-))
-return;
-
-const {error:de}=await sb
-.from('expenses')
-.delete()
-.eq('id',id);
-
-if(de)
-return toast('Expense delete नहीं हुआ: '+de.message);
-
-toast('Expense deleted successfully');
-
-await refreshAll();
-
-}
-
-
-/* =========================================================
-   CUSTOMER PHOTO
-========================================================= */
-
-function customerPhotoHtml(c){
-
-return c.photo_url
-
-?`
-
-<img
-class="customer-mini-photo"
-src="${esc(c.photo_url)}"
-alt="Customer Photo">
-
-`
-
-:`
-
-<span class="customer-mini-placeholder">
-👤
-</span>
-
-`;
-
-}
-
-
-/* =========================================================
-   CUSTOMER PROFILE
-========================================================= */
-
-async function viewCustomerProfile(id){
-
-const {data:c,error}=await sb
-.from('customers')
-.select('*')
-.eq('id',id)
-.maybeSingle();
-
-if(error)
-return toast(
-'Customer profile load नहीं हुई: '+error.message
-);
-
-if(!c)
-return toast('Customer नहीं मिला');
-
-const photo=c.photo_url
-
-?`
-
-<img
-class="profile-big-photo"
-src="${esc(c.photo_url)}"
-alt="Customer Photo">
-
-`
-
-:`
-
-<div class="profile-big-placeholder">
-👤
-</div>
-
-`;
-
-
-q('customerProfileContent').innerHTML=`
-
-<div class="profile-head">
-
-${photo}
-
-<div>
-
-<h2 style="margin:0 0 6px">
-${esc(c.name||'Customer')}
-</h2>
-
-<div class="muted">
-Customer Profile
-</div>
-
-</div>
-
-</div>
-
-
-<div class="profile-fields">
-
-<div class="profile-field">
-<small>👤 Customer Name</small>
-<b>${esc(c.name||'Not available')}</b>
-</div>
-
-<div class="profile-field">
-<small>📱 Phone Number</small>
-<b>${esc(c.phone||'Not available')}</b>
-</div>
-
-<div class="profile-field">
-<small>📧 Email</small>
-<b>${esc(c.email||'Not available')}</b>
-</div>
-
-<div
-class="profile-field"
-style="grid-column:1/-1">
-
-<small>📍 पूरा Address</small>
-
-<b>
-${esc(c.address||'Not available')}
-</b>
-
-</div>
-
-<div
-class="profile-field"
-style="grid-column:1/-1">
-
-<small>📝 Notes</small>
-
-<b>
-${esc(c.notes||'—')}
-</b>
-
-</div>
-
-</div>
-
-
-<div
-class="actions"
-style="margin-top:18px">
-
-<a
-class="btn primary"
-href="tel:${esc(c.phone||'')}">
-📞 Call Customer
-</a>
-
-${
-c.photo_url
-?
-`
-
-<a
-class="btn secondary"
-href="${esc(c.photo_url)}"
-target="_blank">
-📷 Photo खोलें
-</a>
-
-`
-:''
-}
-
-</div>
-
-`;
-
-q('customerProfileOverlay')
-.classList.add('open');
-
-}
-
-
-function closeCustomerProfile(){
-
-q('customerProfileOverlay')
-.classList.remove('open');
-
-}
-
-
-/* =========================================================
-   PROJECT PROGRESS
-========================================================= */
-
-async function viewProjectProgress(id){
-
-q('projectProgressOverlay')
-.classList.add('open');
-
-q('projectProgressContent').innerHTML=
-'<div class="notice">Project record load हो रहा है...</div>';
-
-try{
-
-const {data:p,error:pe}=await sb
-.from('projects')
-.select(
-'id,project_name,work_type,location,status,agreed_amount,start_date,expected_end_date,notes'
-)
-.eq('id',id)
-.maybeSingle();
-
-if(pe)throw pe;
-
-if(!p){
-
-q('projectProgressContent').innerHTML=
-'<div class="notice">Project नहीं मिला।</div>';
-
-return;
-
-}
-
-q('projectProgressSubtitle').textContent=
-(p.work_type||'Construction')+
-' • '+
-(p.location||'');
-
-
-const {data:updates,error:ue}=await sb
-.from('project_updates')
-.select(
-'id,project_id,update_date,title,details,progress_percent,photo_url'
-)
-.eq('project_id',id)
-.order(
-'update_date',
-{ascending:false}
-);
-
-if(ue)throw ue;
-
-const us=updates||[];
-
-const latest=us.length
-?
-Math.max(
-...us.map(
-x=>Number(x.progress_percent||0)
-)
-)
-:0;
-
-const progress=Math.max(
-0,
-Math.min(100,latest)
-);
-
-
-let html=`
-
-<div class="profile-fields">
-
-<div class="profile-field">
-<small>🏗️ Project</small>
-<b>${esc(p.project_name)}</b>
-</div>
-
-<div class="profile-field">
-<small>📌 Status</small>
-<b>${esc(p.status||'—')}</b>
-</div>
-
-<div class="profile-field">
-<small>📅 Start Date</small>
-<b>${esc(p.start_date||'—')}</b>
-</div>
-
-<div class="profile-field">
-<small>📅 Expected End</small>
-<b>${esc(p.expected_end_date||'—')}</b>
-</div>
-
-</div>
-
-
-<div class="project-progress-box">
-
-<div
-class="row"
-style="justify-content:space-between">
-
-<b>
-📊 Current Work Progress
-</b>
-
-<strong>
-${progress}%
-</strong>
-
-</div>
-
-<div class="project-progress-bar">
-<span style="width:${progress}%"></span>
-</div>
-
-<div class="muted">
-Latest progress record
-</div>
-
-</div>
-
-`;
-
-
-if(!us.length){
-
-html+=`
-
-<div class="notice">
-अभी इस project के लिए कोई progress update नहीं है।
-</div>
-
-`;
-
-}else{
-
-html+=`
-
-<div class="project-progress-box">
-
-<h3 style="margin-top:0">
-📋 काम की पूरी Progress / Updates
-</h3>
-
-`;
-
-us.forEach(x=>{
-
-const pr=Math.max(
-0,
-Math.min(
-100,
-Number(x.progress_percent||0)
-)
-);
-
-html+=`
-
-<div class="project-update">
-
-<div
-class="row"
-style="justify-content:space-between">
-
-<b>
-${esc(x.title||'काम का अपडेट')}
-</b>
-
-<span class="muted">
-${esc(x.update_date||'')}
-</span>
-
-</div>
-
-<div style="margin-top:7px">
-${esc(x.details||'')}
-</div>
-
-<div class="project-progress-bar">
-<span style="width:${pr}%"></span>
-</div>
-
-<small>
-<b>${pr}%</b> complete
-</small>
-
-${
-x.photo_url
-?
-`
-
-<div>
-
-<a
-href="${esc(x.photo_url)}"
-target="_blank">
-
-<img
-class="project-update-photo"
-src="${esc(x.photo_url)}"
-alt="काम की Photo">
-
-</a>
-
-</div>
-
-`
-:''
-}
-
-</div>
-
-`;
-
-});
-
-html+='</div>';
-
-}
-
-
-if(p.notes){
-
-html+=`
-
-<div class="notice">
-
-<b>Project Notes:</b>
-<br>
-
-${esc(p.notes)}
-
-</div>
-
-`;
-
-}
-
-
-q('projectProgressContent').innerHTML=html;
-
-}catch(err){
-
-q('projectProgressContent').innerHTML=`
-
-<div class="enquiry-error">
-
-<b>
-Project progress load नहीं हुआ:
-</b>
-
-<br>
-
-${esc(err.message||String(err))}
-
-</div>
-
-`;
-
-toast(
-err.message||
-'Project progress error'
-);
-
-}
-
-}
-
-
-function closeProjectProgress(){
-
-q('projectProgressOverlay')
-.classList.remove('open');
-
-}
-
-
-/* =========================================================
-   ENSURE PROJECT FOR ENQUIRY
-========================================================= */
-
-async function ensureProjectForEnquiry(id){
-
-const {data:req,error:re}=await sb
-.from('contract_requests')
-.select(
-'id,customer_user_id,request_type,site_location,details,budget'
-)
-.eq('id',id)
-.maybeSingle();
-
-if(re)throw re;
-
-if(!req)return;
-
-
-let {data:c,error:ce}=await sb
-.from('customers')
-.select(
-'id,name,phone,village,address'
-)
-.eq(
-'user_id',
-req.customer_user_id
-)
-.maybeSingle();
-
-if(ce)throw ce;
-
-
-if(!c){
-
-const {data:p,error:pe}=await sb
-.from('profiles')
-.select('full_name,phone')
-.eq('id',req.customer_user_id)
-.maybeSingle();
-
-if(pe)throw pe;
-
-const {data:nc,error:ne}=await sb
-.from('customers')
-.insert({
-
-user_id:req.customer_user_id,
-name:p?.full_name||'Customer',
-phone:p?.phone||'',
-address:req.site_location||'',
-created_by:user.id
-
-})
-.select(
-'id,name,phone,address'
-)
-.single();
-
-if(ne)throw ne;
-
-c=nc;
-
-}
-
-
-const {data:existing,error:ee}=await sb
-.from('projects')
-.select('id')
-.eq('customer_id',c.id)
-.limit(1);
-
-if(ee)throw ee;
-
-
-if(!existing||!existing.length){
-
-const {error:pe}=await sb
-.from('projects')
-.insert({
-
-project_name:
-req.request_type||
-'Construction Project',
-
-customer_id:c.id,
-
-work_type:
-req.request_type||'',
-
-location:
-req.site_location||'',
-
-status:'active',
-
-agreed_amount:
-Number(req.budget||0),
-
-notes:
-req.details||'',
-
-created_by:user.id
-
-});
-
-if(pe)throw pe;
-
-}
-
-}
-
-
-/* =========================================================
-   LOAD ENQUIRIES
+   ENQUIRIES LOAD
 ========================================================= */
 
 async function loadEnquiries(){
 
-const box=q('enquiriesList');
+  const {
+    data,
+    error
+  } =
+  await sb
+    .from('customer_enquiries')
+    .select('*')
+    .order(
+      'created_at',
+      {
+        ascending:false
+      }
+    );
 
-box.innerHTML=
-'<div class="notice">Enquiries load हो रही हैं...</div>';
 
-try{
+  if(error){
 
-const {data:req,error}=await sb
-.from('contract_requests')
-.select(
-'id,customer_user_id,request_type,site_location,details,budget,status,admin_notes,created_at'
-)
-.order(
-'created_at',
-{ascending:false}
-);
+    console.error(
+      'customer_enquiries:',
+      error
+    );
 
-if(error)throw error;
+    enquiries = [];
 
-const reqs=Array.isArray(req)?req:[];
+    return;
 
-if(!reqs.length){
+  }
 
-box.innerHTML=
-'<div class="notice">अभी कोई Customer Enquiry नहीं आई है।</div>';
 
-return;
-
-}
-
-
-const rows=reqs.map(x=>{
-
-const c=customerCache[x.customer_user_id]||{};
-
-const status=x.status||'pending';
-
-const statusClass=
-status==='approved'
-?'approved'
-:
-status==='rejected'
-?'rejected'
-:
-status==='contacted'
-?'contacted'
-:'pending';
-
-
-const action=status==='pending'
-
-?
-
-`
-
-<div class="enquiry-actions">
-
-<button
-type="button"
-class="btn approve-btn"
-onclick="setEnquiryStatus('${x.id}','approved')">
-🟢 Approve
-</button>
-
-<button
-type="button"
-class="btn contact-btn"
-onclick="setEnquiryStatus('${x.id}','contacted')">
-🟡 Contacted
-</button>
-
-<button
-type="button"
-class="btn reject-btn"
-onclick="setEnquiryStatus('${x.id}','rejected')">
-🔴 Reject
-</button>
-
-<button
-type="button"
-class="btn note-btn"
-onclick="saveEnquiryNote('${x.id}')">
-📝 Save Note
-</button>
-
-</div>
-
-`
-
-:
-
-'<span class="muted">— Action complete</span>';
-
-
-return `
-
-<tr>
-
-<td>
-${new Date(x.created_at)
-.toLocaleString('en-IN')}
-</td>
-
-<td>
-
-<b>
-${esc(c.name||'Customer')}
-</b>
-
-<br>
-
-<span class="small">
-User ID:
-${esc(x.customer_user_id)}
-</span>
-
-</td>
-
-<td>
-${esc(c.phone||'')}
-</td>
-
-<td>
-${esc(c.address||'')}
-</td>
-
-<td>
-
-<b>
-${esc(x.request_type||'')}
-</b>
-
-<br>
-
-<span class="small">
-
-Site:
-${esc(x.site_location||'')}
-
-<br>
-
-${esc(x.details||'')}
-
-</span>
-
-</td>
-
-<td>
-${money(x.budget)}
-</td>
-
-<td>
-
-<span class="pill ${statusClass}">
-${esc(status)}
-</span>
-
-</td>
-
-<td>
-
-<textarea
-id="note_${x.id}"
-style="min-height:65px"
-${status!=='pending'?'disabled':''}>
-${esc(x.admin_notes||'')}
-</textarea>
-
-</td>
-
-<td>
-${action}
-</td>
-
-</tr>
-
-`;
-
-});
-
-
-box.innerHTML=table(
-[
-'Date',
-'Customer',
-'📞 Phone',
-'📍 Address',
-'काम / Details',
-'Budget',
-'Status',
-'Admin Note',
-'Action'
-],
-rows
-);
-
-}catch(err){
-
-box.innerHTML=`
-
-<div class="enquiry-error">
-
-<b>
-Enquiry load नहीं हो पाई:
-</b>
-
-<br>
-
-${esc(
-err.message||
-String(err)
-)}
-
-</div>
-
-`;
-
-toast(
-err.message||
-'Enquiry load error'
-);
-
-}
+  enquiries = data || [];
 
 }
 
 
 /* =========================================================
-   ENQUIRY STATUS
+   PROJECT UPDATES LOAD
 ========================================================= */
 
-async function setEnquiryStatus(id,status){
+async function loadProjectUpdates(){
 
-const note=q('note_'+id)?.value||'';
-
-const {error}=await sb
-.from('contract_requests')
-.update({
-status,
-admin_notes:note
-})
-.eq('id',id);
-
-if(error)
-return toast(error.message);
-
-
-if(status==='approved'){
-
-try{
-
-await ensureProjectForEnquiry(id);
-
-}catch(e){
-
-toast(
-'Enquiry approved, लेकिन Project create नहीं हुआ: '+
-(e.message||e)
-);
-
-await loadEnquiries();
-await refreshAll();
-
-return;
-
-}
-
-}
+  const {
+    data,
+    error
+  } =
+  await sb
+    .from('project_updates')
+    .select('*')
+    .order(
+      'update_date',
+      {
+        ascending:false
+      }
+    )
+    .order(
+      'created_at',
+      {
+        ascending:false
+      }
+    );
 
 
-toast(
-status==='approved'
-?
-'Enquiry Approved — Project started'
-:
-status==='contacted'
-?
-'Customer marked Contacted'
-:
-'Enquiry Rejected'
-);
+  if(error){
+
+    console.error(
+      'project_updates:',
+      error
+    );
+
+    projectUpdates = [];
+
+    return;
+
+  }
 
 
-await loadEnquiries();
-await refreshAll();
+  projectUpdates = data || [];
 
 }
 
 
 /* =========================================================
-   SAVE ENQUIRY NOTE
+   SELECT OPTIONS
 ========================================================= */
 
-async function saveEnquiryNote(id){
+function populateSelects(){
 
-const note=q('note_'+id)?.value||'';
+  const projectOptions =
+    projects.map(p=>`
 
-const {error}=await sb
-.from('contract_requests')
-.update({
-admin_notes:note
-})
-.eq('id',id);
+      <option value="${esc(p.id)}">
+        ${esc(p.project_name || 'Project')}
+      </option>
 
-if(error)
-return toast(error.message);
+    `).join('');
 
-toast('Admin Note saved');
 
-await loadEnquiries();
+  const customerOptions =
+    customers.map(c=>`
+
+      <option value="${esc(c.id)}">
+        ${esc(c.name || c.customer_name || 'Customer')}
+      </option>
+
+    `).join('');
+
+
+  document.getElementById(
+    'projectCustomer'
+  ).innerHTML =
+    '<option value="">Select Customer</option>' +
+    customerOptions;
+
+
+  document.getElementById(
+    'paymentProject'
+  ).innerHTML =
+    '<option value="">Select Project</option>' +
+    projectOptions;
+
+
+  document.getElementById(
+    'paymentCustomer'
+  ).innerHTML =
+    '<option value="">Select Customer</option>' +
+    customerOptions;
 
 }
 
 
 /* =========================================================
-   MAIN REFRESH
+   PROGRESS CALCULATION
 ========================================================= */
 
-async function refreshAll(){
-
-if(!user)return;
-
-try{
-
-const [
-cs,
-ps,
-ws,
-logs,
-pays,
-exps
-]=await Promise.all([
-
-getAll('customers'),
-getAll('projects'),
-getAll('workers'),
-getAll('work_logs'),
-getAll('payments'),
-getAll('expenses')
-
-]);
-
-
-const {data:req,error:rq}=await sb
-.from('contract_requests')
-.select(
-'id,request_type,status,created_at,customer_user_id'
-)
-.order(
-'created_at',
-{ascending:false}
-);
-
-if(rq)throw rq;
-
-
-customerCache={};
-
-cs.forEach(c=>{
-
-if(c.user_id)
-customerCache[c.user_id]=c;
-
-});
-
-
-/* COUNTS */
-
-q('mCustomers').textContent=cs.length;
-q('mProjects').textContent=ps.length;
-q('mWorkers').textContent=ws.length;
-
-q('mEnquiries').textContent=
-(Array.isArray(req)?req:[])
-.filter(
-x=>!['approved','rejected']
-.includes(x.status)
-)
-.length;
-
-q('mExpenses').textContent=
-money(
-exps.reduce(
-(a,x)=>a+Number(x.amount||0),
-0
-)
-);
-
-
-/* =========================================================
-   CUSTOMERS LIST
-========================================================= */
-
-q('customersList').innerHTML=table(
-
-[
-'Customer',
-'Phone',
-'Email',
-'Address',
-'Action'
-],
-
-cs.map(x=>`
-
-<tr>
-
-<td>
-
-${customerPhotoHtml(x)}
-
-<b>
-${esc(x.name)}
-</b>
-
-</td>
-
-<td>
-${esc(x.phone)}
-</td>
-
-<td>
-${esc(x.email||'')}
-</td>
-
-<td>
-${esc(x.address||'')}
-</td>
-
-<td>
-
-<div class="action-buttons">
-
-<button
-type="button"
-class="btn view-btn"
-onclick="viewCustomerProfile('${x.id}')">
-👁️ View Profile
-</button>
-
-<button
-type="button"
-class="btn edit-btn"
-onclick="editCustomer('${x.id}')">
-✏️ Edit
-</button>
-
-<button
-type="button"
-class="btn delete-btn"
-onclick="deleteCustomer('${x.id}')">
-🗑️ Delete
-</button>
-
-</div>
-
-</td>
-
-</tr>
-
-`)
-
-);
-
-
-/* =========================================================
-   PROJECTS LIST
-========================================================= */
-
-q('projectsList').innerHTML=table(
-
-[
-'Project',
-'Type',
-'Location',
-'Status',
-'Amount',
-'Action'
-],
-
-ps.map(x=>`
-
-<tr>
-
-<td>
-
-<button
-type="button"
-class="btn secondary project-click"
-onclick="viewProjectProgress('${x.id}')">
-
-🏗️ ${esc(x.project_name)}
-
-</button>
-
-</td>
-
-<td>
-${esc(x.work_type||'')}
-</td>
-
-<td>
-${esc(x.location||'')}
-</td>
-
-<td>
-
-<span class="pill">
-${esc(x.status||'')}
-</span>
-
-</td>
-
-<td>
-${money(x.agreed_amount)}
-</td>
-
-<td>
-
-<div class="action-buttons">
-
-<button
-type="button"
-class="btn edit-btn"
-onclick="editProject('${x.id}')">
-✏️ Edit
-</button>
-
-<button
-type="button"
-class="btn delete-btn"
-onclick="deleteProject('${x.id}')">
-🗑️ Delete
-</button>
-
-</div>
-
-</td>
-
-</tr>
-
-`)
-
-);
-
-
-/* =========================================================
-   WORKERS LIST + ACTION
-========================================================= */
-
-q('workersList').innerHTML=table(
-
-[
-'Name',
-'Phone',
-'Role',
-'Daily Rate',
-'Village',
-'Action'
-],
-
-ws.map(x=>`
-
-<tr>
-
-<td>
-<b>${esc(x.name)}</b>
-</td>
-
-<td>
-${esc(x.phone||'')}
-</td>
-
-<td>
-${esc(x.work_role||'')}
-</td>
-
-<td>
-${money(x.daily_rate)}
-</td>
-
-<td>
-${esc(x.village||'')}
-</td>
-
-<td>
-
-<div class="action-buttons">
-
-<button
-type="button"
-class="btn edit-btn"
-onclick="editWorker('${x.id}')">
-✏️ Edit
-</button>
-
-<button
-type="button"
-class="btn delete-btn"
-onclick="deleteWorker('${x.id}')">
-🗑️ Delete
-</button>
-
-</div>
-
-</td>
-
-</tr>
-
-`)
-
-);
-
-
-/* =========================================================
-   WORK LIST + ACTION
-========================================================= */
-
-q('workList').innerHTML=table(
-
-[
-'Date',
-'Project',
-'Worker',
-'Description',
-'Days',
-'Amount',
-'Action'
-],
-
-logs.map(x=>`
-
-<tr>
-
-<td>
-${esc(x.work_date)}
-</td>
-
-<td>
-${esc(
-(ps.find(p=>p.id===x.project_id)||{})
-.project_name||''
-)}
-</td>
-
-<td>
-${esc(
-(ws.find(w=>w.id===x.worker_id)||{})
-.name||''
-)}
-</td>
-
-<td>
-${esc(x.work_description||'')}
-</td>
-
-<td>
-${esc(x.days)}
-</td>
-
-<td>
-${money(x.amount)}
-</td>
-
-<td>
-
-<div class="action-buttons">
-
-<button
-type="button"
-class="btn edit-btn"
-onclick="editWork('${x.id}')">
-✏️ Edit
-</button>
-
-<button
-type="button"
-class="btn delete-btn"
-onclick="deleteWork('${x.id}')">
-🗑️ Delete
-</button>
-
-</div>
-
-</td>
-
-</tr>
-
-`)
-
-);
-
-
-/* =========================================================
-   PAYMENT HISTORY + ACTION
-========================================================= */
-
-q('paymentsList').innerHTML=table(
-
-[
-'Date',
-'Project',
-'Amount',
-'Method',
-'Reference',
-'Action'
-],
-
-pays.map(x=>`
-
-<tr>
-
-<td>
-${esc(x.payment_date)}
-</td>
-
-<td>
-${esc(
-(ps.find(p=>p.id===x.project_id)||{})
-.project_name||''
-)}
-</td>
-
-<td>
-${money(x.amount)}
-</td>
-
-<td>
-${esc(x.payment_method||'')}
-</td>
-
-<td>
-${esc(x.reference_no||'')}
-</td>
-
-<td>
-
-<div class="action-buttons">
-
-<button
-type="button"
-class="btn edit-btn"
-onclick="editPayment('${x.id}')">
-✏️ Edit
-</button>
-
-<button
-type="button"
-class="btn delete-btn"
-onclick="deletePayment('${x.id}')">
-🗑️ Delete
-</button>
-
-</div>
-
-</td>
-
-</tr>
-
-`)
-
-);
-
-
-/* =========================================================
-   EXPENSE HISTORY + ACTION
-========================================================= */
-
-q('expensesList').innerHTML=table(
-
-[
-'Date',
-'Project',
-'Category',
-'Description',
-'Amount',
-'Action'
-],
-
-exps.map(x=>`
-
-<tr>
-
-<td>
-${esc(x.expense_date)}
-</td>
-
-<td>
-${esc(
-(ps.find(p=>p.id===x.project_id)||{})
-.project_name||
-'General'
-)}
-</td>
-
-<td>
-${esc(x.category||'')}
-</td>
-
-<td>
-${esc(x.description||'')}
-</td>
-
-<td>
-${money(x.amount)}
-</td>
-
-<td>
-
-<div class="action-buttons">
-
-<button
-type="button"
-class="btn edit-btn"
-onclick="editExpense('${x.id}')">
-✏️ Edit
-</button>
-
-<button
-type="button"
-class="btn delete-btn"
-onclick="deleteExpense('${x.id}')">
-🗑️ Delete
-</button>
-
-</div>
-
-</td>
-
-</tr>
-
-`)
-
-);
-
-
-/* =========================================================
-   RECENT PROJECTS
-========================================================= */
-
-q('recentProjects').innerHTML=table(
-
-[
-'Project',
-'Location',
-'Status',
-'Amount'
-],
-
-ps.slice(0,8).map(x=>`
-
-<tr>
-
-<td>
-
-<button
-type="button"
-class="btn secondary project-click"
-onclick="viewProjectProgress('${x.id}')">
-
-${esc(x.project_name)}
-
-</button>
-
-</td>
-
-<td>
-${esc(x.location||'')}
-</td>
-
-<td>
-
-<span class="pill">
-${esc(x.status||'')}
-</span>
-
-</td>
-
-<td>
-${money(x.agreed_amount)}
-</td>
-
-</tr>
-
-`)
-
-);
-
-
-/* =========================================================
-   RECENT ENQUIRIES
-========================================================= */
-
-const latest=
-(Array.isArray(req)?req:[])
-.slice(0,6);
-
-
-q('recentEnquiries').innerHTML=
-latest.length
-
-?
-
-table(
-
-[
-'Date',
-'Customer',
-'काम',
-'Status'
-],
-
-latest.map(x=>`
-
-<tr>
-
-<td>
-${new Date(x.created_at)
-.toLocaleDateString('en-IN')}
-</td>
-
-<td>
-${esc(
-(customerCache[x.customer_user_id]||{})
-.name||
-'Customer'
-)}
-</td>
-
-<td>
-${esc(x.request_type||'')}
-</td>
-
-<td>
-
-<span
-class="pill ${
-x.status==='pending'
-?'pending'
-:
-x.status==='rejected'
-?'rejected'
-:
-x.status==='contacted'
-?'contacted'
-:
-x.status==='approved'
-?'approved'
-:''
-}">
-
-${esc(x.status||'')}
-
-</span>
-
-</td>
-
-</tr>
-
-`)
-
-)
-
-:
-
-'अभी कोई enquiry नहीं।';
-
-
-/* =========================================================
-   CUSTOMER DROPDOWN
-========================================================= */
-
-q('pCustomer').innerHTML=
-'<option value="">Select</option>'+
-cs.map(x=>`
-
-<option value="${x.id}">
-${esc(x.name)}
-</option>
-
-`).join('');
-
-
-/* =========================================================
-   PROJECT DROPDOWNS
-========================================================= */
-
-['lProject','payProject','eProject']
-.forEach(id=>{
-
-q(id).innerHTML=
-
-(
-id==='eProject'
-?
-'<option value="">General</option>'
-:
-'<option value="">Select Project</option>'
-)
-
-+
-
-ps.map(x=>`
-
-<option value="${x.id}">
-${esc(x.project_name)}
-</option>
-
-`).join('');
-
-});
-
-
-/* =========================================================
-   WORKER DROPDOWN
-========================================================= */
-
-q('lWorker').innerHTML=
-'<option value="">Select Worker</option>'+
-
-ws.map(x=>`
-
-<option value="${x.id}">
-${esc(x.name)}
-</option>
-
-`).join('');
-
-
-/* =========================================================
-   REPORT
-========================================================= */
-
-const totalP=
-pays.reduce(
-(a,x)=>a+Number(x.amount||0),
-0
-);
-
-const totalE=
-exps.reduce(
-(a,x)=>a+Number(x.amount||0),
-0
-);
-
-const totalW=
-logs.reduce(
-(a,x)=>a+Number(x.amount||0),
-0
-);
-
-q('rPayments').textContent=
-money(totalP);
-
-q('rExpenses').textContent=
-money(totalE);
-
-q('rNet').textContent=
-money(totalP-totalE);
-
-q('rWork').textContent=
-money(totalW);
-
-
-/* =========================================================
-   PROJECT REPORT
-========================================================= */
-
-q('reportProjects').innerHTML=table(
-
-[
-'Project',
-'Agreed',
-'Received',
-'Expense',
-'Work Value',
-'Balance'
-],
-
-ps.map(p=>{
-
-const received=
-pays
-.filter(x=>x.project_id===p.id)
-.reduce(
-(a,x)=>a+Number(x.amount||0),
-0
-);
-
-const expense=
-exps
-.filter(x=>x.project_id===p.id)
-.reduce(
-(a,x)=>a+Number(x.amount||0),
-0
-);
-
-const work=
-logs
-.filter(x=>x.project_id===p.id)
-.reduce(
-(a,x)=>a+Number(x.amount||0),
-0
-);
-
-return `
-
-<tr>
-
-<td>
-
-<button
-type="button"
-class="btn secondary project-click"
-onclick="viewProjectProgress('${p.id}')">
-
-${esc(p.project_name)}
-
-</button>
-
-</td>
-
-<td>
-${money(p.agreed_amount)}
-</td>
-
-<td>
-${money(received)}
-</td>
-
-<td>
-${money(expense)}
-</td>
-
-<td>
-${money(work)}
-</td>
-
-<td>
-${money(
-Number(p.agreed_amount||0)-received
-)}
-</td>
-
-</tr>
-
-`;
-
-})
-
-);
-
-
-if(
-document.querySelector('#enquiries.active')
-)
-await loadEnquiries();
-
-
-}catch(err){
-
-console.error(err);
-
-toast(
-err.message||
-'Data load error'
-);
-
-}
+function projectProgress(projectId){
+
+  const updates =
+    projectUpdates
+      .filter(
+        u =>
+          String(u.project_id) ===
+          String(projectId)
+      )
+      .sort(
+        (a,b)=>
+          new Date(
+            b.update_date ||
+            b.created_at ||
+            0
+          ) -
+          new Date(
+            a.update_date ||
+            a.created_at ||
+            0
+          )
+      );
+
+
+  if(!updates.length)
+    return 0;
+
+
+  return clampProgress(
+    updates[0].progress_percent
+  );
 
 }
 
 
 /* =========================================================
-   START
+   OVERVIEW
 ========================================================= */
 
-checkAdminSession();
+function renderOverview(){
+
+  const total =
+    projects.length;
+
+  const ongoing =
+    projects.filter(p=>{
+
+      const s =
+        String(
+          p.status ||
+          ''
+        ).toLowerCase();
+
+      return [
+        'ongoing',
+        'active',
+        'lead'
+      ].includes(s);
+
+    }).length;
+
+
+  const completed =
+    projects.filter(p=>{
+
+      const s =
+        String(
+          p.status ||
+          ''
+        ).toLowerCase();
+
+      return s === 'completed';
+
+    }).length;
+
+
+  document.getElementById(
+    'statProjects'
+  ).textContent = total;
+
+
+  document.getElementById(
+    'statOngoing'
+  ).textContent = ongoing;
+
+
+  document.getElementById(
+    'statCompleted'
+  ).textContent = completed;
+
+
+  document.getElementById(
+    'statWorkers'
+  ).textContent =
+    workers.length;
+
+
+  let budget = 0;
+
+  projects.forEach(p=>{
+
+    budget += num(
+      p.agreed_amount ??
+      p.amount ??
+      p.total_budget
+    );
+
+  });
+
+
+  let received = 0;
+
+  payments.forEach(p=>{
+
+    const status =
+      String(
+        p.status ||
+        ''
+      ).toLowerCase();
+
+    if(status === 'received')
+      received += num(p.amount);
+
+  });
+
+
+  const pending =
+    Math.max(
+      0,
+      budget - received
+    );
+
+
+  document.getElementById(
+    'statBudget'
+  ).textContent =
+    money(budget);
+
+
+  document.getElementById(
+    'statReceived'
+  ).textContent =
+    money(received);
+
+
+  document.getElementById(
+    'statPending'
+  ).textContent =
+    money(pending);
+
+
+  const recent =
+    projects.slice(0,6);
+
+
+  const box =
+    document.getElementById(
+      'overviewProjects'
+    );
+
+
+  if(!recent.length){
+
+    box.innerHTML =
+      '<div class="empty">अभी कोई Project नहीं है।</div>';
+
+    return;
+
+  }
+
+
+  box.innerHTML =
+    recent.map(
+      projectCardHTML
+    ).join('');
+
+}
+
+
+/* =========================================================
+   PROJECT CARD
+========================================================= */
+
+function projectCardHTML(p){
+
+  const progress =
+    projectProgress(p.id);
+
+
+  const customer =
+    getCustomer(
+      p.customer_id
+    );
+
+
+  const customerName =
+    p.customer_name ||
+    customer?.name ||
+    customer?.customer_name ||
+    'Customer नहीं';
+
+
+  const budget =
+    num(
+      p.agreed_amount ??
+      p.amount ??
+      p.total_budget
+    );
+
+
+  const received =
+    payments
+      .filter(
+        x =>
+          String(x.project_id) ===
+          String(p.id)
+      )
+      .filter(
+        x =>
+          String(x.status).toLowerCase()
+          === 'received'
+      )
+      .reduce(
+        (sum,x)=>
+          sum + num(x.amount),
+        0
+      );
+
+
+  const pending =
+    Math.max(
+      0,
+      budget - received
+    );
+
+
+  const status =
+    String(
+      p.status || 'pending'
+    ).toLowerCase();
+
+
+  return `
+
+    <div class="projectCard">
+
+      <div class="projectTop">
+
+        <div>
+
+          <h3>
+            ${esc(
+              p.project_name ||
+              'Untitled Project'
+            )}
+          </h3>
+
+          <div class="projectMeta">
+
+            👤 ${esc(customerName)}
+
+            • 📍
+            ${esc(p.location || '—')}
+
+            • 🛠️
+            ${esc(p.work_type || '—')}
+
+          </div>
+
+        </div>
+
+        <div>
+
+          <span class="status ${esc(status)}">
+            ${esc(
+              p.status ||
+              'Pending'
+            )}
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div class="progressLabel">
+
+        <span>Progress</span>
+
+        <strong class="orange">
+          ${progress}%
+        </strong>
+
+      </div>
+
+
+      <div class="progressBar">
+
+        <div
+          class="progressFill"
+          style="width:${progress}%">
+        </div>
+
+      </div>
+
+
+      <div class="moneyGrid">
+
+        <div class="money">
+
+          <span>Total Budget</span>
+
+          <strong>
+            ${money(budget)}
+          </strong>
+
+        </div>
+
+
+        <div class="money received">
+
+          <span>Received</span>
+
+          <strong class="green">
+            ${money(received)}
+          </strong>
+
+        </div>
+
+
+        <div class="money pending">
+
+          <span>Pending</span>
+
+          <strong class="red">
+            ${money(pending)}
+          </strong>
+
+        </div>
+
+      </div>
+
+
+      <div class="actions" style="margin-top:18px">
+
+        <button
+          class="btn btn-dark btn-sm"
+          onclick="openProgressModal('${esc(p.id)}')">
+
+          📅 Progress Update
+
+        </button>
+
+
+        <button
+          class="btn btn-blue btn-sm"
+          onclick="editProject('${esc(p.id)}')">
+
+          ✏️ Edit
+
+        </button>
+
+
+        <button
+          class="btn btn-red btn-sm"
+          onclick="deleteProject('${esc(p.id)}')">
+
+          🗑️ Delete
+
+        </button>
+
+      </div>
+
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   PROJECT LIST
+========================================================= */
+
+function renderProjects(){
+
+  const box =
+    document.getElementById(
+      'projectsList'
+    );
+
+
+  if(!projects.length){
+
+    box.innerHTML =
+      '<div class="empty">कोई Project नहीं मिला।</div>';
+
+    return;
+
+  }
+
+
+  box.innerHTML =
+    projects
+      .map(projectCardHTML)
+      .join('');
+
+}
+
+
+/* =========================================================
+   ADD / EDIT PROJECT
+========================================================= */
+
+function openProjectModal(id=''){
+
+  document.getElementById(
+    'projectForm'
+  ).reset();
+
+
+  document.getElementById(
+    'projectId'
+  ).value = '';
+
+
+  document.getElementById(
+    'projectModalTitle'
+  ).textContent =
+    'Add Project';
+
+
+  populateSelects();
+
+
+  if(id){
+
+    const p =
+      getProject(id);
+
+    if(!p)
+      return;
+
+
+    document.getElementById(
+      'projectModalTitle'
+    ).textContent =
+      'Edit Project';
+
+
+    document.getElementById(
+      'projectId'
+    ).value =
+      p.id || '';
+
+
+    document.getElementById(
+      'projectName'
+    ).value =
+      p.project_name || '';
+
+
+    document.getElementById(
+      'projectCustomer'
+    ).value =
+      p.customer_id || '';
+
+
+    document.getElementById(
+      'projectType'
+    ).value =
+      p.work_type || '';
+
+
+    document.getElementById(
+      'projectLocation'
+    ).value =
+      p.location || '';
+
+
+    document.getElementById(
+      'projectStatus'
+    ).value =
+      p.status || 'pending';
+
+
+    document.getElementById(
+      'projectAmount'
+    ).value =
+      p.agreed_amount ??
+      p.amount ??
+      p.total_budget ??
+      '';
+
+
+    document.getElementById(
+      'projectStart'
+    ).value =
+      p.start_date || '';
+
+
+    document.getElementById(
+      'projectEnd'
+    ).value =
+      p.end_date || '';
+
+
+    document.getElementById(
+      'projectNotes'
+    ).value =
+      p.notes || '';
+
+  }
+
+
+  openModal(
+    'projectModal'
+  );
+
+}
+
+
+function editProject(id){
+
+  openProjectModal(id);
+
+}
+
+
+document.getElementById(
+  'projectForm'
+).addEventListener(
+  'submit',
+  async e=>{
+
+    e.preventDefault();
+
+
+    const id =
+      document.getElementById(
+        'projectId'
+      ).value;
+
+
+    const payload = {
+
+      project_name:
+        document.getElementById(
+          'projectName'
+        ).value.trim(),
+
+      customer_id:
+        document.getElementById(
+          'projectCustomer'
+        ).value || null,
+
+      work_type:
+        document.getElementById(
+          'projectType'
+        ).value.trim(),
+
+      location:
+        document.getElementById(
+          'projectLocation'
+        ).value.trim(),
+
+      status:
+        document.getElementById(
+          'projectStatus'
+        ).value,
+
+      agreed_amount:
+        num(
+          document.getElementById(
+            'projectAmount'
+          ).value
+        ),
+
+      start_date:
+        document.getElementById(
+          'projectStart'
+        ).value || null,
+
+      end_date:
+        document.getElementById(
+          'projectEnd'
+        ).value || null,
+
+      notes:
+        document.getElementById(
+          'projectNotes'
+        ).value.trim()
+
+    };
+
+
+    let result;
+
+
+    if(id){
+
+      result =
+        await sb
+          .from('projects')
+          .update(payload)
+          .eq('id',id);
+
+    }else{
+
+      result =
+        await sb
+          .from('projects')
+          .insert(payload);
+
+    }
+
+
+    if(result.error){
+
+      console.error(result.error);
+
+      toast(
+        '❌ Project save नहीं हुआ: ' +
+        result.error.message
+      );
+
+      return;
+
+    }
+
+
+    closeModal(
+      'projectModal'
+    );
+
+
+    toast(
+      id
+        ? '✅ Project updated'
+        : '✅ Project added'
+    );
+
+
+    await loadAll();
+
+  }
+);
+
+
+/* =========================================================
+   DELETE PROJECT
+========================================================= */
+
+async function deleteProject(id){
+
+  const p =
+    getProject(id);
+
+
+  if(!p)
+    return;
+
+
+  const yes =
+    confirm(
+      `क्या आप "${p.project_name || 'Project'}" को delete करना चाहते हैं?\n\nइससे इस project का record permanently delete हो सकता है।`
+    );
+
+
+  if(!yes)
+    return;
+
+
+  /*
+    पहले project updates हटाएँ।
+    अगर RLS / foreign key अनुमति देती है।
+  */
+
+  const updateDelete =
+    await sb
+      .from('project_updates')
+      .delete()
+      .eq('project_id',id);
+
+
+  if(updateDelete.error){
+
+    console.warn(
+      'Project updates delete:',
+      updateDelete.error
+    );
+
+  }
+
+
+  const result =
+    await sb
+      .from('projects')
+      .delete()
+      .eq('id',id);
+
+
+  if(result.error){
+
+    console.error(
+      result.error
+    );
+
+    toast(
+      '❌ Project delete नहीं हुआ: ' +
+      result.error.message
+    );
+
+    return;
+
+  }
+
+
+  toast(
+    '🗑️ Project deleted'
+  );
+
+
+  await loadAll();
+
+}
+
+
+/* =========================================================
+   CUSTOMERS
+========================================================= */
+
+function renderCustomers(){
+
+  const tbody =
+    document.getElementById(
+      'customersTable'
+    );
+
+
+  if(!customers.length){
+
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="5">
+          <div class="empty">
+            कोई Customer नहीं मिला।
+          </div>
+        </td>
+      </tr>
+    `;
+
+    return;
+
+  }
+
+
+  tbody.innerHTML =
+    customers.map(c=>{
+
+      const name =
+        c.name ||
+        c.customer_name ||
+        '—';
+
+
+      return `
+
+        <tr>
+
+          <td>
+            <strong>
+              ${esc(name)}
+            </strong>
+          </td>
+
+          <td>
+            ${esc(
+              c.phone ||
+              c.mobile ||
+              '—'
+            )}
+          </td>
+
+          <td>
+            ${esc(
+              c.village ||
+              '—'
+            )}
+          </td>
+
+          <td>
+            ${esc(
+              c.address ||
+              '—'
+            )}
+          </td>
+
+          <td>
+
+            <div class="actions">
+
+              <button
+                class="btn btn-blue btn-sm"
+                onclick="editCustomer('${esc(c.id)}')">
+
+                ✏️ Edit
+
+              </button>
+
+              <button
+                class="btn btn-red btn-sm"
+                onclick="deleteCustomer('${esc(c.id)}')">
+
+                🗑️ Delete
+
+              </button>
+
+            </div>
+
+          </td>
+
+        </tr>
+
+      `;
+
+    }).join('');
+
+}
+
+
+function openCustomerModal(id=''){
+
+  document.getElementById(
+    'customerForm'
+  ).reset();
+
+
+  document.getElementById(
+    'customerId'
+  ).value = '';
+
+
+  document.getElementById(
+    'customerModalTitle'
+  ).textContent =
+    'Add Customer';
+
+
+  if(id){
+
+    const c =
+      getCustomer(id);
+
+    if(!c)
+      return;
+
+
+    document.getElementById(
+      'customerModalTitle'
+    ).textContent =
+      'Edit Customer';
+
+
+    document.getElementById(
+      'customerId'
+    ).value =
+      c.id || '';
+
+
+    document.getElementById(
+      'customerName'
+    ).value =
+      c.name ||
+      c.customer_name ||
+      '';
+
+
+    document.getElementById(
+      'customerPhone'
+    ).value =
+      c.phone ||
+      c.mobile ||
+      '';
+
+
+    document.getElementById(
+      'customerVillage'
+    ).value =
+      c.village ||
+      '';
+
+
+    document.getElementById(
+      'customerAddress'
+    ).value =
+      c.address ||
+      '';
+
+
+    document.getElementById(
+      'customerNotes'
+    ).value =
+      c.notes ||
+      '';
+
+  }
+
+
+  openModal(
+    'customerModal'
+  );
+
+}
+
+
+function editCustomer(id){
+
+  openCustomerModal(id);
+
+}
+
+
+document.getElementById(
+  'customerForm'
+).addEventListener(
+  'submit',
+  async e=>{
+
+    e.preventDefault();
+
+
+    const id =
+      document.getElementById(
+        'customerId'
+      ).value;
+
+
+    const payload = {
+
+      name:
+        document.getElementById(
+          'customerName'
+        ).value.trim(),
+
+      phone:
+        document.getElementById(
+          'customerPhone'
+        ).value.trim(),
+
+      village:
+        document.getElementById(
+          'customerVillage'
+        ).value.trim(),
+
+      address:
+        document.getElementById(
+          'customerAddress'
+        ).value.trim(),
+
+      notes:
+        document.getElementById(
+          'customerNotes'
+        ).value.trim()
+
+    };
+
+
+    let result;
+
+
+    if(id){
+
+      result =
+        await sb
+          .from('customers')
+          .update(payload)
+          .eq('id',id);
+
+    }else{
+
+      result =
+        await sb
+          .from('customers')
+          .insert(payload);
+
+    }
+
+
+    if(result.error){
+
+      toast(
+        '❌ Customer save नहीं हुआ: ' +
+        result.error.message
+      );
+
+      return;
+
+    }
+
+
+    closeModal(
+      'customerModal'
+    );
+
+
+    toast(
+      id
+        ? '✅ Customer updated'
+        : '✅ Customer added'
+    );
+
+
+    await loadAll();
+
+  }
+);
+
+
+/* =========================================================
+   DELETE CUSTOMER
+========================================================= */
+
+async function deleteCustomer(id){
+
+  const c =
+    getCustomer(id);
+
+
+  if(!c)
+    return;
+
+
+  const name =
+    c.name ||
+    c.customer_name ||
+    'Customer';
+
+
+  const yes =
+    confirm(
+      `क्या आप "${name}" को permanently delete करना चाहते हैं?`
+    );
+
+
+  if(!yes)
+    return;
+
+
+  const result =
+    await sb
+      .from('customers')
+      .delete()
+      .eq('id',id);
+
+
+  if(result.error){
+
+    console.error(
+      result.error
+    );
+
+    toast(
+      '❌ Customer delete नहीं हुआ: ' +
+      result.error.message
+    );
+
+    return;
+
+  }
+
+
+  toast(
+    '🗑️ Customer deleted'
+  );
+
+
+  await loadAll();
+
+}
+
+
+/* =========================================================
+   WORKERS
+========================================================= */
+
+function renderWorkers(){
+
+  const box =
+    document.getElementById(
+      'workersList'
+    );
+
+
+  if(!workers.length){
+
+    box.innerHTML =
+      '<div class="empty">कोई Worker नहीं मिला।</div>';
+
+    return;
+
+  }
+
+
+  box.innerHTML =
+    workers.map(w=>{
+
+      const name =
+        w.name ||
+        w.worker_name ||
+        'Worker';
+
+
+      const role =
+        w.role ||
+        w.designation ||
+        '—';
+
+
+      const wage =
+        num(
+          w.daily_wage ??
+          w.wage ??
+          w.daily_salary
+        );
+
+
+      return `
+
+        <div class="workerCard">
+
+          <div class="workerHead">
+
+            <div class="avatar">
+              ${esc(
+                name.charAt(0)
+              ).toUpperCase()}
+            </div>
+
+            <div>
+
+              <h3>
+                ${esc(name)}
+              </h3>
+
+              <p>
+                ${esc(role)}
+              </p>
+
+            </div>
+
+          </div>
+
+
+          <div class="workerInfo">
+
+            <div class="workerRow">
+
+              <span>Mobile</span>
+
+              <strong>
+                ${esc(
+                  w.mobile ||
+                  w.phone ||
+                  '—'
+                )}
+              </strong>
+
+            </div>
+
+
+            <div class="workerRow">
+
+              <span>Daily Wage</span>
+
+              <strong>
+                ${money(wage)}
+              </strong>
+
+            </div>
+
+
+            <div class="workerRow">
+
+              <span>Attendance</span>
+
+              <strong>
+                ${esc(
+                  w.present_days ??
+                  w.attendance ??
+                  '—'
+                )}
+              </strong>
+
+            </div>
+
+
+            <div class="actions"
+                 style="margin-top:15px">
+
+              <button
+                class="btn btn-blue btn-sm"
+                onclick="editWorker('${esc(w.id)}')">
+
+                ✏️ Edit
+
+              </button>
+
+              <button
+                class="btn btn-red btn-sm"
+                onclick="deleteWorker('${esc(w.id)}')">
+
+                🗑️ Delete
+
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      `;
+
+    }).join('');
+
+}
+
+
+function openWorkerModal(id=''){
+
+  document.getElementById(
+    'workerForm'
+  ).reset();
+
+
+  document.getElementById(
+    'workerId'
+  ).value = '';
+
+
+  document.getElementById(
+    'workerModalTitle'
+  ).textContent =
+    'Add Worker';
+
+
+  if(id){
+
+    const w =
+      workers.find(
+        x =>
+          String(x.id) ===
+          String(id)
+      );
+
+
+    if(!w)
+      return;
+
+
+    document.getElementById(
+      'workerModalTitle'
+    ).textContent =
+      'Edit Worker';
+
+
+    document.getElementById(
+      'workerId'
+    ).value =
+      w.id;
+
+
+    document.getElementById(
+      'workerName'
+    ).value =
+      w.name ||
+      w.worker_name ||
+      '';
+
+
+    document.getElementById(
+      'workerRole'
+    ).value =
+      w.role ||
+      w.designation ||
+      '';
+
+
+    document.getElementById(
+      'workerMobile'
+    ).value =
+      w.mobile ||
+      w.phone ||
+      '';
+
+
+    document.getElementById(
+      'workerWage'
+    ).value =
+      w.daily_wage ??
+      w.wage ??
+      w.daily_salary ??
+      '';
+
+  }
+
+
+  openModal(
+    'workerModal'
+  );
+
+}
+
+
+function editWorker(id){
+
+  openWorkerModal(id);
+
+}
+
+
+document.getElementById(
+  'workerForm'
+).addEventListener(
+  'submit',
+  async e=>{
+
+    e.preventDefault();
+
+
+    const id =
+      document.getElementById(
+        'workerId'
+      ).value;
+
+
+    const payload = {
+
+      name:
+        document.getElementById(
+          'workerName'
+        ).value.trim(),
+
+      role:
+        document.getElementById(
+          'workerRole'
+        ).value.trim(),
+
+      mobile:
+        document.getElementById(
+          'workerMobile'
+        ).value.trim(),
+
+      daily_wage:
+        num(
+          document.getElementById(
+            'workerWage'
+          ).value
+        )
+
+    };
+
+
+    let result;
+
+
+    if(id){
+
+      result =
+        await sb
+          .from('workers')
+          .update(payload)
+          .eq('id',id);
+
+    }else{
+
+      result =
+        await sb
+          .from('workers')
+          .insert(payload);
+
+    }
+
+
+    if(result.error){
+
+      toast(
+        '❌ Worker save नहीं हुआ: ' +
+        result.error.message
+      );
+
+      return;
+
+    }
+
+
+    closeModal(
+      'workerModal'
+    );
+
+
+    toast(
+      id
+        ? '✅ Worker updated'
+        : '✅ Worker added'
+    );
+
+
+    await loadAll();
+
+  }
+);
+
+
+async function deleteWorker(id){
+
+  const w =
+    workers.find(
+      x =>
+        String(x.id) ===
+        String(id)
+    );
+
+
+  if(!w)
+    return;
+
+
+  if(!confirm(
+    `क्या "${w.name || w.worker_name || 'Worker'}" को delete करना है?`
+  ))
+    return;
+
+
+  const result =
+    await sb
+      .from('workers')
+      .delete()
+      .eq('id',id);
+
+
+  if(result.error){
+
+    toast(
+      '❌ Worker delete नहीं हुआ: ' +
+      result.error.message
+    );
+
+    return;
+
+  }
+
+
+  toast(
+    '🗑️ Worker deleted'
+  );
+
+
+  await loadAll();
+
+}
+
+
+/* =========================================================
+   PAYMENTS
+========================================================= */
+
+function renderPayments(){
+
+  let received = 0;
+  let pending = 0;
+
+
+  payments.forEach(p=>{
+
+    const amount =
+      num(p.amount);
+
+
+    if(
+      String(
+        p.status || ''
+      ).toLowerCase()
+      === 'received'
+    ){
+
+      received += amount;
+
+    }else{
+
+      pending += amount;
+
+    }
+
+  });
+
+
+  document.getElementById(
+    'paymentReceived'
+  ).textContent =
+    money(received);
+
+
+  document.getElementById(
+    'paymentPending'
+  ).textContent =
+    money(pending);
+
+
+  const tbody =
+    document.getElementById(
+      'paymentsTable'
+    );
+
+
+  if(!payments.length){
+
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6">
+          <div class="empty">
+            कोई payment record नहीं मिला।
+          </div>
+        </td>
+      </tr>
+    `;
+
+    return;
+
+  }
+
+
+  tbody.innerHTML =
+    payments.map(p=>{
+
+      const project =
+        getProject(
+          p.project_id
+        );
+
+
+      const customer =
+        getCustomer(
+          p.customer_id
+        );
+
+
+      const status =
+        String(
+          p.status ||
+          'pending'
+        ).toLowerCase();
+
+
+      return `
+
+        <tr>
+
+          <td>
+            <strong>
+              ${esc(
+                p.project_name ||
+                project?.project_name ||
+                '—'
+              )}
+            </strong>
+          </td>
+
+          <td>
+            ${esc(
+              p.customer_name ||
+              customer?.name ||
+              customer?.customer_name ||
+              '—'
+            )}
+          </td>
+
+          <td>
+            <strong>
+              ${money(p.amount)}
+            </strong>
+          </td>
+
+          <td>
+            ${esc(
+              p.payment_date ||
+              p.date ||
+              '—'
+            )}
+          </td>
+
+          <td>
+
+            <span class="status ${esc(status)}">
+              ${status === 'received'
+                ? '✅ Received'
+                : '⏳ Pending'}
+            </span>
+
+          </td>
+
+          <td>
+
+            <div class="actions">
+
+              <button
+                class="btn btn-blue btn-sm"
+                onclick="editPayment('${esc(p.id)}')">
+
+                ✏️ Edit
+
+              </button>
+
+              <button
+                class="btn btn-red btn-sm"
+                onclick="deletePayment('${esc(p.id)}')">
+
+                🗑️ Delete
+
+              </button>
+
+            </div>
+
+          </td>
+
+        </tr>
+
+      `;
+
+    }).join('');
+
+}
+
+
+function openPaymentModal(id=''){
+
+  document.getElementById(
+    'paymentForm'
+  ).reset();
+
+
+  document.getElementById(
+    'paymentId'
+  ).value = '';
+
+
+  populateSelects();
+
+
+  document.getElementById(
+    'paymentDate'
+  ).value =
+    today();
+
+
+  if(id){
+
+    const p =
+      payments.find(
+        x =>
+          String(x.id) ===
+          String(id)
+      );
+
+
+    if(!p)
+      return;
+
+
+    document.getElementById(
+      'paymentId'
+    ).value =
+      p.id;
+
+
+    document.getElementById(
+      'paymentProject'
+    ).value =
+      p.project_id || '';
+
+
+    document.getElementById(
+      'paymentCustomer'
+    ).value =
+      p.customer_id || '';
+
+
+    document.getElementById(
+      'paymentAmount'
+    ).value =
+      p.amount || '';
+
+
+    document.getElementById(
+      'paymentDate'
+    ).value =
+      p.payment_date ||
+      p.date ||
+      today();
+
+
+    document.getElementById(
+      'paymentStatus'
+    ).value =
+      p.status ||
+      'received';
+
+
+    document.getElementById(
+      'paymentNotes'
+    ).value =
+      p.notes || '';
+
+  }
+
+
+  openModal(
+    'paymentModal'
+  );
+
+}
+
+
+function editPayment(id){
+
+  openPaymentModal(id);
+
+}
+
+
+document.getElementById(
+  'paymentForm'
+).addEventListener(
+  'submit',
+  async e=>{
+
+    e.preventDefault();
+
+
+    const id =
+      document.getElementById(
+        'paymentId'
+      ).value;
+
+
+    const payload = {
+
+      project_id:
+        document.getElementById(
+          'paymentProject'
+        ).value || null,
+
+      customer_id:
+        document.getElementById(
+          'paymentCustomer'
+        ).value || null,
+
+      amount:
+        num(
+          document.getElementById(
+            'paymentAmount'
+          ).value
+        ),
+
+      payment_date:
+        document.getElementById(
+          'paymentDate'
+        ).value || null,
+
+      status:
+        document.getElementById(
+          'paymentStatus'
+        ).value,
+
+      notes:
+        document.getElementById(
+          'paymentNotes'
+        ).value.trim()
+
+    };
+
+
+    let result;
+
+
+    if(id){
+
+      result =
+        await sb
+          .from('payments')
+          .update(payload)
+          .eq('id',id);
+
+    }else{
+
+      result =
+        await sb
+          .from('payments')
+          .insert(payload);
+
+    }
+
+
+    if(result.error){
+
+      toast(
+        '❌ Payment save नहीं हुआ: ' +
+        result.error.message
+      );
+
+      return;
+
+    }
+
+
+    closeModal(
+      'paymentModal'
+    );
+
+
+    toast(
+      id
+        ? '✅ Payment updated'
+        : '✅ Payment added'
+    );
+
+
+    await loadAll();
+
+  }
+);
+
+
+async function deletePayment(id){
+
+  if(!confirm(
+    'क्या आप इस payment record को delete करना चाहते हैं?'
+  ))
+    return;
+
+
+  const result =
+    await sb
+      .from('payments')
+      .delete()
+      .eq('id',id);
+
+
+  if(result.error){
+
+    toast(
+      '❌ Payment delete नहीं हुआ: ' +
+      result.error.message
+    );
+
+    return;
+
+  }
+
+
+  toast(
+    '🗑️ Payment deleted'
+  );
+
+
+  await loadAll();
+
+}
+
+
+/* =========================================================
+   DAILY UPDATE PAGE
+========================================================= */
+
+function renderDailyUpdates(){
+
+  const box =
+    document.getElementById(
+      'updatesProjects'
+    );
+
+
+  if(!projects.length){
+
+    box.innerHTML =
+      '<div class="empty">कोई Project उपलब्ध नहीं है।</div>';
+
+    return;
+
+  }
+
+
+  box.innerHTML =
+    projects.map(p=>{
+
+      const progress =
+        projectProgress(p.id);
+
+
+      const customer =
+        getCustomer(
+          p.customer_id
+        );
+
+
+      const customerName =
+        p.customer_name ||
+        customer?.name ||
+        customer?.customer_name ||
+        'Customer';
+
+
+      const status =
+        progress >= 100
+          ? 'पूरा'
+          : 'जारी';
+
+
+      return `
+
+        <div class="updateCard">
+
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            gap:10px;
+          ">
+
+            <div>
+
+              <h3>
+                ${esc(
+                  p.project_name ||
+                  'Project'
+                )}
+              </h3>
+
+              <div class="updateMeta">
+
+                ${esc(customerName)}
+                •
+                ${esc(p.location || '—')}
+
+              </div>
+
+            </div>
+
+            <span class="status ${
+              progress >= 100
+                ? 'completed'
+                : 'ongoing'
+            }">
+
+              ${
+                progress >= 100
+                  ? '✅ पूरा'
+                  : '⏳ जारी'
+              }
+
+            </span>
+
+          </div>
+
+
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            margin-bottom:7px;
+          ">
+
+            <strong>
+              Current Progress
+            </strong>
+
+            <strong class="orange">
+              ${progress}%
+            </strong>
+
+          </div>
+
+
+          <div class="progressBar">
+
+            <div
+              class="progressFill"
+              style="width:${progress}%">
+            </div>
+
+          </div>
+
+
+          <button
+            class="btn btn-primary"
+            style="width:100%;margin-top:18px"
+            onclick="openProgressModal('${esc(p.id)}')">
+
+            📝 आज की Progress Update करें
+
+          </button>
+
+        </div>
+
+      `;
+
+    }).join('');
+
+}
+
+
+/* =========================================================
+   PROGRESS MODAL
+========================================================= */
+
+function openProgressModal(projectId,updateId=''){
+
+  const p =
+    getProject(projectId);
+
+
+  if(!p)
+    return;
+
+
+  document.getElementById(
+    'progressForm'
+  ).reset();
+
+
+  document.getElementById(
+    'updateProjectId'
+  ).value =
+    p.id;
+
+
+  document.getElementById(
+    'updateProjectName'
+  ).value =
+    p.project_name || '';
+
+
+  document.getElementById(
+    'updateDate'
+  ).value =
+    today();
+
+
+  document.getElementById(
+    'updateProgress'
+  ).value =
+    projectProgress(p.id);
+
+
+  document.getElementById(
+    'updateId'
+  ).value =
+    '';
+
+
+  if(updateId){
+
+    const u =
+      projectUpdates.find(
+        x =>
+          String(x.id) ===
+          String(updateId)
+      );
+
+
+    if(u){
+
+      document.getElementById(
+        'updateId'
+      ).value =
+        u.id;
+
+
+      document.getElementById(
+        'updateDate'
+      ).value =
+        u.update_date ||
+        today();
+
+
+      document.getElementById(
+        'updateTitle'
+      ).value =
+        u.title || '';
+
+
+      document.getElementById(
+        'updateDetails'
+      ).value =
+        u.details || '';
+
+
+      document.getElementById(
+        'updateProgress'
+      ).value =
+        clampProgress(
+          u.progress_percent
+        );
+
+
+      document.getElementById(
+        'updatePhoto'
+      ).value =
+        u.photo_url || '';
+
+    }
+
+  }
+
+
+  openModal(
+    'progressModal'
+  );
+
+}
+
+
+document.getElementById(
+  'progressForm'
+).addEventListener(
+  'submit',
+  async e=>{
+
+    e.preventDefault();
+
+
+    const id =
+      document.getElementById(
+        'updateId'
+      ).value;
+
+
+    const projectId =
+      document.getElementById(
+        'updateProjectId'
+      ).value;
+
+
+    const progress =
+      clampProgress(
+        document.getElementById(
+          'updateProgress'
+        ).value
+      );
+
+
+    const payload = {
+
+      project_id:
+        projectId,
+
+      update_date:
+        document.getElementById(
+          'updateDate'
+        ).value,
+
+      title:
+        document.getElementById(
+          'updateTitle'
+        ).value.trim(),
+
+      details:
+        document.getElementById(
+          'updateDetails'
+        ).value.trim(),
+
+      progress_percent:
+        progress,
+
+      photo_url:
+        document.getElementById(
+          'updatePhoto'
+        ).value.trim() ||
+        null
+
+    };
+
+
+    let result;
+
+
+    if(id){
+
+      result =
+        await sb
+          .from('project_updates')
+          .update(payload)
+          .eq('id',id);
+
+    }else{
+
+      result =
+        await sb
+          .from('project_updates')
+          .insert(payload);
+
+    }
+
+
+    if(result.error){
+
+      console.error(
+        result.error
+      );
+
+      toast(
+        '❌ Progress save नहीं हुई: ' +
+        result.error.message
+      );
+
+      return;
+
+    }
+
+
+    closeModal(
+      'progressModal'
+    );
+
+
+    toast(
+      id
+        ? '✅ Progress updated'
+        : '✅ आज की Progress save हो गई'
+    );
+
+
+    await loadAll();
+
+  }
+);
+
+
+/* =========================================================
+   EDIT / DELETE PROJECT UPDATE
+========================================================= */
+
+function editProgressUpdate(id){
+
+  const u =
+    projectUpdates.find(
+      x =>
+        String(x.id) ===
+        String(id)
+    );
+
+
+  if(!u)
+    return;
+
+
+  openProgressModal(
+    u.project_id,
+    u.id
+  );
+
+}
+
+
+async function deleteProgressUpdate(id){
+
+  if(!confirm(
+    'क्या इस Progress Update को delete करना है?'
+  ))
+    return;
+
+
+  const result =
+    await sb
+      .from('project_updates')
+      .delete()
+      .eq('id',id);
+
+
+  if(result.error){
+
+    toast(
+      '❌ Progress delete नहीं हुई: ' +
+      result.error.message
+    );
+
+    return;
+
+  }
+
+
+  toast(
+    '🗑️ Progress update deleted'
+  );
+
+
+  await loadAll();
+
+}
+
+
+/* =========================================================
+   ENQUIRIES
+========================================================= */
+
+function renderEnquiries(){
+
+  const tbody =
+    document.getElementById(
+      'enquiriesTable'
+    );
+
+
+  if(!enquiries.length){
+
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="5">
+          <div class="empty">
+            अभी कोई enquiry नहीं मिली।
+          </div>
+        </td>
+      </tr>
+    `;
+
+    return;
+
+  }
+
+
+  tbody.innerHTML =
+    enquiries.map(e=>{
+
+      const name =
+        e.name ||
+        e.customer_name ||
+        e.full_name ||
+        '—';
+
+
+      const phone =
+        e.phone ||
+        e.mobile ||
+        '—';
+
+
+      const message =
+        e.message ||
+        e.enquiry ||
+        e.details ||
+        '—';
+
+
+      const status =
+        e.status ||
+        'new';
+
+
+      return `
+
+        <tr>
+
+          <td>
+            <strong>
+              ${esc(name)}
+            </strong>
+          </td>
+
+          <td>
+            ${esc(phone)}
+          </td>
+
+          <td>
+            ${esc(message)}
+          </td>
+
+          <td>
+            <span class="status pending">
+              ${esc(status)}
+            </span>
+          </td>
+
+          <td>
+
+            <div class="actions">
+
+              <button
+                class="btn btn-blue btn-sm"
+                onclick="editEnquiry('${esc(e.id)}')">
+
+                ✏️ Edit
+
+              </button>
+
+              <button
+                class="btn btn-red btn-sm"
+                onclick="deleteEnquiry('${esc(e.id)}')">
+
+                🗑️ Delete
+
+              </button>
+
+            </div>
+
+          </td>
+
+        </tr>
+
+      `;
+
+    }).join('');
+
+}
+
+
+/*
+  Enquiry edit के लिए simple prompt रखा गया है
+  ताकि अलग modal की आवश्यकता न हो।
+*/
+
+async function editEnquiry(id){
+
+  const e =
+    enquiries.find(
+      x =>
+        String(x.id) ===
+        String(id)
+    );
+
+
+  if(!e)
+    return;
+
+
+  const status =
+    prompt(
+      'Enquiry Status लिखें:',
+      e.status || 'new'
+    );
+
+
+  if(status === null)
+    return;
+
+
+  const result =
+    await sb
+      .from('customer_enquiries')
+      .update({
+        status:status.trim()
+      })
+      .eq('id',id);
+
+
+  if(result.error){
+
+    toast(
+      '❌ Enquiry update नहीं हुई: ' +
+      result.error.message
+    );
+
+    return;
+
+  }
+
+
+  toast(
+    '✅ Enquiry updated'
+  );
+
+
+  await loadAll();
+
+}
+
+
+async function deleteEnquiry(id){
+
+  if(!confirm(
+    'क्या इस enquiry को delete करना है?'
+  ))
+    return;
+
+
+  const result =
+    await sb
+      .from('customer_enquiries')
+      .delete()
+      .eq('id',id);
+
+
+  if(result.error){
+
+    toast(
+      '❌ Enquiry delete नहीं हुई: ' +
+      result.error.message
+    );
+
+    return;
+
+  }
+
+
+  toast(
+    '🗑️ Enquiry deleted'
+  );
+
+
+  await loadAll();
+
+}
+
+
+/* =========================================================
+   CLOSE MODAL WHEN CLICK OUTSIDE
+========================================================= */
+
+document
+  .querySelectorAll('.modal')
+  .forEach(modal=>{
+
+    modal.addEventListener(
+      'click',
+      e=>{
+
+        if(e.target === modal){
+
+          modal.classList.remove(
+            'show'
+          );
+
+        }
+
+      }
+    );
+
+  });
+
+
+/* =========================================================
+   INITIAL LOAD
+========================================================= */
+
+(async function(){
+
+  await loadUser();
+
+  await loadAll();
+
+})();
 
 </script>
 
 </body>
 </html>
+```
