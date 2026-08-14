@@ -3,35 +3,2036 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+
 <title>BALAJI Construction • Admin Dashboard</title>
-<script>
-/* Daily update button injected without touching existing functions */
-document.addEventListener('DOMContentLoaded',()=>{
-  const addButton=()=>{
-    const progressSection=document.querySelector('#progress .row');
-    if(!progressSection||document.getElementById('dailyUpdateBtn')) return;
-    const btn=document.createElement('button');
-    btn.id='dailyUpdateBtn';
-    btn.className='btn primary';
-    btn.textContent='➕ Daily Update';
-    btn.onclick=()=>location.href='admin-progress-updates.html';
-    progressSection.appendChild(btn);
-  };
-  addButton();
-  const observer=new MutationObserver(addButton);
-  observer.observe(document.body,{childList:true,subtree:true});
-});
-</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root{
+--n:#0b1f33;
+--o:#f58220;
+--g:#16a34a;
+--bg:#f4f7fb;
+--c:#fff;
+--t:#142235;
+--m:#6b7788;
+--l:#e4e9f0;
+--r:#dc2626;
+--b:#2563eb;
+}
+
+*{box-sizing:border-box}
+
+body{
+margin:0;
+font-family:Arial,"Noto Sans Devanagari",sans-serif;
+background:var(--bg);
+color:var(--t);
+}
+
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+
+.shell{
+display:grid;
+grid-template-columns:250px 1fr;
+min-height:100vh;
+}
+
+.side{
+background:var(--n);
+color:#fff;
+padding:24px 15px;
+position:sticky;
+top:0;
+height:100vh;
+overflow:auto;
+}
+
+.logo{
+width:56px;
+height:56px;
+border-radius:18px;
+background:linear-gradient(135deg,#ffb34f,#f47718);
+display:grid;
+place-items:center;
+color:#fff;
+font-weight:900;
+font-size:22px;
+}
+
+.brand{
+display:flex;
+gap:14px;
+align-items:center;
+margin-bottom:24px;
+}
+
+.brand h1{
+margin:0;
+font-size:21px;
+}
+
+.brand p{
+margin:3px 0;
+color:#9fb0c0;
+font-size:12px;
+}
+
+.side nav button{
+width:100%;
+text-align:left;
+background:transparent;
+color:#dbe7f1;
+border:0;
+padding:11px 13px;
+border-radius:11px;
+margin:2px 0;
+font-weight:750;
+}
+
+.side nav button.active,
+.side nav button:hover{
+background:#ffffff12;
+color:#fff;
+}
+
+.main{
+padding:28px;
+min-width:0;
+}
+
+.top{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:15px;
+margin-bottom:22px;
+}
+
+.top h1{
+margin:0;
+font-size:28px;
+}
+
+.muted{
+color:var(--m);
+font-size:13px;
+}
+
+.userbox,
+.row,
+.actions{
+display:flex;
+gap:9px;
+align-items:center;
+flex-wrap:wrap;
+}
+
+.grid{
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:15px;
+}
+
+.stat,
+.panel{
+background:var(--c);
+border:1px solid var(--l);
+border-radius:19px;
+padding:19px;
+}
+
+.stat small{
+color:var(--m);
+}
+
+.stat .num{
+font-size:27px;
+font-weight:900;
+margin-top:4px;
+}
+
+.panel{
+margin-top:17px;
+}
+
+.panel h2{
+margin:0 0 14px;
+font-size:19px;
+}
+
+.forms{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:13px;
+}
+
+.full{
+grid-column:1/-1;
+}
+
+label{
+display:block;
+font-weight:800;
+font-size:13px;
+margin:13px 0 6px;
+}
+
+input,
+select,
+textarea{
+width:100%;
+padding:12px 13px;
+border:1px solid var(--l);
+border-radius:11px;
+background:#fff;
+}
+
+textarea{
+min-height:90px;
+resize:vertical;
+}
+
+.btn{
+border:0;
+border-radius:12px;
+padding:12px 16px;
+font-weight:800;
+}
+
+.primary{
+background:var(--o);
+color:#fff;
+}
+
+.secondary{
+background:#eef2f7;
+color:var(--t);
+}
+
+.danger{
+background:#fee2e2;
+color:#991b1b;
+}
+
+.success{
+background:#dcfce7;
+color:#166534;
+}
+
+.warning{
+background:#fef3c7;
+color:#92400e;
+}
+
+.info{
+background:#e0f2fe;
+color:#075985;
+}
+
+.tablewrap{
+overflow:auto;
+}
+
+.table{
+width:100%;
+border-collapse:collapse;
+min-width:850px;
+}
+
+.table th,
+.table td{
+padding:11px 9px;
+border-bottom:1px solid var(--l);
+text-align:left;
+font-size:13px;
+vertical-align:top;
+}
+
+.table th{
+color:var(--m);
+font-size:12px;
+white-space:nowrap;
+}
+
+.pill{
+display:inline-block;
+padding:4px 8px;
+border-radius:99px;
+background:#e8f5ed;
+color:#15803d;
+font-weight:800;
+font-size:11px;
+}
+
+.pill.pending{
+background:#fff7ed;
+color:#c2410c;
+}
+
+.pill.rejected,
+.pill.absent{
+background:#fee2e2;
+color:#991b1b;
+}
+
+.pill.contacted{
+background:#fef3c7;
+color:#92400e;
+}
+
+.pill.approved,
+.pill.present{
+background:#dcfce7;
+color:#166534;
+}
+
+.section{
+display:none;
+}
+
+.section.active{
+display:block;
+}
+
+.report{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:15px;
+}
+
+.big{
+font-size:29px;
+font-weight:900;
+}
+
+.notice{
+padding:13px;
+border-radius:12px;
+background:#fff7ed;
+margin-top:12px;
+}
+
+.toast{
+position:fixed;
+right:20px;
+bottom:20px;
+background:#111827;
+color:#fff;
+padding:13px 17px;
+border-radius:12px;
+z-index:99999;
+max-width:420px;
+}
+
+.small{
+font-size:12px;
+}
+
+.action-buttons{
+display:flex;
+gap:6px;
+flex-wrap:wrap;
+}
+
+.action-buttons .btn{
+padding:7px 10px;
+font-size:12px;
+}
+
+.photo{
+width:55px;
+height:55px;
+border-radius:12px;
+object-fit:cover;
+border:1px solid var(--l);
+background:#f1f5f9;
+}
+
+.face-box{
+border:2px dashed #cbd5e1;
+border-radius:18px;
+padding:20px;
+text-align:center;
+background:#f8fafc;
+}
+
+.face-status{
+font-size:15px;
+font-weight:800;
+margin:12px 0;
+}
+
+.att-summary{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:12px;
+margin-bottom:15px;
+}
+
+.att-card{
+padding:17px;
+background:#fff;
+border:1px solid var(--l);
+border-radius:16px;
+}
+
+.att-card b{
+font-size:25px;
+display:block;
+margin-top:5px;
+}
+
+.modal{
+position:fixed;
+inset:0;
+background:#061525aa;
+display:none;
+align-items:center;
+justify-content:center;
+padding:20px;
+z-index:5000;
+}
+
+.modal.open{
+display:flex;
+}
+
+.modal-box{
+width:min(900px,100%);
+max-height:92vh;
+overflow:auto;
+background:#fff;
+border-radius:22px;
+padding:24px;
+}
+
+.project-row{
+cursor:pointer;
+transition:.15s;
+}
+
+.project-row:hover{
+background:#f8fafc;
+}
+
+.progress-wrap{
+margin-top:15px;
+}
+
+.progress-track{
+height:15px;
+background:#e5e7eb;
+border-radius:99px;
+overflow:hidden;
+}
+
+.progress-bar{
+height:100%;
+background:#16a34a;
+width:0%;
+transition:.4s;
+}
+
+.timeline{
+position:relative;
+margin-top:20px;
+}
+
+.timeline-item{
+position:relative;
+padding:18px;
+margin-bottom:14px;
+border:1px solid var(--l);
+border-radius:18px;
+background:#fff;
+}
+
+.timeline-item:hover{
+box-shadow:0 5px 20px #0000000a;
+}
+
+.progress-photo{
+width:180px;
+height:130px;
+object-fit:cover;
+border-radius:14px;
+cursor:zoom-in;
+border:1px solid var(--l);
+}
+
+.photo-grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:12px;
+margin-top:15px;
+}
+
+.photo-grid img{
+width:100%;
+height:140px;
+object-fit:cover;
+border-radius:13px;
+cursor:zoom-in;
+border:1px solid var(--l);
+}
+
+.project-card{
+background:#fff;
+border:1px solid var(--l);
+border-radius:18px;
+padding:17px;
+cursor:pointer;
+transition:.2s;
+}
+
+.project-card:hover{
+transform:translateY(-2px);
+box-shadow:0 8px 25px #00000012;
+}
+
+.project-grid{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:14px;
+}
+
+.customer-profile{
+display:flex;
+gap:12px;
+align-items:center;
+}
+
+.customer-profile img{
+width:58px;
+height:58px;
+border-radius:14px;
+object-fit:cover;
+cursor:zoom-in;
+border:1px solid var(--l);
+}
+
+.empty{
+padding:25px;
+text-align:center;
+color:var(--m);
+}
+
+.loading{
+padding:20px;
+text-align:center;
+color:var(--m);
+}
+
+@media(max-width:1100px){
+
+.grid{
+grid-template-columns:repeat(3,1fr);
+}
+
+.att-summary{
+grid-template-columns:repeat(2,1fr);
+}
+
+.project-grid{
+grid-template-columns:repeat(2,1fr);
+}
+
+.photo-grid{
+grid-template-columns:repeat(3,1fr);
+}
+
+}
+
+@media(max-width:950px){
+
+.shell{
+grid-template-columns:1fr;
+}
+
+.side{
+position:static;
+height:auto;
+}
+
+.side nav{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+}
+
+.grid{
+grid-template-columns:repeat(2,1fr);
+}
+
+}
+
+@media(max-width:600px){
+
+.main{
+padding:15px;
+}
+
+.side nav{
+grid-template-columns:repeat(2,1fr);
+}
+
+.grid,
+.forms,
+.report,
+.att-summary,
+.project-grid{
+grid-template-columns:1fr;
+}
+
+.photo-grid{
+grid-template-columns:repeat(2,1fr);
+}
+
+.full{
+grid-column:auto;
+}
+
+.top{
+align-items:flex-start;
+flex-direction:column;
+}
+
+}
+
+@media print{
+
+.side,
+.top button,
+.action-buttons,
+.forms{
+display:none!important;
+}
+
+.main{
+padding:0;
+}
+
+}
+</style>
 </head>
+
 <body>
-<script>
-/* Keep existing dashboard exactly as-is by loading it in place */
-fetch('https://raw.githubusercontent.com/Balajicontruction/balaji-construction-services/main/dashboard.html')
-  .then(r=>r.text())
-  .then(html=>{
-    const body=html.match(/<body[^>]*>([\s\S]*)<\/body>/i);
-    document.body.innerHTML=body?body[1]:html;
-  });
-</script>
-</body>
-</html>
+
+<!-- ======================================================
+LOADING
+====================================================== -->
+
+<div id="loadingScreen"
+style="
+min-height:100vh;
+display:grid;
+place-items:center;
+background:#0b1f33;
+color:#fff;
+text-align:center;
+padding:25px">
+
+<div>
+
+<div style="
+width:70px;
+height:70px;
+border-radius:20px;
+background:#f58220;
+display:grid;
+place-items:center;
+font-weight:900;
+font-size:25px;
+margin:auto auto 18px">
+BC
+</div>
+
+<h2>BALAJI Construction</h2>
+
+<div style="opacity:.8">
+Admin session verify हो रही है...
+</div>
+
+</div>
+
+</div>
+
+
+<!-- ======================================================
+APP
+====================================================== -->
+
+<div id="app" class="shell hidden">
+
+<aside class="side">
+
+<div class="brand">
+
+<div class="logo">BC</div>
+
+<div>
+
+<h1 style="color:#fff;font-size:17px">
+BALAJI
+</h1>
+
+<p>
+Private Management
+</p>
+
+</div>
+
+</div>
+
+
+<nav>
+
+<button data-s="dashboard" class="active">
+📊 Dashboard
+</button>
+
+<button data-s="enquiries">
+📩 Customer Enquiries
+</button>
+
+<button data-s="customers">
+👥 Customers
+</button>
+
+<button data-s="projects">
+🏗️ Projects
+</button>
+
+<button data-s="progress">
+📈 Project Progress
+</button>
+
+<button data-s="workers">
+👷 Workers
+</button>
+
+<button data-s="attendance">
+🕘 Attendance
+</button>
+
+<button data-s="work">
+📝 Work Entry
+</button>
+
+<button data-s="payments">
+💰 Payments
+</button>
+
+<button data-s="expenses">
+🧾 Expenses
+</button>
+
+<button data-s="reports">
+📊 Reports
+</button>
+
+</nav>
+
+
+<button
+class="btn secondary"
+style="width:100%;margin-top:18px"
+onclick="logout()">
+
+Logout
+
+</button>
+
+</aside>
+
+
+<main class="main">
+
+
+<!-- TOP -->
+
+<div class="top">
+
+<div>
+
+<h1 id="title">
+Dashboard
+</h1>
+
+<div class="muted">
+BALAJI Construction Services • Secure Management
+</div>
+
+</div>
+
+
+<div class="userbox">
+
+<span id="userRole" class="pill">
+Admin
+</span>
+
+<span id="userEmail" class="muted">
+</span>
+
+<button
+class="btn secondary"
+onclick="refreshAll()">
+
+↻ Refresh
+
+</button>
+
+</div>
+
+</div>
+
+
+<!-- ======================================================
+DASHBOARD
+====================================================== -->
+
+<section id="dashboard" class="section active">
+
+<div class="grid">
+
+<div class="stat">
+
+<small>
+Customers
+</small>
+
+<div
+class="num"
+id="mCustomers">
+0
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<small>
+Projects
+</small>
+
+<div
+class="num"
+id="mProjects">
+0
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<small>
+Workers
+</small>
+
+<div
+class="num"
+id="mWorkers">
+0
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<small>
+Present Today
+</small>
+
+<div
+class="num"
+id="mPresent">
+0
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<small>
+Pending Enquiries
+</small>
+
+<div
+class="num"
+id="mEnquiries">
+0
+</div>
+
+</div>
+
+</div>
+
+
+<div class="panel">
+
+<div class="row"
+style="justify-content:space-between">
+
+<h2>
+🏗️ Recent Projects
+</h2>
+
+<button
+class="btn secondary"
+onclick="showSection('projects')">
+
+All Projects →
+
+</button>
+
+</div>
+
+<div
+id="recentProjects"
+class="project-grid">
+
+</div>
+
+</div>
+
+
+<div class="panel">
+
+<h2>
+📩 Latest Customer Enquiries
+</h2>
+
+<div
+id="recentEnquiries"
+class="tablewrap">
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ======================================================
+ENQUIRIES
+====================================================== -->
+
+<section id="enquiries" class="section">
+
+<div class="panel">
+
+<div
+class="row"
+style="justify-content:space-between">
+
+<div>
+
+<h2>
+📩 Customer Enquiries / Contract Requests
+</h2>
+
+<div class="muted">
+Customer द्वारा भेजी गई enquiry यहाँ दिखाई देगी।
+</div>
+
+</div>
+
+<button
+class="btn primary"
+onclick="loadEnquiries()">
+
+↻ Refresh
+
+</button>
+
+</div>
+
+
+<div
+id="enquiriesList"
+class="tablewrap"
+style="margin-top:15px">
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ======================================================
+CUSTOMERS
+====================================================== -->
+
+<section id="customers" class="section">
+
+
+<div class="panel">
+
+<h2>
+Customer जोड़ें
+</h2>
+
+
+<form
+class="forms"
+onsubmit="addCustomer(event)">
+
+<div>
+
+<label>
+Name *
+</label>
+
+<input
+id="cName"
+required>
+
+</div>
+
+
+<div>
+
+<label>
+Phone
+</label>
+
+<input
+id="cPhone">
+
+</div>
+
+
+<div>
+
+<label>
+Email
+</label>
+
+<input
+id="cEmail"
+type="email">
+
+</div>
+
+
+<div>
+
+<label>
+Address
+</label>
+
+<input
+id="cAddress">
+
+</div>
+
+
+<div class="full">
+
+<label>
+Photo URL
+</label>
+
+<input
+id="cPhoto"
+placeholder="Customer photo का URL">
+
+<div class="muted" style="margin-top:5px">
+यदि photo_url पहले से customer record में है तो उसे यहाँ बदलने की आवश्यकता नहीं।
+</div>
+
+</div>
+
+
+<div class="full">
+
+<label>
+Notes
+</label>
+
+<textarea
+id="cNotes">
+</textarea>
+
+</div>
+
+
+<div>
+
+<button
+class="btn primary">
+
+Save Customer
+
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+
+<div class="panel">
+
+<div
+class="row"
+style="justify-content:space-between">
+
+<h2>
+👥 Customers List
+</h2>
+
+<button
+class="btn secondary"
+onclick="refreshAll()">
+
+↻ Refresh
+
+</button>
+
+</div>
+
+
+<div
+id="customersList"
+class="tablewrap">
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ======================================================
+PROJECTS
+====================================================== -->
+
+<section id="projects" class="section">
+
+
+<div class="panel">
+
+<h2>
+🏗️ Project जोड़ें
+</h2>
+
+
+<form
+class="forms"
+onsubmit="addProject(event)">
+
+
+<div>
+
+<label>
+Project Name *
+</label>
+
+<input
+id="pName"
+required>
+
+</div>
+
+
+<div>
+
+<label>
+Customer
+</label>
+
+<select id="pCustomer">
+
+<option value="">
+Select
+</option>
+
+</select>
+
+</div>
+
+
+<div>
+
+<label>
+Work Type
+</label>
+
+<input id="pType">
+
+</div>
+
+
+<div>
+
+<label>
+Location
+</label>
+
+<input id="pLocation">
+
+</div>
+
+
+<div>
+
+<label>
+Start Date
+</label>
+
+<input
+id="pStart"
+type="date">
+
+</div>
+
+
+<div>
+
+<label>
+Expected End
+</label>
+
+<input
+id="pEnd"
+type="date">
+
+</div>
+
+
+<div>
+
+<label>
+Status
+</label>
+
+<select id="pStatus">
+
+<option value="lead">
+Lead
+</option>
+
+<option value="active">
+Active
+</option>
+
+<option value="completed">
+Completed
+</option>
+
+<option value="cancelled">
+Cancelled
+</option>
+
+</select>
+
+</div>
+
+
+<div>
+
+<label>
+Agreed Amount
+</label>
+
+<input
+id="pAmount"
+type="number"
+min="0">
+
+</div>
+
+
+<div class="full">
+
+<label>
+Notes
+</label>
+
+<textarea id="pNotes">
+</textarea>
+
+</div>
+
+
+<div>
+
+<button
+class="btn primary">
+
+Save Project
+
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+
+<div class="panel">
+
+<h2>
+Projects List
+</h2>
+
+<div class="muted" style="margin-bottom:12px">
+💡 किसी भी Project पर click करके उसकी पूरी progress, updates और photos देखें।
+</div>
+
+<div
+id="projectsList"
+class="project-grid">
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ======================================================
+PROJECT PROGRESS
+====================================================== -->
+
+<section id="progress" class="section">
+
+<div class="panel">
+
+<div class="row"
+style="justify-content:space-between">
+
+<div>
+
+<h2>
+📈 Project Progress
+</h2>
+
+<div class="muted">
+किसी project को चुनें।
+</div>
+
+</div>
+
+</div>
+
+
+<div
+id="progressProjectCards"
+class="project-grid"
+style="margin-top:18px">
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ======================================================
+WORKERS
+====================================================== -->
+
+<section id="workers" class="section">
+
+
+<div class="panel">
+
+<h2>
+👷 Worker जोड़ें / Account बनाएं
+</h2>
+
+
+<div class="notice">
+
+Worker का password workers table में plain text में save नहीं होगा।
+
+Worker save करते समय Supabase Auth account भी बनाया जाएगा।
+
+<br><br>
+
+<strong>
+Login ID + Email + Password तीनों जरूरी हैं।
+</strong>
+
+</div>
+
+
+<form
+class="forms"
+onsubmit="addWorker(event)">
+
+
+<div>
+
+<label>
+Name *
+</label>
+
+<input
+id="wName"
+required>
+
+</div>
+
+
+<div>
+
+<label>
+Phone
+</label>
+
+<input id="wPhone">
+
+</div>
+
+
+<div>
+
+<label>
+काम / Role
+</label>
+
+<input id="wRole">
+
+</div>
+
+
+<div>
+
+<label>
+Daily Rate
+</label>
+
+<input
+id="wRate"
+type="number"
+min="0">
+
+</div>
+
+
+<div>
+
+<label>
+Village
+</label>
+
+<input id="wVillage">
+
+</div>
+
+
+<div>
+
+<label>
+Worker Login ID *
+</label>
+
+<input
+id="wLoginId"
+required
+placeholder="worker001">
+
+</div>
+
+
+<div>
+
+<label>
+Worker Login Email *
+</label>
+
+<input
+id="wLoginEmail"
+type="email"
+required
+placeholder="worker001@gmail.com">
+
+</div>
+
+
+<div>
+
+<label>
+Worker Password *
+</label>
+
+<input
+id="wPassword"
+type="password"
+minlength="6"
+required
+placeholder="कम से कम 6 characters">
+
+</div>
+
+
+<div class="full">
+
+<label>
+Notes
+</label>
+
+<textarea id="wNotes">
+</textarea>
+
+</div>
+
+
+<div>
+
+<button
+class="btn primary">
+
+➕ Save Worker + Login Account
+
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+
+<div class="panel">
+
+<div
+class="row"
+style="justify-content:space-between">
+
+<div>
+
+<h2>
+👷 Workers List
+</h2>
+
+<div class="muted">
+Worker Login, Face Registration और Attendance status।
+</div>
+
+</div>
+
+<button
+class="btn secondary"
+onclick="refreshAll()">
+
+↻ Refresh
+
+</button>
+
+</div>
+
+
+<div
+id="workersList"
+class="tablewrap">
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ======================================================
+ATTENDANCE
+====================================================== -->
+
+<section id="attendance" class="section">
+
+
+<div class="panel">
+
+<div
+class="row"
+style="justify-content:space-between">
+
+<div>
+
+<h2>
+🕘 Worker Attendance Management
+</h2>
+
+<div class="muted">
+Check-in / Check-out और daily attendance।
+</div>
+
+</div>
+
+<button
+class="btn primary"
+onclick="loadAttendance()">
+
+↻ Refresh Attendance
+
+</button>
+
+</div>
+
+
+<div class="forms">
+
+
+<div>
+
+<label>
+Date
+</label>
+
+<input
+id="attDate"
+type="date">
+
+</div>
+
+
+<div>
+
+<label>
+Worker Filter
+</label>
+
+<select id="attWorkerFilter">
+
+<option value="">
+सभी Worker
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div class="panel">
+
+<div class="att-summary">
+
+
+<div class="att-card">
+
+<small>
+Total
+</small>
+
+<b id="attTotal">
+0
+</b>
+
+</div>
+
+
+<div class="att-card">
+
+<small>
+Present
+</small>
+
+<b id="attPresent">
+0
+</b>
+
+</div>
+
+
+<div class="att-card">
+
+<small>
+Absent
+</small>
+
+<b id="attAbsent">
+0
+</b>
+
+</div>
+
+
+<div class="att-card">
+
+<small>
+Checked Out
+</small>
+
+<b id="attOut">
+0
+</b>
+
+</div>
+
+
+</div>
+
+
+<div
+id="attendanceList"
+class="tablewrap">
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ======================================================
+WORK
+====================================================== -->
+
+<section id="work" class="section">
+
+
+<div class="panel">
+
+<h2>
+📝 Daily Work Entry
+</h2>
+
+
+<form
+class="forms"
+onsubmit="addWork(event)">
+
+
+<div>
+
+<label>
+Project *
+</label>
+
+<select
+id="lProject"
+required>
+
+<option value="">
+Select Project
+</option>
+
+</select>
+
+</div>
+
+
+<div>
+
+<label>
+Worker
+</label>
+
+<select id="lWorker">
+
+<option value="">
+Select Worker
+</option>
+
+</select>
+
+</div>
+
+
+<div>
+
+<label>
+Date
+</label>
+
+<input
+id="lDate"
+type="date">
+
+</div>
+
+
+<div>
+
+<label>
+Days
+</label>
+
+<input
+id="lDays"
+type="number"
+step="0.5"
+value="1">
+
+</div>
+
+
+<div>
+
+<label>
+Work Description
+</label>
+
+<input id="lDesc">
+
+</div>
+
+
+<div>
+
+<label>
+Amount
+</label>
+
+<input
+id="lAmount"
+type="number"
+min="0">
+
+</div>
+
+
+<div class="full">
+
+<label>
+Notes
+</label>
+
+<textarea id="lNotes">
+</textarea>
+
+</div>
+
+
+<div>
+
+<button
+class="btn primary">
+
+Save Work Entry
+
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+
+<div class="panel">
+
+<h2>
+Recent Work
+</h2>
+
+<div
+id="workList"
+class="tablewrap">
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ======================================================
+PAYMENTS
+====================================================== -->
+
+<section id="payments" class="section">
+
+
+<div class="panel">
+
+<h2>
+💰 Payment / ग्राहक से प्राप्त राशि
+</h2>
+
+
+<form
+class="forms"
+onsubmit="addPayment(event)">
+
+
+<div>
+
+<label>
+Project *
+</label>
+
+<select
+id="payProject"
+required>
+
+<option value="">
+Select Project
+</option>
+
+</select>
+
+</div>
+
+
+<div>
+
+<label>
+Date
+</label>
+
+<input
+id="payDate"
+type="date">
+
+</div>
+
+
+<div>
+
+<label>
+Amount *
+</label>
+
+<input
+id="payAmount"
+type="number"
+min="0"
+required>
+
+</div>
+
+
+<div>
+
+<label>
+Method
+</label>
+
+<select id="payMethod">
+
+<option>
+Cash
+</option>
+
+<option>
+UPI
+</option>
+
+<option>
+Bank Transfer
+</option>
+
+<option>
+Cheque
+</option>
+
+</select>
+
+</div>
+
+
+<div>
+
+<label>
+Reference No.
+</label>
+
+<input id="payRef">
+
+</div>
+
+
+<div>
+
+<label>
+Notes
+</label>
+
+<input id="payNotes">
+
+</div>
+
+
+<div>
+
+<button
+class="btn primary">
+
+Save Payment
+
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+
+<div class="panel">
+
+<h2>
+Payment History
+</h2>
+
+<div
+id="paymentsList"
+class="tablewrap">
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ======================================================
+EXPENSES
+====================================================== -->
+
+<section id="expenses" class="section">
+
+
+<div class="panel">
+
+<h2>
+🧾 Expense जोड़ें
+</h2>
+
+
+<form
+class="forms"
+onsubmit="addExpense(event)">
+
+
+<div>
+
+<label>
+Project
+</label>
+
+<select id="eProject">
+
+<option value="">
+General
+</option>
+
+</select>
+
+</div>
+
+
+<div>
+
+<label>
+Date
+</label>
+
+<input
+id="eDate"
+type="date">
+
+</div>
+
+
+<div
