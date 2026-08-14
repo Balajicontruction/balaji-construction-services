@@ -208,11 +208,11 @@ function patchRender(){
 function installPayments(){
  if(!SB)return;
  makePaymentModal();ensureUpiField();
- window.__lastWorkers=Array.isArray(window.workers)?window.workers:[];
+ window.__lastWorkers=(typeof workers!=='undefined'&&Array.isArray(workers))?workers:[];
  patchRender();
  const form=document.getElementById('workerForm');if(form&&!form.__upiSave){form.__upiSave=true;form.addEventListener('submit',()=>setTimeout(saveUpiFromWorkerForm,700),false);}
  refreshWorkerPayments();
- setTimeout(()=>{window.__lastWorkers=Array.isArray(window.workers)?window.workers:[];patchRender();enhanceWorkerCards();},1200);
+ setTimeout(()=>{window.__lastWorkers=(typeof workers!=='undefined'&&Array.isArray(workers))?workers:[];patchRender();enhanceWorkerCards();},1200);
 }
 window.addEventListener('beforeunload',()=>{});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(installPayments,300));else setTimeout(installPayments,300);
