@@ -1,0 +1,33 @@
+name: Install worker face integration
+on:
+  push:
+    paths:
+      - 'worker-face.js'
+      - '.github/workflows/install-worker-face.yml'
+permissions:
+  contents: write
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inject worker face scripts into dashboard
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('dashboard.html')
+          s=p.read_text(encoding='utf-8')
+          marker='<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>'
+          addon=marker+'\n<script src="worker-face.js"></script>'
+          if 'worker-face.js' not in s:
+              s=s.replace('</body>', addon+'\n</body>', 1)
+              p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit dashboard integration
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add dashboard.html
+          git diff --cached --quiet || git commit -m 'Integrate worker face registration into admin dashboard'
+          git push
