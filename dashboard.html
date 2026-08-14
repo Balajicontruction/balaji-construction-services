@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="hi">
 <head>
@@ -557,6 +558,12 @@ grid-template-columns:repeat(2,1fr);
 }
 }
 
+@media(max-width:800px){
+.progress-project-grid{
+grid-template-columns:1fr !important;
+}
+}
+
 @media(max-width:600px){
 
 .main{
@@ -1088,20 +1095,35 @@ Project के नाम पर click करके progress देखें।
 
 <section id="progress" class="section">
 
-<div
-class="panel"
-style="padding:0;overflow:hidden">
+<div class="panel">
 
-<iframe
-src="project-progress.html"
-title="Project Progress"
+<div class="row" style="justify-content:space-between;align-items:flex-start">
+<div>
+<h2>📈 Daily Progress Update</h2>
+<div class="muted">
+किसी भी project की daily progress यहाँ से update करें।
+</div>
+</div>
+
+<button
+type="button"
+class="btn secondary"
+onclick="loadProgressSection()">
+↻ Refresh
+</button>
+</div>
+
+<div
+id="progressProjects"
+class="progress-project-grid"
 style="
-display:block;
-width:100%;
-height:900px;
-border:0;
+display:grid;
+grid-template-columns:repeat(2,minmax(0,1fr));
+gap:18px;
+margin-top:18px;
 ">
-</iframe>
+<div class="notice">Projects load हो रहे हैं...</div>
+</div>
 
 </div>
 
@@ -1893,6 +1915,9 @@ b.textContent.replace(/^\S+\s*/,'');
 
 if(b.dataset.s==='enquiries')
 loadEnquiries();
+
+if(b.dataset.s==='progress')
+loadProgressSection();
 
 };
 
@@ -3677,6 +3702,230 @@ const term=String(input.value||'').trim().toLowerCase(); let visible=0;
 document.querySelectorAll('.table tbody tr').forEach(row=>{const match=!term||String(row.innerText||'').toLowerCase().includes(term);row.classList.toggle('search-hidden',!match);if(match&&term)visible++;});
 const summary=q('searchSummary');if(summary)summary.textContent=term?`🔎 “${input.value}” के लिए ${visible} matching record मिले।`:'Search खाली है — सभी records दिखाई दे रहे हैं।';
 }
+
+/* =========================================================
+   PROJECT PROGRESS SECTION
+========================================================= */
+
+async function loadProgressSection(){
+
+const box=q('progressProjects');
+
+if(!box)return;
+
+box.innerHTML='<div class="notice">Projects load हो रहे हैं...</div>';
+
+try{
+
+const {data:projects,error:pe}=await sb
+.from('projects')
+.select('id,project_name,location,status,customer_id')
+.order('created_at',{ascending:false});
+
+if(pe)throw pe;
+
+const ps=projects||[];
+
+if(!ps.length){
+
+box.innerHTML='<div class="notice">अभी कोई Project उपलब्ध नहीं है।</div>';
+return;
+
+}
+
+/*
+  हर project की latest progress निकालें।
+  project_updates table उपलब्ध न होने पर project को 0% दिखाएँ,
+  लेकिन पूरा dashboard बंद नहीं होगा।
+*/
+
+let updates=[];
+
+try{
+
+const {data:us,error:ue}=await sb
+.from('project_updates')
+.select('project_id,progress_percent,update_date,created_at')
+.order('update_date',{ascending:false})
+.order('created_at',{ascending:false});
+
+if(!ue)updates=us||[];
+
+}catch(e){
+
+console.warn('Project updates unavailable',e);
+
+}
+
+const latestByProject={};
+
+updates.forEach(u=>{
+
+if(!latestByProject[u.project_id]){
+
+latestByProject[u.project_id]=
+Math.max(
+0,
+Math.min(
+100,
+Number(u.progress_percent||0)
+)
+);
+
+}
+
+});
+
+box.innerHTML=ps.map(p=>{
+
+const progress=
+latestByProject[p.id] ??
+Number(p.progress_percent||0) ??
+0;
+
+const pct=Math.max(
+0,
+Math.min(100,Number(progress)||0)
+);
+
+const status=String(p.status||'').toLowerCase();
+
+let badge='⏳ जारी';
+let badgeClass='progress-running';
+
+if(status==='completed' || pct>=100){
+
+badge='✅ पूरा';
+badgeClass='progress-complete';
+
+}else if(status==='pending'){
+
+badge='⏸️ पेंडिंग';
+badgeClass='progress-pending';
+
+}
+
+const url=
+'project-progress.html?project_id='+
+encodeURIComponent(p.id);
+
+return `
+
+<div
+class="progress-project-card"
+style="
+background:#fff;
+border:1px solid #e2e8f0;
+border-radius:18px;
+padding:20px;
+box-shadow:0 5px 18px rgba(15,23,42,.05);
+">
+
+<div
+style="
+display:flex;
+justify-content:space-between;
+gap:12px;
+align-items:flex-start;
+">
+
+<div>
+
+<h3 style="margin:0 0 7px">
+🏗️ ${esc(p.project_name||'Project')}
+</h3>
+
+<div class="muted">
+${esc(p.location||'')}
+</div>
+
+</div>
+
+<span
+class="pill ${badgeClass}"
+style="white-space:nowrap">
+${badge}
+</span>
+
+</div>
+
+<div style="margin-top:18px">
+
+<div
+style="
+display:flex;
+justify-content:space-between;
+margin-bottom:8px;
+">
+
+<b>Current Progress</b>
+
+<strong style="color:#f58220">
+${pct}%
+</strong>
+
+</div>
+
+<div
+style="
+height:11px;
+background:#e5e7eb;
+border-radius:99px;
+overflow:hidden;
+">
+
+<div
+style="
+height:100%;
+width:${pct}%;
+background:${pct>=100?'#16a34a':'#f58220'};
+border-radius:99px;
+transition:.3s;
+">
+</div>
+
+</div>
+
+</div>
+
+<a
+href="${url}"
+style="
+display:block;
+text-align:center;
+margin-top:18px;
+padding:13px 16px;
+background:#f58220;
+color:#fff;
+text-decoration:none;
+border-radius:12px;
+font-weight:800;
+">
+
+📝 आज की Progress Update करें
+
+</a>
+
+</div>
+
+`;
+
+}).join('');
+
+}catch(err){
+
+console.error(err);
+
+box.innerHTML=
+'<div class="notice" style="color:#dc2626">'+
+'❌ Progress load नहीं हुई: '+
+esc(err.message||String(err))+
+'</div>';
+
+}
+
+}
+
 
 /* =========================================================
    MAIN REFRESH
