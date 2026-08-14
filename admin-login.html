@@ -22,7 +22,7 @@
 </main>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const sb=supabase.createClient('https://iefxfyjmyssuiuyncfqz.supabase.co','sb_publishable_45zaRM5LLByFABddU5hm9g_4UwfnT7t',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'balaji-admin-auth'}});
+const sb=supabase.createClient('https://iefxfyjmyssuiuyncfqz.supabase.co','sb_publishable_45zaRM5LLByFABddU5hm9g_4UwfnT7t',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const form=document.getElementById('loginForm'),btn=document.getElementById('loginBtn'),msg=document.getElementById('msg');
 function show(text,type='err'){msg.textContent=text;msg.className='msg '+type}
 async function installFix(){
