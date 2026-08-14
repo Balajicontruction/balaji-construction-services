@@ -1,7 +1,6 @@
 (()=>{
 'use strict';
-const SB=window.sb;
-let faceStream=null,faceModelsLoaded=false,registeredDescriptor=null,faceRegistered=false,faceBusy=false;
+let faceStream=null,faceModelsLoaded=false,registeredDescriptor=null,faceRegistered=false,faceBusy=false,installed=false;
 const MODEL_URL='https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
 const escText=s=>String(s??'').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[m]));
 function normPhone(v){return String(v||'').replace(/\D/g,'').replace(/^91(?=\d{10}$)/,'').replace(/^0(?=\d{10}$)/,'');}
@@ -36,7 +35,7 @@ function ensureFaceUI(){
      <button type="button" id="workerFaceCapture" class="btn btn-green" disabled>✅ Face Register</button>
      <button type="button" id="workerFaceStop" class="btn btn-light" style="display:none">Stop Camera</button>
    </div>
-   <div class="uploadHint" style="margin-top:8px">पहली बार Worker add करते समय एक ही साफ चेहरा register होगा। बाद में इसी registered face से attendance verification होगी।</div>
+   <div class="uploadHint" style="margin-top:8px">पहली बार Worker add करते समय एक साफ चेहरा register होगा। बाद में इसी registered face से attendance verification होगी।</div>
  </div>`;
  const grid=form.querySelector('.formGrid');grid.appendChild(box);
  document.getElementById('workerFaceStart').onclick=startFaceCamera;
@@ -70,14 +69,20 @@ async function captureAndPrepare(){
  }catch(e){setFaceStatus('Face registration failed: '+e.message,'err');}finally{faceBusy=false;}
 }
 function currentWorkerId(){return document.getElementById('workerId')?.value||'';}
-function currentWorker(){const id=currentWorkerId();return id?(window.workers||[]).find(w=>String(w.id)===String(id)):null;}
-function setupFaceState(){
+function currentWorker(){
+ const id=currentWorkerId();
+ if(!id)return null;
+ return Array.isArray(window.__balajiWorkers)?window.__balajiWorkers.find(w=>String(w.id)===String(id)):null;
+}
+async function setupFaceState(){
  ensureFaceUI();stopCamera();registeredDescriptor=null;faceRegistered=false;
- const w=currentWorker();
+ const id=currentWorkerId();
+ let w=currentWorker();
+ if(id&&!w){const r=await sb.from('workers').select('id,face_registered,face_descriptor').eq('id',id).maybeSingle();if(!r.error)w=r.data;}
  if(w?.face_registered && Array.isArray(w.face_descriptor)){
   faceRegistered=true;registeredDescriptor=w.face_descriptor;
   setFaceStatus('🔐 Face पहले से registered है। दोबारा register करने की जरूरत नहीं।','ok');
- }else setFaceStatus('⚠️ इस Worker का Face अभी registered नहीं है। Add/Save करने से पहले Face Register करें।','info');
+ }else setFaceStatus('⚠️ इस Worker का Face अभी registered नहीं है। Face Register करें।','info');
 }
 async function saveWorkerWithFace(){
  const id=currentWorkerId();
@@ -88,21 +93,26 @@ async function saveWorkerWithFace(){
  const village=document.getElementById('workerVillage').value.trim();
  const attendanceStatus=document.getElementById('workerAttendanceStatus').value;
  if(!name){toast('❌ Worker name जरूरी है');return;}
- if(!normPhone(phone)||normPhone(phone).length!==10){toast('❌ सही 10 अंकों का mobile number डालें');return;}
+ if(normPhone(phone).length!==10){toast('❌ सही 10 अंकों का mobile number डालें');return;}
  if(!faceRegistered||!Array.isArray(registeredDescriptor)||registeredDescriptor.length!==128){toast('❌ पहले Face Register करें');return;}
  const payload={name,work_role:role,phone,daily_rate:wage,village,face_descriptor:registeredDescriptor,face_registered:true,face_registered_at:new Date().toISOString()};
- let result;
- if(id) result=await SB.from('workers').update(payload).eq('id',id);
- else result=await SB.from('workers').insert(payload);
+ let result=id?await sb.from('workers').update(payload).eq('id',id):await sb.from('workers').insert(payload).select('id').single();
  if(result.error){toast('❌ Worker save नहीं हुआ: '+result.error.message);return;}
- if(attendanceStatus&&id&&typeof window.saveWorkerAttendance==='function')await window.saveWorkerAttendance(id,attendanceStatus);
+ const workerId=id||result.data?.id;
+ if(workerId){
+  const rr=await sb.from('worker_face_registrations').upsert({worker_id:workerId,face_descriptor:registeredDescriptor,registered_at:new Date().toISOString()},{onConflict:'worker_id'});
+  if(rr.error){toast('⚠️ Worker save हो गया लेकिन Face registration record save नहीं हुआ: '+rr.error.message);return;}
+  if(attendanceStatus)await window.saveWorkerAttendance(workerId,attendanceStatus);
+ }
  closeModal('workerModal');stopCamera();toast(id?'✅ Worker updated + Face registered':'✅ Worker added + Face registered');await loadAll();
 }
 function install(){
- if(!window.sb||!window.openWorkerModal)return;
+ if(installed)return;
+ if(!window.sb||!window.openWorkerModal||!window.faceapi)return;
+ installed=true;
  ensureFaceUI();
  const originalOpen=window.openWorkerModal;
- window.openWorkerModal=function(id=''){originalOpen(id);setTimeout(setupFaceState,0);};
+ window.openWorkerModal=function(id=''){originalOpen(id);setTimeout(()=>setupFaceState(),50);};
  const form=document.getElementById('workerForm');
  form.addEventListener('submit',async e=>{
    const id=currentWorkerId();const w=currentWorker();
@@ -113,5 +123,5 @@ function install(){
  },true);
  window.addEventListener('beforeunload',stopCamera);
 }
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else install();
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install);else setTimeout(install,0);
 })();
