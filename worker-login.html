@@ -6,25 +6,23 @@
 
 <title>BALAJI Construction • Worker Login</title>
 
-<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- Face API -->
+<!-- Face Recognition Library -->
 <script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 
 <style>
-
 :root{
   --navy:#0b1f33;
   --orange:#f58220;
   --green:#16a34a;
   --red:#dc2626;
-  --blue:#2563eb;
-  --bg:#f4f7fb;
+  --yellow:#d97706;
+  --bg:#f3f6fa;
   --white:#fff;
   --text:#142235;
   --muted:#6b7788;
-  --line:#e4e9f0;
+  --line:#e1e7ef;
 }
 
 *{
@@ -34,8 +32,18 @@
 body{
   margin:0;
   font-family:Arial,"Noto Sans Devanagari",sans-serif;
-  background:var(--bg);
+  background:
+    radial-gradient(circle at top,#eef5ff,#f3f6fa 45%,#e9eef5);
   color:var(--text);
+  min-height:100vh;
+}
+
+button,input{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
 }
 
 .hidden{
@@ -50,30 +58,31 @@ body{
 }
 
 .card{
-  width:min(500px,100%);
+  width:min(520px,100%);
   background:#fff;
   border:1px solid var(--line);
-  border-radius:24px;
+  border-radius:25px;
   padding:25px;
-  box-shadow:0 20px 60px #00000012;
+  box-shadow:0 20px 60px #0b1f3315;
 }
 
 .logo{
-  width:65px;
-  height:65px;
-  border-radius:19px;
+  width:68px;
+  height:68px;
+  border-radius:20px;
   background:linear-gradient(135deg,#ffb34f,#f47718);
+  color:#fff;
   display:grid;
   place-items:center;
-  color:#fff;
+  font-size:25px;
   font-weight:900;
-  font-size:24px;
   margin:auto;
 }
 
-h1{
+.title{
   text-align:center;
-  margin:15px 0 5px;
+  margin:13px 0 4px;
+  font-size:25px;
 }
 
 .subtitle{
@@ -82,11 +91,15 @@ h1{
   font-size:13px;
 }
 
+.form{
+  margin-top:24px;
+}
+
 label{
   display:block;
-  font-weight:800;
   font-size:13px;
-  margin:16px 0 7px;
+  font-weight:800;
+  margin:13px 0 6px;
 }
 
 input{
@@ -99,6 +112,7 @@ input{
 
 input:focus{
   border-color:var(--orange);
+  box-shadow:0 0 0 3px #f5822015;
 }
 
 .btn{
@@ -106,14 +120,8 @@ input:focus{
   border:0;
   border-radius:13px;
   padding:13px 16px;
-  font-weight:800;
-  cursor:pointer;
+  font-weight:900;
   margin-top:15px;
-}
-
-.btn:disabled{
-  opacity:.55;
-  cursor:not-allowed;
 }
 
 .primary{
@@ -122,547 +130,447 @@ input:focus{
 }
 
 .secondary{
-  background:#eef2f7;
+  background:#edf2f7;
   color:var(--text);
 }
 
-.green{
-  background:#16a34a;
-  color:#fff;
-}
-
-.red{
-  background:#dc2626;
-  color:#fff;
-}
-
-.blue{
-  background:#2563eb;
-  color:#fff;
-}
-
-.notice{
-  padding:13px;
-  border-radius:13px;
-  background:#fff7ed;
-  margin-top:15px;
-  font-size:13px;
-}
-
-.error{
-  padding:13px;
-  border-radius:13px;
-  background:#fee2e2;
-  color:#991b1b;
-  margin-top:15px;
-  font-size:13px;
-}
-
 .success{
-  padding:13px;
-  border-radius:13px;
   background:#dcfce7;
   color:#166534;
+}
+
+.danger{
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+.info{
+  background:#e0f2fe;
+  color:#075985;
+}
+
+.status{
   margin-top:15px;
+  padding:13px;
+  border-radius:12px;
+  background:#f8fafc;
   font-size:13px;
+  line-height:1.5;
+}
+
+.status.success{
+  background:#dcfce7;
+  color:#166534;
+}
+
+.status.error{
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+.status.warning{
+  background:#fef3c7;
+  color:#92400e;
 }
 
 .worker-head{
   display:flex;
   align-items:center;
-  gap:12px;
-  padding-bottom:18px;
+  gap:13px;
+  padding-bottom:15px;
   border-bottom:1px solid var(--line);
 }
 
 .worker-avatar{
-  width:55px;
-  height:55px;
+  width:58px;
+  height:58px;
   border-radius:16px;
-  background:#eef2f7;
+  background:#fff7ed;
   display:grid;
   place-items:center;
   font-size:25px;
 }
 
-.worker-info{
-  flex:1;
+.worker-name{
+  font-size:19px;
+  font-weight:900;
 }
 
-.worker-info h2{
-  margin:0;
-  font-size:18px;
-}
-
-.worker-info div{
+.worker-id{
   color:var(--muted);
   font-size:12px;
   margin-top:3px;
 }
 
-.status-box{
-  text-align:center;
-  padding:20px 10px;
-  margin-top:18px;
-  border:1px solid var(--line);
-  border-radius:18px;
-  background:#f8fafc;
-}
-
-.status-icon{
-  font-size:45px;
-}
-
-.status-title{
-  font-size:20px;
-  font-weight:900;
-  margin-top:7px;
-}
-
-.attendance-info{
+.att-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin-top:15px;
+  gap:12px;
+  margin-top:18px;
 }
 
-.info{
-  padding:13px;
+.att-box{
   border:1px solid var(--line);
-  border-radius:13px;
+  border-radius:15px;
+  padding:15px;
   background:#fff;
 }
 
-.info small{
-  display:block;
+.att-box small{
   color:var(--muted);
-  margin-bottom:5px;
 }
 
-.info b{
-  font-size:14px;
-}
-
-.camera-box{
-  margin-top:18px;
-  border:1px solid var(--line);
-  border-radius:18px;
-  overflow:hidden;
-  background:#111827;
-  position:relative;
-}
-
-.camera-box video{
-  width:100%;
+.att-box b{
   display:block;
+  margin-top:5px;
+  font-size:20px;
+}
+
+.camera-wrap{
+  margin-top:18px;
+  border-radius:20px;
+  overflow:hidden;
+  background:#071521;
+  position:relative;
   aspect-ratio:4/3;
+}
+
+video{
+  width:100%;
+  height:100%;
+  display:block;
   object-fit:cover;
   transform:scaleX(-1);
 }
 
-.face-overlay{
+.face-frame{
   position:absolute;
-  inset:0;
+  width:62%;
+  height:70%;
+  border:3px solid #fff;
+  border-radius:45%;
+  left:19%;
+  top:15%;
+  box-shadow:0 0 0 9999px #00000030;
   pointer-events:none;
 }
 
-.face-guide{
+.face-dot{
   position:absolute;
-  width:58%;
-  height:72%;
-  left:21%;
-  top:14%;
-  border:3px solid rgba(255,255,255,.8);
-  border-radius:50%;
-  box-shadow:0 0 0 999px rgba(0,0,0,.12);
-}
-
-.camera-status{
-  padding:12px;
-  background:#fff;
-  color:var(--text);
-  font-size:13px;
-  font-weight:700;
-}
-
-.verification-box{
-  margin-top:15px;
-  padding:15px;
-  border-radius:15px;
-  background:#f8fafc;
-  border:1px solid var(--line);
-  text-align:center;
-}
-
-.verification-icon{
-  font-size:32px;
-}
-
-.verification-title{
-  font-weight:900;
-  margin-top:5px;
-}
-
-.distance{
-  color:var(--muted);
-  font-size:12px;
-  margin-top:5px;
+  left:50%;
+  top:10px;
+  transform:translateX(-50%);
+  background:#000b;
+  color:#fff;
+  padding:7px 12px;
+  border-radius:99px;
+  font-size:11px;
+  font-weight:800;
 }
 
 .loading{
   text-align:center;
-  padding:10px;
+  padding:18px;
   color:var(--muted);
-  font-size:13px;
 }
 
-.logout{
-  margin-top:10px;
+.spinner{
+  width:30px;
+  height:30px;
+  border:3px solid #dce3ec;
+  border-top-color:var(--orange);
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+  margin:auto auto 10px;
+}
+
+@keyframes spin{
+  to{transform:rotate(360deg)}
+}
+
+.hidden-camera{
+  display:none;
+}
+
+.badge{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:99px;
+  font-size:11px;
+  font-weight:900;
+}
+
+.badge.green{
+  background:#dcfce7;
+  color:#166534;
+}
+
+.badge.red{
+  background:#fee2e2;
+  color:#991b1b;
+}
+
+.badge.yellow{
+  background:#fef3c7;
+  color:#92400e;
+}
+
+.divider{
+  height:1px;
+  background:var(--line);
+  margin:20px 0;
+}
+
+.center{
+  text-align:center;
 }
 
 .small{
-  font-size:11px;
+  font-size:12px;
   color:var(--muted);
-  line-height:1.5;
-  margin-top:10px;
 }
 
-@media(max-width:500px){
+.footer{
+  text-align:center;
+  margin-top:18px;
+  font-size:11px;
+  color:#8a96a5;
+}
+
+@media(max-width:520px){
+  .page{
+    padding:10px;
+  }
 
   .card{
-    padding:18px;
+    padding:19px;
+    border-radius:20px;
   }
 
-  .attendance-info{
+  .att-grid{
     grid-template-columns:1fr;
   }
-
 }
-
 </style>
 </head>
 
 <body>
 
+<div class="page">
 
-<!-- =====================================================
-     LOGIN PAGE
-===================================================== -->
+<!-- LOGIN CARD -->
 
-<div id="loginPage" class="page">
+<div id="loginCard" class="card">
 
-  <div class="card">
+<div class="logo">BC</div>
 
-    <div class="logo">
-      BC
-    </div>
+<h1 class="title">BALAJI Construction</h1>
 
-    <h1>
-      Worker Login
-    </h1>
+<div class="subtitle">
+Worker Attendance Portal
+</div>
 
-    <div class="subtitle">
-      BALAJI Construction Services
-    </div>
+<div class="form">
 
-    <form id="loginForm">
+<label>Worker Login ID</label>
 
-      <label>
-        Worker Login Email
-      </label>
+<input
+id="loginId"
+autocomplete="username"
+placeholder="अपना Login ID डालें"
+>
 
-      <input
-        id="email"
-        type="email"
-        placeholder="worker@example.com"
-        required
-        autocomplete="username"
-      >
+<label>Password</label>
 
-      <label>
-        Password
-      </label>
+<input
+id="password"
+type="password"
+autocomplete="current-password"
+placeholder="Password डालें"
+>
 
-      <input
-        id="password"
-        type="password"
-        placeholder="Password"
-        required
-        autocomplete="current-password"
-      >
+<button
+class="btn primary"
+onclick="workerLogin()"
+id="loginBtn"
+>
+🔐 Login
+</button>
 
-      <button
-        id="loginBtn"
-        class="btn primary"
-        type="submit">
+<div id="loginStatus" class="status hidden"></div>
 
-        🔐 Worker Login
+</div>
 
-      </button>
-
-    </form>
-
-    <div id="loginMessage"></div>
-
-  </div>
+<div class="footer">
+सिर्फ BALAJI Construction के registered workers के लिए
+</div>
 
 </div>
 
 
-<!-- =====================================================
-     ATTENDANCE PAGE
-===================================================== -->
+<!-- WORKER PANEL -->
 
-<div id="attendancePage" class="page hidden">
+<div id="workerCard" class="card hidden">
 
-  <div class="card">
+<div class="worker-head">
 
-    <div class="worker-head">
+<div class="worker-avatar">
+👷
+</div>
 
-      <div class="worker-avatar">
-        👷
-      </div>
+<div>
 
-      <div class="worker-info">
+<div id="workerName" class="worker-name">
+Worker
+</div>
 
-        <h2 id="workerName">
-          Worker
-        </h2>
+<div id="workerLoginId" class="worker-id">
+-
+</div>
 
-        <div id="workerRole">
-          Worker
-        </div>
+</div>
 
-      </div>
+</div>
 
-    </div>
 
+<div class="att-grid">
 
-    <!-- STATUS -->
+<div class="att-box">
 
-    <div class="status-box">
+<small>आज की स्थिति</small>
 
-      <div
-        id="statusIcon"
-        class="status-icon">
+<b id="todayStatus">
+लोड हो रहा है...
+</b>
 
-        🕘
+</div>
 
-      </div>
+<div class="att-box">
 
-      <div
-        id="statusTitle"
-        class="status-title">
+<small>Check-in</small>
 
-        Attendance
+<b id="checkInTime">
+—
+</b>
 
-      </div>
+</div>
 
-      <div
-        id="statusText"
-        class="subtitle">
+<div class="att-box">
 
-        आज की attendance check करें
+<small>Check-out</small>
 
-      </div>
+<b id="checkOutTime">
+—
+</b>
 
-    </div>
+</div>
 
+<div class="att-box">
 
-    <!-- INFO -->
+<small>Face</small>
 
-    <div class="attendance-info">
+<b id="faceStatus">
+—
+</b>
 
-      <div class="info">
+</div>
 
-        <small>
-          📅 आज की तारीख
-        </small>
+</div>
 
-        <b id="todayDate">
-          —
-        </b>
 
-      </div>
+<div class="divider"></div>
 
 
-      <div class="info">
+<!-- FACE SECTION -->
 
-        <small>
-          🟢 Check-in
-        </small>
+<div id="faceSection">
 
-        <b id="checkInTime">
-          —
-        </b>
+<div class="center">
 
-      </div>
+<h3 id="faceTitle">
+चेहरा सत्यापन
+</h3>
 
+<div class="small" id="faceInstruction">
+Camera में अपना चेहरा साफ दिखाई दें।
+</div>
 
-      <div class="info">
+</div>
 
-        <small>
-          🔴 Check-out
-        </small>
 
-        <b id="checkOutTime">
-          —
-        </b>
+<div class="camera-wrap">
 
-      </div>
+<video
+id="camera"
+autoplay
+muted
+playsinline
+></video>
 
+<div class="face-frame"></div>
 
-      <div class="info">
+<div class="face-dot">
+चेहरा frame के अंदर रखें
+</div>
 
-        <small>
-          📷 Face Verification
-        </small>
+</div>
 
-        <b id="faceStatus">
-          Pending
-        </b>
 
-      </div>
+<div id="faceStatusBox" class="status">
+Camera शुरू करने के लिए नीचे button दबाएँ।
+</div>
 
-    </div>
 
+<button
+class="btn info"
+onclick="startCamera()"
+id="cameraBtn"
+>
+📷 Camera शुरू करें
+</button>
 
-    <!-- CAMERA -->
 
-    <div
-      id="cameraBox"
-      class="camera-box hidden">
+<button
+class="btn success hidden"
+onclick="verifyFaceAndAttendance()"
+id="verifyBtn"
+>
+🔎 Face Verify करके Attendance लगाएँ
+</button>
 
-      <video
-        id="camera"
-        autoplay
-        muted
-        playsinline>
-      </video>
 
-      <div class="face-overlay">
+<button
+class="btn secondary"
+onclick="logoutWorker()"
+>
+Logout
+</button>
 
-        <div class="face-guide"></div>
+</div>
 
-      </div>
 
-      <div
-        id="cameraStatus"
-        class="camera-status">
+<div id="successSection" class="hidden">
 
-        📷 चेहरा कैमरे के सामने रखें।
+<div class="status success">
 
-      </div>
+<h3 style="margin-top:0">
+✅ Attendance सफल
+</h3>
 
-    </div>
+<div id="successMessage"></div>
 
+</div>
 
-    <!-- FACE VERIFICATION -->
+<button
+class="btn secondary"
+onclick="logoutWorker()"
+>
+Logout
+</button>
 
-    <div
-      id="verificationBox"
-      class="verification-box">
+</div>
 
-      <div
-        id="verificationIcon"
-        class="verification-icon">
-
-        🔒
-
-      </div>
-
-      <div
-        id="verificationTitle"
-        class="verification-title">
-
-        Face Verification बाकी है
-
-      </div>
-
-      <div
-        id="verificationDistance"
-        class="distance">
-
-        Camera खोलकर verification शुरू करें।
-
-      </div>
-
-    </div>
-
-
-    <!-- CAMERA BUTTON -->
-
-    <button
-      id="startCameraBtn"
-      class="btn secondary"
-      onclick="startCamera()">
-
-      📷 Camera खोलें
-
-    </button>
-
-
-    <!-- VERIFY BUTTON -->
-
-    <button
-      id="verifyBtn"
-      class="btn blue hidden"
-      onclick="verifyFace()">
-
-      🧠 Face Verify करें
-
-    </button>
-
-
-    <!-- CHECK IN -->
-
-    <button
-      id="checkInBtn"
-      class="btn green hidden"
-      onclick="requestCheckIn()">
-
-      🟢 Check-in करें
-
-    </button>
-
-
-    <!-- CHECK OUT -->
-
-    <button
-      id="checkOutBtn"
-      class="btn red hidden"
-      onclick="requestCheckOut()">
-
-      🔴 Check-out करें
-
-    </button>
-
-
-    <button
-      class="btn secondary logout"
-      onclick="logout()">
-
-      Logout
-
-    </button>
-
-
-    <div
-      id="attendanceMessage">
-    </div>
-
-
-    <div class="small">
-
-      सुरक्षा सूचना: Face matching browser में registered
-      face descriptor के विरुद्ध किया जाता है। वास्तविक
-      biometric identity/liveness verification के लिए
-      production में server-side validation और anti-spoofing
-      जोड़ना उचित है।
-
-    </div>
-
-  </div>
+</div>
 
 </div>
 
@@ -670,1557 +578,1275 @@ input:focus{
 <script>
 
 /* =========================================================
-   SUPABASE
+SUPABASE
 ========================================================= */
 
-const sb = window.supabase.createClient(
-  'https://iefxfyjmyssuiuyncfqz.supabase.co',
-  'sb_publishable_45zaRM5LLByFABddU5hm9g_4UwfnT7t'
+const SUPABASE_URL =
+'https://iefxfyjmyssuiuyncfqz.supabase.co';
+
+const SUPABASE_ANON_KEY =
+'sb_publishable_45zaRM5LLByFABddU5hm9g_4UwfnT7t';
+
+const sb =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_ANON_KEY
 );
 
 
 /* =========================================================
-   FACE API MODEL URL
+GLOBAL
 ========================================================= */
 
-const MODEL_URL =
-  'https://justadudewhohacks.github.io/face-api.js/models';
-
-
-/* =========================================================
-   GLOBAL VARIABLES
-========================================================= */
-
-let session = null;
-
-let worker = null;
-
-let attendance = null;
+let currentWorker = null;
+let currentSession = null;
 
 let cameraStream = null;
 
 let faceModelsLoaded = false;
 
-let faceVerified = false;
+let todayAttendance = null;
 
-let lastFaceDistance = null;
-
-
-/*
-  Face matching threshold.
-
-  Lower = ज्यादा strict
-  Higher = ज्यादा tolerant
-
-  0.50 काफी strict
-  0.55 balanced
-  0.60 tolerant
-
-  शुरुआत में 0.55 रखा गया है।
-*/
-
-const FACE_MATCH_THRESHOLD = 0.55;
-
-
-/* =========================================================
-   HELPER
-========================================================= */
+let faceDescriptor = null;
 
 const q = id =>
-  document.getElementById(id);
+document.getElementById(id);
+
+const today = () =>
+new Date().toISOString().slice(0,10);
 
 
-/* =========================================================
-   MESSAGE
-========================================================= */
+function esc(v){
 
-function message(
-  text,
-  type='notice'
-){
+return String(v ?? '')
+.replace(/[&<>"']/g,c=>({
 
-  const box =
-    q('attendanceMessage');
+'&':'&amp;',
+'<':'&lt;',
+'>':'&gt;',
+'"':'&quot;',
+"'":'&#39;'
 
-  box.className = type;
+}[c]));
 
-  box.textContent = text;
+}
+
+
+function setLoginStatus(message,type=''){
+
+const box=q('loginStatus');
+
+box.textContent=message;
+
+box.className='status';
+
+if(type){
+box.classList.add(type);
+}
+
+box.classList.remove('hidden');
+
+}
+
+
+function setFaceStatus(message,type=''){
+
+const box=q('faceStatusBox');
+
+box.textContent=message;
+
+box.className='status';
+
+if(type){
+box.classList.add(type);
+}
+
+}
+
+
+function formatTime(v){
+
+if(!v)return '—';
+
+try{
+
+return new Date(v)
+.toLocaleTimeString(
+'en-IN',
+{
+hour:'2-digit',
+minute:'2-digit'
+}
+);
+
+}catch{
+
+return '—';
+
+}
 
 }
 
 
 /* =========================================================
-   LOGIN MESSAGE
+FACE API MODELS
 ========================================================= */
 
-function loginMessage(
-  text,
-  type='error'
-){
+const MODEL_URL =
+'https://cdn.jsdelivr.net/gh/justadudewhohacks/face-api.js@0.22.2/weights';
 
-  const box =
-    q('loginMessage');
-
-  box.className = type;
-
-  box.textContent = text;
-
-}
-
-
-/* =========================================================
-   TODAY
-========================================================= */
-
-function today(){
-
-  const d =
-    new Date();
-
-  const year =
-    d.getFullYear();
-
-  const month =
-    String(
-      d.getMonth()+1
-    ).padStart(2,'0');
-
-  const day =
-    String(
-      d.getDate()
-    ).padStart(2,'0');
-
-  return `${year}-${month}-${day}`;
-
-}
-
-
-/* =========================================================
-   TIME
-========================================================= */
-
-function formatTime(value){
-
-  if(!value)
-    return '—';
-
-  return new Date(value)
-    .toLocaleTimeString(
-      'en-IN',
-      {
-        hour:'2-digit',
-        minute:'2-digit',
-        second:'2-digit'
-      }
-    );
-
-}
-
-
-/* =========================================================
-   LOAD FACE MODELS
-========================================================= */
 
 async function loadFaceModels(){
 
-  if(faceModelsLoaded)
-    return true;
+if(faceModelsLoaded)return;
 
-  try{
-
-    q('verificationIcon')
-      .textContent='⏳';
-
-    q('verificationTitle')
-      .textContent=
-      'Face system load हो रहा है...';
-
-    await faceapi
-      .nets.tinyFaceDetector
-      .loadFromUri(MODEL_URL);
-
-    await faceapi
-      .nets.faceLandmark68Net
-      .loadFromUri(MODEL_URL);
-
-    await faceapi
-      .nets.faceRecognitionNet
-      .loadFromUri(MODEL_URL);
-
-    faceModelsLoaded=true;
-
-    q('verificationIcon')
-      .textContent='🔒';
-
-    q('verificationTitle')
-      .textContent=
-      'Face Verification तैयार है';
-
-    q('verificationDistance')
-      .textContent=
-      'Camera खोलें।';
-
-    return true;
-
-  }catch(err){
-
-    console.error(
-      'Face model error:',
-      err
-    );
-
-    q('verificationIcon')
-      .textContent='❌';
-
-    q('verificationTitle')
-      .textContent=
-      'Face system load नहीं हुआ';
-
-    q('verificationDistance')
-      .textContent=
-      err.message ||
-      'Models load नहीं हो पाए।';
-
-    message(
-      'Face verification models load नहीं हुए। Internet connection और HTTPS check करें।',
-      'error'
-    );
-
-    return false;
-
-  }
-
-}
-
-
-/* =========================================================
-   LOGIN
-========================================================= */
-
-q('loginForm')
-.addEventListener(
-  'submit',
-  async e => {
-
-    e.preventDefault();
-
-    const email =
-      q('email').value.trim();
-
-    const password =
-      q('password').value;
-
-    if(!email || !password)
-      return;
-
-
-    q('loginBtn').disabled=true;
-
-    q('loginBtn').textContent=
-      'Login हो रहा है...';
-
-    loginMessage('');
-
-
-    try{
-
-      const {
-        data,
-        error
-      } =
-      await sb.auth
-        .signInWithPassword({
-          email,
-          password
-        });
-
-
-      if(error)
-        throw error;
-
-
-      if(!data.session)
-        throw new Error(
-          'Worker session नहीं बनी।'
-        );
-
-
-      session =
-        data.session;
-
-
-      await loadWorker();
-
-
-    }catch(err){
-
-      console.error(err);
-
-      loginMessage(
-        err.message ||
-        'Login failed'
-      );
-
-    }finally{
-
-      q('loginBtn').disabled=false;
-
-      q('loginBtn').textContent=
-        '🔐 Worker Login';
-
-    }
-
-  }
+setFaceStatus(
+'Face recognition model load हो रहा है...',
+'warning'
 );
 
+await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
 
-/* =========================================================
-   LOAD WORKER
-========================================================= */
+await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
 
-async function loadWorker(){
+await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
 
-  try{
+faceModelsLoaded=true;
 
-    const {
-      data,
-      error
-    } =
-    await sb
-      .from('workers')
-      .select(`
-        id,
-        name,
-        phone,
-        village,
-        work_role,
-        daily_rate,
-        user_id,
-        auth_user_id,
-        login_email,
-        login_id,
-        face_descriptor,
-        face_registered,
-        active
-      `)
-      .or(
-        `user_id.eq.${session.user.id},auth_user_id.eq.${session.user.id}`
-      )
-      .maybeSingle();
-
-
-    if(error)
-      throw error;
-
-
-    if(!data){
-
-      throw new Error(
-        'इस Login Account से Worker profile जुड़ी नहीं है।'
-      );
-
-    }
-
-
-    worker=data;
-
-
-    if(worker.active === false){
-
-      throw new Error(
-        'यह Worker account अभी inactive है।'
-      );
-
-    }
-
-
-    q('loginPage')
-      .classList.add('hidden');
-
-    q('attendancePage')
-      .classList.remove('hidden');
-
-
-    q('workerName')
-      .textContent =
-      worker.name ||
-      'Worker';
-
-
-    q('workerRole')
-      .textContent =
-      worker.work_role ||
-      'Worker';
-
-
-    q('todayDate')
-      .textContent =
-      new Date()
-        .toLocaleDateString(
-          'hi-IN'
-        );
-
-
-    await loadTodayAttendance();
-
-
-    /*
-      Face models background में load
-    */
-
-    await loadFaceModels();
-
-
-  }catch(err){
-
-    console.error(err);
-
-    await sb.auth.signOut();
-
-    q('attendancePage')
-      .classList.add('hidden');
-
-    q('loginPage')
-      .classList.remove('hidden');
-
-    loginMessage(
-      err.message ||
-      'Worker profile load नहीं हुई।'
-    );
-
-  }
+setFaceStatus(
+'Face recognition तैयार है।',
+'success'
+);
 
 }
 
 
 /* =========================================================
-   LOAD TODAY ATTENDANCE
+WORKER LOGIN
+========================================================= */
+
+async function workerLogin(){
+
+const loginId =
+q('loginId').value.trim();
+
+const password =
+q('password').value;
+
+if(!loginId){
+
+return setLoginStatus(
+'Worker Login ID डालें।',
+'error'
+);
+
+}
+
+if(!password){
+
+return setLoginStatus(
+'Password डालें।',
+'error'
+);
+
+}
+
+const btn=q('loginBtn');
+
+btn.disabled=true;
+
+btn.textContent='Login हो रहा है...';
+
+setLoginStatus(
+'Worker account verify हो रहा है...',
+'warning'
+);
+
+try{
+
+/*
+IMPORTANT:
+
+हम direct client auth के बजाय
+तुम्हारे existing worker-login Edge Function
+का उपयोग कर रहे हैं।
+
+इस function में:
+login_id → workers table
+login_email → Auth email
+password → Supabase Auth
+*/
+
+const response =
+await fetch(
+SUPABASE_URL+
+'/functions/v1/worker-login',
+{
+
+method:'POST',
+
+headers:{
+'Content-Type':'application/json',
+'apikey':SUPABASE_ANON_KEY
+},
+
+body:JSON.stringify({
+login_id:loginId,
+password:password
+})
+
+});
+
+
+const result =
+await response.json();
+
+if(!response.ok || !result.ok){
+
+throw new Error(
+result.error ||
+'Invalid login credentials'
+);
+
+}
+
+
+if(!result.session){
+
+throw new Error(
+'Login session प्राप्त नहीं हुई।'
+);
+
+}
+
+
+/*
+Edge Function ने Supabase Auth session दी।
+अब browser में session set करते हैं।
+*/
+
+const {error:sessionError} =
+await sb.auth.setSession({
+
+access_token:
+result.session.access_token,
+
+refresh_token:
+result.session.refresh_token
+
+});
+
+if(sessionError){
+throw sessionError;
+}
+
+
+currentSession =
+result.session;
+
+currentWorker =
+result.worker;
+
+
+/*
+Worker information UI
+*/
+
+q('loginCard')
+.classList.add('hidden');
+
+q('workerCard')
+.classList.remove('hidden');
+
+q('workerName')
+textContent =
+currentWorker.name ||
+'Worker';
+
+q('workerLoginId')
+textContent =
+'Login ID: '+
+(currentWorker.login_id || loginId);
+
+
+/*
+Load today's attendance
+*/
+
+await loadTodayAttendance();
+
+
+/*
+Face models background में load
+*/
+
+try{
+
+await loadFaceModels();
+
+}catch(faceError){
+
+console.error(faceError);
+
+setFaceStatus(
+'Face model load नहीं हो पाया। Internet connection check करें।',
+'error'
+);
+
+}
+
+}catch(err){
+
+console.error(err);
+
+setLoginStatus(
+err.message ||
+'Invalid login credentials',
+'error'
+);
+
+}finally{
+
+btn.disabled=false;
+
+btn.textContent='🔐 Login';
+
+}
+
+}
+
+
+/* =========================================================
+TODAY ATTENDANCE
 ========================================================= */
 
 async function loadTodayAttendance(){
 
-  if(!worker)
-    return;
+if(!currentWorker)return;
 
 
-  const {
-    data,
-    error
-  } =
-  await sb
-    .from('worker_attendance')
-    .select('*')
-    .eq(
-      'worker_id',
-      worker.id
-    )
-    .eq(
-      'attendance_date',
-      today()
-    )
-    .maybeSingle();
+/*
+पहले worker_attendance से आज का record
+*/
+
+const {data,error} =
+await sb
+.from('worker_attendance')
+.select('*')
+.eq('worker_id',currentWorker.id)
+.eq('attendance_date',today())
+.order('check_in',{
+ascending:false
+})
+.limit(1)
+.maybeSingle();
 
 
-  if(error){
+if(error){
 
-    console.error(error);
+console.error(error);
 
-    message(
-      'आज की attendance load नहीं हुई: '+
-      error.message,
-      'error'
-    );
+q('todayStatus').textContent='—';
 
-    return;
+return;
 
-  }
+}
 
 
-  attendance =
-    data || null;
+todayAttendance=data||null;
 
 
-  faceVerified=false;
+if(!todayAttendance){
 
-  renderAttendance();
+q('todayStatus').innerHTML =
+'<span class="badge yellow">अभी Attendance नहीं</span>';
+
+q('checkInTime').textContent='—';
+
+q('checkOutTime').textContent='—';
+
+q('faceStatus').innerHTML =
+'<span class="badge red">Verify बाकी</span>';
+
+q('faceTitle').textContent =
+'चेहरा सत्यापन';
+
+q('faceInstruction').textContent =
+'पहले camera में अपना चेहरा साफ दिखाएँ।';
+
+return;
+
+}
+
+
+q('checkInTime').textContent =
+formatTime(todayAttendance.check_in);
+
+q('checkOutTime').textContent =
+formatTime(todayAttendance.check_out);
+
+
+if(todayAttendance.status==='present'){
+
+if(todayAttendance.check_out){
+
+q('todayStatus').innerHTML =
+'<span class="badge green">दिन पूरा</span>';
+
+q('faceStatus').innerHTML =
+'<span class="badge green">Verified</span>';
+
+hideAttendanceCamera();
+
+}else{
+
+q('todayStatus').innerHTML =
+'<span class="badge green">Present</span>';
+
+q('faceStatus').innerHTML =
+todayAttendance.face_verified
+?
+'<span class="badge green">Verified</span>'
+:
+'<span class="badge yellow">Checked-in</span>';
+
+q('faceTitle').textContent =
+'Check-out';
+
+q('faceInstruction').textContent =
+'Check-out के लिए अपना चेहरा verify करें।';
+
+}
+
+}else{
+
+q('todayStatus').innerHTML =
+'<span class="badge red">Absent</span>';
+
+}
 
 }
 
 
 /* =========================================================
-   RENDER ATTENDANCE
-========================================================= */
-
-function renderAttendance(){
-
-  q('checkInTime')
-    .textContent =
-    formatTime(
-      attendance?.check_in
-    );
-
-
-  q('checkOutTime')
-    .textContent =
-    formatTime(
-      attendance?.check_out
-    );
-
-
-  q('faceStatus')
-    .textContent =
-    attendance?.face_verified
-      ? '✅ Verified'
-      : 'Pending';
-
-
-  q('checkInBtn')
-    .classList.add('hidden');
-
-
-  q('checkOutBtn')
-    .classList.add('hidden');
-
-
-  q('verifyBtn')
-    .classList.add('hidden');
-
-
-  if(!attendance){
-
-    q('statusIcon')
-      .textContent='🕘';
-
-    q('statusTitle')
-      .textContent=
-      'Check-in बाकी है';
-
-    q('statusText')
-      .textContent=
-      'Face Verification करके Check-in करें।';
-
-    if(faceVerified){
-
-      q('checkInBtn')
-        .classList.remove('hidden');
-
-    }else{
-
-      if(cameraStream){
-
-        q('verifyBtn')
-          .classList.remove('hidden');
-
-      }
-
-    }
-
-    return;
-
-  }
-
-
-  if(
-    attendance.check_in &&
-    !attendance.check_out
-  ){
-
-    q('statusIcon')
-      .textContent='🟢';
-
-    q('statusTitle')
-      .textContent=
-      'आप आज Present हैं';
-
-    q('statusText')
-      .textContent=
-      'Check-out के लिए Face Verification करें।';
-
-    if(faceVerified){
-
-      q('checkOutBtn')
-        .classList.remove('hidden');
-
-    }else{
-
-      if(cameraStream){
-
-        q('verifyBtn')
-          .classList.remove('hidden');
-
-      }
-
-    }
-
-    return;
-
-  }
-
-
-  if(
-    attendance.check_in &&
-    attendance.check_out
-  ){
-
-    q('statusIcon')
-      .textContent='✅';
-
-    q('statusTitle')
-      .textContent=
-      'आज की Attendance Complete';
-
-    q('statusText')
-      .textContent=
-      'Check-in और Check-out दोनों दर्ज हैं।';
-
-  }
-
-}
-
-
-/* =========================================================
-   START CAMERA
+CAMERA
 ========================================================= */
 
 async function startCamera(){
 
-  try{
+try{
 
-    if(!faceModelsLoaded){
+await loadFaceModels();
 
-      const loaded =
-        await loadFaceModels();
+}catch(err){
 
-      if(!loaded)
-        return;
+return setFaceStatus(
+'Face recognition model load नहीं हुआ: '+
+err.message,
+'error'
+);
 
-    }
-
-
-    if(
-      !navigator.mediaDevices ||
-      !navigator.mediaDevices.getUserMedia
-    ){
-
-      throw new Error(
-        'इस browser में Camera access उपलब्ध नहीं है।'
-      );
-
-    }
+}
 
 
-    if(cameraStream){
+if(!navigator.mediaDevices ||
+!navigator.mediaDevices.getUserMedia){
 
-      stopCamera();
+return setFaceStatus(
+'इस browser में camera support नहीं है।',
+'error'
+);
 
-    }
-
-
-    cameraStream =
-      await navigator.mediaDevices
-        .getUserMedia({
-
-          video:{
-            facingMode:'user',
-            width:{
-              ideal:640
-            },
-            height:{
-              ideal:480
-            }
-          },
-
-          audio:false
-
-        });
+}
 
 
-    const video =
-      q('camera');
+try{
 
-    video.srcObject =
-      cameraStream;
+cameraStream =
+await navigator.mediaDevices.getUserMedia({
 
+video:{
+facingMode:'user',
+width:{
+ideal:640
+},
+height:{
+ideal:480
+}
+},
 
-    await video.play();
+audio:false
 
-
-    q('cameraBox')
-      .classList.remove('hidden');
-
-
-    q('startCameraBtn')
-      .textContent=
-      '📷 Camera चालू है';
-
-
-    q('startCameraBtn')
-      .disabled=true;
+});
 
 
-    q('cameraStatus')
-      .textContent=
-      '👤 चेहरा अंडाकार के अंदर रखें।';
+const video=q('camera');
+
+video.srcObject=
+cameraStream;
+
+await video.play();
 
 
-    q('verificationIcon')
-      .textContent='🔎';
+q('cameraBtn')
+.classList.add('hidden');
 
-    q('verificationTitle')
-      .textContent=
-      'Face Verification के लिए तैयार';
-
-
-    q('verificationDistance')
-      .textContent=
-      'अब Face Verify करें।';
+q('verifyBtn')
+.classList.remove('hidden');
 
 
-    if(
-      !worker.face_registered ||
-      !worker.face_descriptor
-    ){
+setFaceStatus(
+'Camera चालू है। चेहरा frame के बीच रखें।',
+'success'
+);
 
-      message(
-        'इस Worker का registered face descriptor उपलब्ध नहीं है। पहले Dashboard में Face Registration करें।',
-        'error'
-      );
+}catch(err){
 
-      return;
+console.error(err);
 
-    }
+setFaceStatus(
+'Camera permission नहीं मिली। Browser में Camera Allow करें।',
+'error'
+);
 
-
-    q('verifyBtn')
-      .classList.remove('hidden');
-
-
-    renderAttendance();
-
-
-  }catch(err){
-
-    console.error(err);
-
-    message(
-      'Camera access नहीं मिला: '+
-      err.message,
-      'error'
-    );
-
-  }
+}
 
 }
 
 
 /* =========================================================
-   STOP CAMERA
+FACE DETECTION
 ========================================================= */
 
-function stopCamera(){
+async function getFaceDescriptor(){
 
-  if(cameraStream){
+const video=q('camera');
 
-    cameraStream
-      .getTracks()
-      .forEach(
-        track => track.stop()
-      );
+if(!video.videoWidth){
 
-    cameraStream=null;
+throw new Error(
+'Camera अभी तैयार नहीं है।'
+);
 
-  }
+}
 
 
-  const video =
-    q('camera');
+const detection =
+await faceapi
+.detectSingleFace(
+video,
+new faceapi.TinyFaceDetectorOptions({
+inputSize:416,
+scoreThreshold:0.5
+})
+.withFaceLandmarks()
+.withFaceDescriptor();
 
-  if(video)
-    video.srcObject=null;
+
+if(!detection){
+
+throw new Error(
+'चेहरा नहीं मिला। Camera के सामने सीधे देखें।'
+);
+
+}
 
 
-  q('cameraBox')
-    .classList.add('hidden');
+/*
+Face descriptor = 128 dimensional vector
+*/
+
+return Array.from(
+detection.descriptor
+);
 
 }
 
 
 /* =========================================================
-   NORMALIZE DESCRIPTOR
+GET STORED FACE
 ========================================================= */
 
-function normalizeDescriptor(value){
+async function getStoredFaceDescriptor(){
 
-  if(!value)
-    return null;
+/*
+workers table में face_descriptor column होना चाहिए।
 
+Expected:
+jsonb / json compatible column
 
-  /*
-    Possible formats:
-
-    [0.1,0.2...]
-
-    {"descriptor":[...]}
-
-    {"values":[...]}
-
-    Float32Array
-  */
+उदाहरण:
+face_descriptor jsonb
+*/
 
 
-  if(
-    Array.isArray(value)
-  ){
-
-    return new Float32Array(
-      value.map(Number)
-    );
-
-  }
-
-
-  if(
-    value.descriptor &&
-    Array.isArray(
-      value.descriptor
-    )
-  ){
-
-    return new Float32Array(
-      value.descriptor.map(Number)
-    );
-
-  }
+const {data,error} =
+await sb
+.from('workers')
+.select(
+'id,name,face_registered,face_descriptor'
+)
+.eq('id',currentWorker.id)
+.maybeSingle();
 
 
-  if(
-    value.values &&
-    Array.isArray(
-      value.values
-    )
-  ){
+if(error){
 
-    return new Float32Array(
-      value.values.map(Number)
-    );
+throw error;
 
-  }
+}
 
 
-  return null;
+if(!data){
+
+throw new Error(
+'Worker profile नहीं मिला।'
+);
+
+}
+
+
+if(
+!data.face_descriptor ||
+!Array.isArray(data.face_descriptor) ||
+data.face_descriptor.length!==128
+){
+
+return null;
+
+}
+
+
+return data.face_descriptor;
 
 }
 
 
 /* =========================================================
-   GET REGISTERED DESCRIPTOR
+FACE DISTANCE
 ========================================================= */
 
-function getRegisteredDescriptor(){
+function euclideanDistance(a,b){
 
-  const descriptor =
-    normalizeDescriptor(
-      worker.face_descriptor
-    );
+if(
+!Array.isArray(a) ||
+!Array.isArray(b) ||
+a.length!==b.length
+){
 
+return 999;
 
-  if(!descriptor)
-    return null;
-
-
-  if(descriptor.length !== 128)
-    return null;
+}
 
 
-  return descriptor;
+let sum=0;
+
+for(let i=0;i<a.length;i++){
+
+const d=
+Number(a[i])-Number(b[i]);
+
+sum+=d*d;
+
+}
+
+return Math.sqrt(sum);
 
 }
 
 
 /* =========================================================
-   REAL FACE VERIFICATION
+REGISTER FIRST FACE
+========================================================= */
+
+async function registerFirstFace(descriptor){
+
+/*
+अगर admin ने सिर्फ face_registered=true किया है
+लेकिन descriptor save नहीं किया,
+तो यहाँ पहली बार worker का face descriptor
+save किया जाएगा।
+
+इसके बाद अगली verification में
+इसी descriptor से matching होगी।
+*/
+
+
+const {error} =
+await sb
+.from('workers')
+.update({
+
+face_descriptor:descriptor,
+
+face_registered:true,
+
+face_registered_at:
+new Date().toISOString(),
+
+updated_at:
+new Date().toISOString()
+
+})
+.eq('id',currentWorker.id);
+
+
+if(error){
+
+throw error;
+
+}
+
+
+faceDescriptor=descriptor;
+
+}
+
+
+/* =========================================================
+FACE MATCH
 ========================================================= */
 
 async function verifyFace(){
 
-  faceVerified=false;
+setFaceStatus(
+'चेहरा scan हो रहा है...',
+'warning'
+);
 
-  lastFaceDistance=null;
+const liveDescriptor =
+await getFaceDescriptor();
 
 
-  if(!worker){
+const stored =
+await getStoredFaceDescriptor();
 
-    message(
-      'Worker profile उपलब्ध नहीं है।',
-      'error'
-    );
 
-    return false;
+/*
+अगर descriptor अभी registered नहीं है
+*/
 
-  }
+if(!stored){
 
+/*
+यह पहली registration है।
+Password से login हो चुका है,
+इसलिए worker की identity verified है।
 
-  if(
-    !worker.face_registered ||
-    !worker.face_descriptor
-  ){
+पहली बार face enrollment होगा।
+*/
 
-    message(
-      'Worker का registered face उपलब्ध नहीं है। पहले Dashboard में Face Registration करें।',
-      'error'
-    );
+await registerFirstFace(
+liveDescriptor
+);
 
-    return false;
-
-  }
-
-
-  const registered =
-    getRegisteredDescriptor();
-
-
-  if(!registered){
-
-    message(
-      'Registered face descriptor सही format में नहीं है। Dashboard में face दोबारा register करें।',
-      'error'
-    );
-
-    return false;
-
-  }
-
-
-  if(!cameraStream){
-
-    message(
-      'पहले Camera खोलें।',
-      'error'
-    );
-
-    return false;
-
-  }
-
-
-  const video =
-    q('camera');
-
-
-  if(
-    !video ||
-    video.readyState < 2
-  ){
-
-    message(
-      'Camera अभी तैयार नहीं है।',
-      'error'
-    );
-
-    return false;
-
-  }
-
-
-  q('verifyBtn')
-    .disabled=true;
-
-  q('verifyBtn')
-    .textContent=
-    '🔎 Face scan हो रहा है...';
-
-
-  q('verificationIcon')
-    .textContent='🔎';
-
-  q('verificationTitle')
-    .textContent=
-    'चेहरा scan हो रहा है...';
-
-  q('verificationDistance')
-    .textContent=
-    'कृपया चेहरा स्थिर रखें।';
-
-
-  try{
-
-    /*
-      Tiny Face Detector
-    */
-
-    const options =
-      new faceapi
-        .TinyFaceDetectorOptions({
-          inputSize:320,
-          scoreThreshold:0.5
-        });
-
-
-    /*
-      Detect ALL faces.
-    */
-
-    const detections =
-      await faceapi
-        .detectAllFaces(
-          video,
-          options
-        )
-        .withFaceLandmarks()
-        .withFaceDescriptors();
-
-
-    /*
-      No face
-    */
-
-    if(
-      !detections ||
-      detections.length === 0
-    ){
-
-      q('verificationIcon')
-        .textContent='❌';
-
-      q('verificationTitle')
-        .textContent=
-        'चेहरा नहीं मिला';
-
-      q('verificationDistance')
-        .textContent=
-        'चेहरा कैमरे के सामने साफ रखें।';
-
-      message(
-        'Face detect नहीं हुआ। Camera के सामने सीधे देखें।',
-        'error'
-      );
-
-      return false;
-
-    }
-
-
-    /*
-      Multiple faces
-    */
-
-    if(
-      detections.length > 1
-    ){
-
-      q('verificationIcon')
-        .textContent='⚠️';
-
-      q('verificationTitle')
-        .textContent=
-        'एक से अधिक चेहरे मिले';
-
-      q('verificationDistance')
-        .textContent=
-        'केवल Worker का चेहरा camera में होना चाहिए।';
-
-      message(
-        'Camera में केवल Worker का एक चेहरा होना चाहिए।',
-        'error'
-      );
-
-      return false;
-
-    }
-
-
-    /*
-      One face
-    */
-
-    const liveDescriptor =
-      detections[0]
-        .descriptor;
-
-
-    /*
-      Euclidean distance
-    */
-
-    const distance =
-      faceapi.euclideanDistance(
-        registered,
-        liveDescriptor
-      );
-
-
-    lastFaceDistance =
-      distance;
-
-
-    q('verificationDistance')
-      .textContent=
-      'Face distance: '+
-      distance.toFixed(4);
-
-
-    /*
-      Match
-    */
-
-    if(
-      distance <=
-      FACE_MATCH_THRESHOLD
-    ){
-
-      faceVerified=true;
-
-
-      q('verificationIcon')
-        .textContent='✅';
-
-      q('verificationTitle')
-        .textContent=
-        'Face Verified';
-
-      q('verificationDistance')
-        .textContent=
-        'Match सफल • Distance: '+
-        distance.toFixed(4);
-
-
-      q('faceStatus')
-        .textContent=
-        '✅ Verified';
-
-
-      message(
-        '✅ Face Verification सफल हो गया। अब Attendance दर्ज की जा सकती है।',
-        'success'
-      );
-
-
-      /*
-        Verification button hide
-      */
-
-      q('verifyBtn')
-        .classList.add('hidden');
-
-
-      /*
-        Attendance buttons
-      */
-
-      renderAttendance();
-
-
-      return true;
-
-    }
-
-
-    /*
-      No match
-    */
-
-    faceVerified=false;
-
-
-    q('verificationIcon')
-      .textContent='❌';
-
-    q('verificationTitle')
-      .textContent=
-      'Face Match नहीं हुआ';
-
-    q('verificationDistance')
-      .textContent=
-      'Distance: '+
-      distance.toFixed(4)+
-      ' • Required ≤ '+
-      FACE_MATCH_THRESHOLD;
-
-
-    message(
-      '❌ यह चेहरा Registered Worker से match नहीं हुआ।',
-      'error'
-    );
-
-
-    return false;
-
-
-  }catch(err){
-
-    console.error(
-      'Face verification error:',
-      err
-    );
-
-
-    message(
-      'Face verification में समस्या: '+
-      err.message,
-      'error'
-    );
-
-
-    return false;
-
-
-  }finally{
-
-    q('verifyBtn')
-      .disabled=false;
-
-    q('verifyBtn')
-      .textContent=
-      '🧠 Face Verify करें';
-
-  }
+return {
+matched:true,
+firstRegistration:true,
+distance:0
+};
 
 }
 
 
-/* =========================================================
-   CHECK IN
-========================================================= */
-
-async function requestCheckIn(){
-
-  if(!worker)
-    return;
-
-
-  if(!faceVerified){
-
-    const verified =
-      await verifyFace();
-
-    if(!verified)
-      return;
-
-  }
-
-
-  const now =
-    new Date()
-      .toISOString();
-
-
-  q('checkInBtn')
-    .disabled=true;
-
-
-  const {
-    data,
-    error
-  } =
-  await sb
-    .from('worker_attendance')
-    .upsert({
-
-      worker_id:
-        worker.id,
-
-      attendance_date:
-        today(),
-
-      check_in:
-        now,
-
-      status:
-        'present',
-
-      face_verified:
-        true,
-
-      check_in_face_verified:
-        true,
-
-      created_by:
-        session.user.id,
-
-      updated_at:
-        now
-
-    },{
-      onConflict:
-        'worker_id,attendance_date'
-    })
-    .select()
-    .single();
-
-
-  if(error){
-
-    console.error(error);
-
-    q('checkInBtn')
-      .disabled=false;
-
-    message(
-      'Check-in save नहीं हुआ: '+
-      error.message,
-      'error'
-    );
-
-    return;
-
-  }
-
-
-  attendance=data;
-
-  faceVerified=false;
-
-  renderAttendance();
-
-
-  message(
-    '🟢 Check-in successfully दर्ज हो गया।',
-    'success'
-  );
-
-
-  /*
-    Camera बंद
-  */
-
-  stopCamera();
-
-}
-
-
-/* =========================================================
-   CHECK OUT
-========================================================= */
-
-async function requestCheckOut(){
-
-  if(!worker ||
-     !attendance)
-    return;
-
-
-  if(!attendance.check_in){
-
-    message(
-      'पहले Check-in करें।',
-      'error'
-    );
-
-    return;
-
-  }
-
-
-  if(attendance.check_out){
-
-    message(
-      'आज का Check-out पहले ही हो चुका है।'
-    );
-
-    return;
-
-  }
-
-
-  if(!faceVerified){
-
-    const verified =
-      await verifyFace();
-
-    if(!verified)
-      return;
-
-  }
-
-
-  const now =
-    new Date()
-      .toISOString();
-
-
-  q('checkOutBtn')
-    .disabled=true;
-
-
-  const {
-    data,
-    error
-  } =
-  await sb
-    .from('worker_attendance')
-    .update({
-
-      check_out:
-        now,
-
-      check_out_face_verified:
-        true,
-
-      face_verified:
-        true,
-
-      updated_at:
-        now
-
-    })
-    .eq(
-      'id',
-      attendance.id
-    )
-    .select()
-    .single();
-
-
-  if(error){
-
-    console.error(error);
-
-    q('checkOutBtn')
-      .disabled=false;
-
-    message(
-      'Check-out save नहीं हुआ: '+
-      error.message,
-      'error'
-    );
-
-    return;
-
-  }
-
-
-  attendance=data;
-
-  faceVerified=false;
-
-  renderAttendance();
-
-
-  message(
-    '🔴 Check-out successfully दर्ज हो गया।',
-    'success'
-  );
-
-
-  stopCamera();
-
-}
-
-
-/* =========================================================
-   LOGOUT
-========================================================= */
-
-async function logout(){
-
-  stopCamera();
-
-  await sb.auth.signOut();
-
-
-  session=null;
-
-  worker=null;
-
-  attendance=null;
-
-  faceVerified=false;
-
-
-  q('attendancePage')
-    .classList.add('hidden');
-
-  q('loginPage')
-    .classList.remove('hidden');
-
-
-  q('password').value='';
-
-
-  q('email').value='';
-
-
-  q('cameraBox')
-    .classList.add('hidden');
-
-}
-
-
-/* =========================================================
-   SESSION CHECK
-========================================================= */
-
-async function checkSession(){
-
-  try{
-
-    const {
-      data
-    } =
-    await sb.auth.getSession();
-
-
-    if(data.session){
-
-      session =
-        data.session;
-
-      await loadWorker();
-
-    }
-
-  }catch(err){
-
-    console.error(err);
-
-  }
-
-}
-
-
-/* =========================================================
-   AUTH LISTENER
-========================================================= */
-
-sb.auth.onAuthStateChange(
-  (
-    event,
-    newSession
-  ) => {
-
-    if(
-      event ===
-      'SIGNED_OUT'
-    ){
-
-      stopCamera();
-
-      session=null;
-
-      worker=null;
-
-      attendance=null;
-
-      faceVerified=false;
-
-
-      q('attendancePage')
-        .classList.add('hidden');
-
-      q('loginPage')
-        .classList.remove('hidden');
-
-    }
-
-  }
+/*
+Existing registered face के साथ match
+*/
+
+const distance =
+euclideanDistance(
+liveDescriptor,
+stored
 );
 
 
+/*
+face-api सामान्यतः ~0.6 threshold पर
+similarity detect करता है।
+
+हम थोड़ा strict 0.50 रख रहे हैं।
+*/
+
+const MATCH_THRESHOLD=0.50;
+
+if(distance> MATCH_THRESHOLD){
+
+return {
+matched:false,
+distance
+};
+
+}
+
+
+return {
+matched:true,
+distance
+};
+
+}
+
+
 /* =========================================================
-   START
+ATTENDANCE
 ========================================================= */
 
-checkSession();
+async function verifyFaceAndAttendance(){
+
+if(!currentWorker){
+
+return setFaceStatus(
+'Worker session नहीं मिली।',
+'error'
+);
+
+}
+
+
+if(!cameraStream){
+
+return setFaceStatus(
+'पहले Camera शुरू करें।',
+'error'
+);
+
+}
+
+
+const btn=q('verifyBtn');
+
+btn.disabled=true;
+
+btn.textContent=
+'🔎 Face verify हो रहा है...';
+
+
+try{
+
+const result =
+await verifyFace();
+
+
+if(!result.matched){
+
+throw new Error(
+'Face match नहीं हुआ। Camera के सामने सही तरीके से देखें और फिर प्रयास करें।'
+);
+
+}
+
+
+q('faceStatus').innerHTML =
+'<span class="badge green">Matched</span>';
+
+
+/*
+अब attendance action
+*/
+
+if(
+todayAttendance &&
+todayAttendance.check_in &&
+!todayAttendance.check_out
+){
+
+await checkOutAttendance();
+
+}else if(
+!todayAttendance
+){
+
+await checkInAttendance();
+
+}else if(
+todayAttendance &&
+todayAttendance.check_out
+){
+
+throw new Error(
+'आज की attendance पहले ही पूरी हो चुकी है।'
+);
+
+}else{
+
+await checkInAttendance();
+
+}
+
+
+}catch(err){
+
+console.error(err);
+
+setFaceStatus(
+err.message ||
+'Face verification failed',
+'error'
+);
+
+}finally{
+
+btn.disabled=false;
+
+btn.textContent=
+'🔎 Face Verify करके Attendance लगाएँ';
+
+}
+
+}
+
+
+/* =========================================================
+CHECK-IN
+========================================================= */
+
+async function checkInAttendance(){
+
+const now =
+new Date().toISOString();
+
+
+const {data,error} =
+await sb
+.from('worker_attendance')
+.insert({
+
+worker_id:currentWorker.id,
+
+attendance_date:today(),
+
+check_in:now,
+
+check_out:null,
+
+status:'present',
+
+source:'worker-face',
+
+face_verified:true,
+
+face_match_score:null,
+
+created_at:now
+
+})
+.select('*')
+.single();
+
+
+if(error){
+
+/*
+अगर table में कुछ optional column नहीं है
+तो fallback insert
+*/
+
+if(
+error.message &&
+(
+error.message.includes('face_match_score') ||
+error.message.includes('created_at')
+)
+){
+
+const fallback =
+await sb
+.from('worker_attendance')
+.insert({
+
+worker_id:currentWorker.id,
+
+attendance_date:today(),
+
+check_in:now,
+
+check_out:null,
+
+status:'present',
+
+source:'worker-face',
+
+face_verified:true
+
+})
+.select('*')
+.single();
+
+
+if(fallback.error){
+
+throw fallback.error;
+
+}
+
+todayAttendance=fallback.data;
+
+}else{
+
+throw error;
+
+}
+
+}else{
+
+todayAttendance=data;
+
+}
+
+
+stopCamera();
+
+
+q('successMessage').innerHTML=
+`
+<b>${esc(currentWorker.name||'Worker')}</b><br>
+आज का Check-in सफल हुआ।<br>
+समय: <b>${esc(formatTime(now))}</b>
+`;
+
+
+q('faceSection')
+.classList.add('hidden');
+
+q('successSection')
+.classList.remove('hidden');
+
+
+await loadTodayAttendance();
+
+}
+
+
+/* =========================================================
+CHECK-OUT
+========================================================= */
+
+async function checkOutAttendance(){
+
+if(!todayAttendance){
+
+throw new Error(
+'आज का Check-in record नहीं मिला।'
+);
+
+}
+
+
+if(todayAttendance.check_out){
+
+throw new Error(
+'आज पहले ही Check-out हो चुका है।'
+);
+
+}
+
+
+const now =
+new Date().toISOString();
+
+
+const {data,error} =
+await sb
+.from('worker_attendance')
+.update({
+
+check_out:now,
+
+status:'present',
+
+face_verified:true,
+
+updated_at:now
+
+})
+.eq('id',todayAttendance.id)
+.select('*')
+.single();
+
+
+if(error){
+
+throw error;
+
+}
+
+
+todayAttendance=data;
+
+
+stopCamera();
+
+
+q('successMessage').innerHTML=
+`
+<b>${esc(currentWorker.name||'Worker')}</b><br>
+आज का Check-out सफल हुआ।<br>
+समय: <b>${esc(formatTime(now))}</b>
+`;
+
+
+q('faceSection')
+.classList.add('hidden');
+
+q('successSection')
+.classList.remove('hidden');
+
+
+await loadTodayAttendance();
+
+}
+
+
+/* =========================================================
+STOP CAMERA
+========================================================= */
+
+function stopCamera(){
+
+if(cameraStream){
+
+cameraStream
+.getTracks()
+.forEach(track=>{
+track.stop();
+});
+
+cameraStream=null;
+
+}
+
+q('camera').srcObject=null;
+
+}
+
+
+/* =========================================================
+HIDE CAMERA
+========================================================= */
+
+function hideAttendanceCamera(){
+
+stopCamera();
+
+q('faceSection')
+.classList.add('hidden');
+
+q('successSection')
+.classList.remove('hidden');
+
+q('successMessage').innerHTML=
+`
+आज की attendance पूरी हो चुकी है।<br>
+Check-in: <b>${esc(formatTime(todayAttendance?.check_in))}</b><br>
+Check-out: <b>${esc(formatTime(todayAttendance?.check_out))}</b>
+`;
+
+}
+
+
+/* =========================================================
+LOGOUT
+========================================================= */
+
+async function logoutWorker(){
+
+stopCamera();
+
+try{
+
+await sb.auth.signOut();
+
+}catch(e){
+
+console.error(e);
+
+}
+
+
+currentWorker=null;
+
+currentSession=null;
+
+todayAttendance=null;
+
+faceDescriptor=null;
+
+
+q('workerCard')
+.classList.add('hidden');
+
+q('successSection')
+.classList.add('hidden');
+
+q('faceSection')
+.classList.remove('hidden');
+
+q('loginCard')
+.classList.remove('hidden');
+
+q('loginId').value='';
+
+q('password').value='';
+
+q('loginStatus')
+.classList.add('hidden');
+
+q('cameraBtn')
+.classList.remove('hidden');
+
+q('verifyBtn')
+.classList.add('hidden');
+
+}
+
+
+/* =========================================================
+PAGE LOAD
+========================================================= */
+
+(async function(){
+
+try{
+
+const {
+data:{
+session
+}
+}=await sb.auth.getSession();
+
+
+/*
+अगर पुरानी worker session है तो sign out
+क्योंकि इस page पर fresh worker login चाहिए।
+*/
+
+if(session){
+
+await sb.auth.signOut();
+
+}
+
+}catch(err){
+
+console.error(err);
+
+}
+
+})();
+
+
+/* =========================================================
+PAGE CLOSE
+========================================================= */
+
+window.addEventListener(
+'beforeunload',
+()=>{
+
+stopCamera();
+
+}
+);
 
 </script>
 
