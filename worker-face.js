@@ -217,3 +217,46 @@ function installPayments(){
 window.addEventListener('beforeunload',()=>{});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(installPayments,300));else setTimeout(installPayments,300);
 })();
+
+/* =========================================================
+   ADMIN WORKER FACE VERIFICATION / ATTENDANCE
+========================================================= */
+(()=>{
+'use strict';
+const SB=window.sb;
+const MODEL_URL='https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
+let verifyStream=null,verifyBusy=false,verifyModels=false;
+const esc=s=>String(s??'').replace(/[&<>\"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[m]));
+async function verifyModelsLoad(){
+ if(verifyModels)return;
+ await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);
+ await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);
+ await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);
+ verifyModels=true;
+}
+function stopVerifyCamera(){if(verifyStream){verifyStream.getTracks().forEach(t=>t.stop());verifyStream=null;}const v=document.getElementById('workerVerifyVideo');if(v)v.srcObject=null;}
+function closeVerify(){stopVerifyCamera();const m=document.getElementById('workerVerifyModal');if(m)m.classList.remove('show');}
+function ensureVerifyModal(){
+ if(document.getElementById('workerVerifyModal'))return;
+ const m=document.createElement('div');m.className='modal';m.id='workerVerifyModal';m.innerHTML=`<div class="modalBox" style="max-width:560px"><div class="modalHead"><h3 id="workerVerifyTitle">🔐 Face Verification</h3><button class="close" type="button">×</button></div><div id="workerVerifyStatus" style="padding:12px;border-radius:12px;background:#eff6ff;color:#1d4ed8;font-weight:800">Camera शुरू करें और Worker का चेहरा सामने रखें।</div><div style="display:none;max-width:430px;aspect-ratio:4/3;background:#081827;border-radius:16px;overflow:hidden;margin:14px auto" id="workerVerifyCamera"><video id="workerVerifyVideo" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover;transform:scaleX(-1)"></video></div><div class="actions" style="margin-top:14px"><button class="btn btn-blue" id="workerVerifyStart">📷 Camera Start</button><button class="btn btn-green" id="workerVerifyScan" disabled>🔎 Verify Face</button><button class="btn btn-light" id="workerVerifyCancel">Cancel</button></div></div>`;document.body.appendChild(m);
+ m.querySelector('.close').onclick=closeVerify;m.querySelector('#workerVerifyCancel').onclick=closeVerify;m.querySelector('#workerVerifyStart').onclick=startVerify;m.querySelector('#workerVerifyScan').onclick=scanVerify;m.addEventListener('click',e=>{if(e.target===m)closeVerify();});
+}
+function setVerifyStatus(t,ok=false,err=false){const e=document.getElementById('workerVerifyStatus');if(!e)return;e.textContent=t;e.style.background=ok?'#ecfdf5':err?'#fff1f2':'#eff6ff';e.style.color=ok?'#166534':err?'#9f1239':'#1d4ed8';}
+async function startVerify(){
+ if(verifyBusy)return;
+ try{verifyBusy=true;setVerifyStatus('Face model load हो रहा है...');await verifyModelsLoad();verifyStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:640},height:{ideal:480}},audio:false});const v=document.getElementById('workerVerifyVideo');v.srcObject=verifyStream;document.getElementById('workerVerifyCamera').style.display='block';document.getElementById('workerVerifyScan').disabled=false;setVerifyStatus('Camera तैयार है। अब Verify Face दबाएँ।',true);}catch(e){setVerifyStatus('Camera/Face model error: '+e.message,false,true);}finally{verifyBusy=false;}
+}
+async function scanVerify(){
+ if(verifyBusy)return;
+ const workerId=document.getElementById('workerVerifyModal')?.dataset.workerId;const w=(window.__lastWorkers||[]).find(x=>String(x.id)===String(workerId));
+ if(!w)return setVerifyStatus('Worker नहीं मिला।',false,true);
+ if(!w.face_registered||!Array.isArray(w.face_descriptor)||w.face_descriptor.length!==128)return setVerifyStatus('❌ इस Worker का registered face नहीं है। पहले Edit → Face Register करें।',false,true);
+ try{verifyBusy=true;setVerifyStatus('🔎 Face verify हो रहा है...');await verifyModelsLoad();const v=document.getElementById('workerVerifyVideo');const d=await faceapi.detectSingleFace(v,new faceapi.TinyFaceDetectorOptions({inputSize:320,scoreThreshold:.55})).withFaceLandmarks().withFaceDescriptor();if(!d){setVerifyStatus('❌ चेहरा detect नहीं हुआ। Camera के सामने साफ चेहरा रखें।',false,true);return;}const distance=faceapi.euclideanDistance(d.descriptor,new Float32Array(w.face_descriptor));const threshold=.50;if(distance>threshold){setVerifyStatus(`❌ Face match नहीं हुआ। दूरी ${distance.toFixed(3)} है।`,false,true);return;}setVerifyStatus(`✅ Face Verified — ${w.name||w.worker_name||'Worker'} | Match ${distance.toFixed(3)}`,true);if(typeof window.saveWorkerAttendance==='function'){await window.saveWorkerAttendance(w.id,'present');toast(`✅ ${w.name||'Worker'} की आज की attendance Face Verification से Present कर दी गई।`);}else{toast('⚠️ Face verified, लेकिन attendance function उपलब्ध नहीं है।');}setTimeout(closeVerify,900);}catch(e){setVerifyStatus('❌ Verification error: '+e.message,false,true);}finally{verifyBusy=false;}
+}
+window.openWorkerFaceVerification=function(workerId){ensureVerifyModal();const w=(window.__lastWorkers||[]).find(x=>String(x.id)===String(workerId));document.getElementById('workerVerifyModal').dataset.workerId=workerId;document.getElementById('workerVerifyTitle').textContent=`🔐 Face Verification — ${w?.name||w?.worker_name||'Worker'}`;document.getElementById('workerVerifyCamera').style.display='none';document.getElementById('workerVerifyScan').disabled=true;setVerifyStatus('Camera शुरू करें और Worker का चेहरा सामने रखें।');openModal('workerVerifyModal');};
+function addVerifyButtons(){const cards=[...document.querySelectorAll('#workersList .workerCard')];const ws=window.__lastWorkers||[];cards.forEach((card,i)=>{const w=ws[i];if(!w||card.querySelector('.workerFaceVerifyBtn'))return;const actions=card.querySelector('.actions');if(!actions)return;const b=document.createElement('button');b.type='button';b.className='btn btn-dark btn-sm workerFaceVerifyBtn';b.textContent='🔐 Verify Face';b.onclick=()=>window.openWorkerFaceVerification(w.id);actions.insertBefore(b,actions.firstChild);});}
+function patch(){if(typeof window.renderWorkers!=='function'||window.renderWorkers.__faceVerifyPatched)return;const orig=window.renderWorkers;const fn=function(){orig();setTimeout(addVerifyButtons,50);};fn.__faceVerifyPatched=true;window.renderWorkers=fn;}
+function install(){ensureVerifyModal();patch();setTimeout(()=>{window.__lastWorkers=(typeof workers!=='undefined'&&Array.isArray(workers))?workers:window.__lastWorkers||[];patch();addVerifyButtons();},1600);}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>setTimeout(install,700));else setTimeout(install,700);
+window.addEventListener('beforeunload',stopVerifyCamera);
+})();
