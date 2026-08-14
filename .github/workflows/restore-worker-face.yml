@@ -1,0 +1,46 @@
+name: Restore worker face verification
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  restore-face:
+    if: github.event.head_commit.message != 'Restore worker face verification in admin dashboard'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Restore face verification scripts
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('dashboard.html')
+          s = p.read_text(encoding='utf-8')
+          original = s
+
+          face_api = '<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>'
+          face_js = '<script src="worker-face.js"></script>'
+
+          # worker-face.js must load after face-api.js and after the dashboard's
+          # main script, so inject both immediately before </body>.
+          if 'face-api.js@0.22.2/dist/face-api.min.js' not in s:
+              s = s.replace('</body>', face_api + '\n</body>', 1)
+          if 'src="worker-face.js"' not in s and "src='worker-face.js'" not in s:
+              s = s.replace('</body>', face_js + '\n</body>', 1)
+
+          if s != original:
+              p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Commit face restoration
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add dashboard.html
+          git diff --cached --quiet && exit 0
+          git commit -m 'Restore worker face verification in admin dashboard'
+          git push
