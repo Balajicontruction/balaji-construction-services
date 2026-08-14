@@ -1,0 +1,62 @@
+name: Run worker payments activation
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  activate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Activate worker payment module and UPI field
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p = Path('dashboard.html')
+          s = p.read_text(encoding='utf-8')
+          original = s
+
+          if 'src="worker-payments.js"' not in s and "src='worker-payments.js'" not in s:
+              marker = '<script src="worker-face.js"></script>'
+              if marker in s:
+                  s = s.replace(marker, marker + '\n<script src="worker-payments.js"></script>', 1)
+              elif '</body>' in s:
+                  s = s.replace('</body>', '<script src="worker-payments.js"></script>\n</body>', 1)
+
+          if 'id="workerUpi"' not in s:
+              village_marker = '<div class="field"><label>Village</label><input id="workerVillage"'
+              pos = s.find(village_marker)
+              if pos >= 0:
+                  end = s.find('</div>', pos)
+                  if end >= 0:
+                      end += len('</div>')
+                      field = '<div class="field"><label>UPI ID</label><input id="workerUpi" type="text" placeholder="example@upi"><small class="uploadHint">Worker का UPI ID, जैसे 9876543210@upi</small></div>'
+                      s = s[:end] + field + s[end:]
+
+          needle = "document.getElementById('workerVillage').value=w.village||'';"
+          if "document.getElementById('workerUpi').value=w.upi_id||'';" not in s and needle in s:
+              s = s.replace(needle, needle + "document.getElementById('workerUpi').value=w.upi_id||'';", 1)
+
+          if "upi_id:\n        document.getElementById('workerUpi').value.trim()" not in s:
+              needle = "village:\n        document.getElementById('workerVillage').value.trim()"
+              if needle in s:
+                  s = s.replace(needle, needle + ",\n\n      upi_id:\n        document.getElementById('workerUpi').value.trim()", 1)
+
+          if s != original:
+              p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Commit dashboard activation
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add dashboard.html
+          git diff --cached --quiet && exit 0
+          git commit -m 'Activate worker payments in admin dashboard'
+          git push
