@@ -24,9 +24,12 @@
 <script>
 const SUPABASE_URL='https://iefxfyjmyssuiuyncfqz.supabase.co';
 const SUPABASE_KEY='sb_publishable_45zaRM5LLByFABddU5hm9g_4UwfnT7t';
-const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,storageKey:'balaji-admin-auth'}});
+// IMPORTANT: use the SAME Supabase browser storage as dashboard.html.
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
 const form=document.getElementById('loginForm'),btn=document.getElementById('loginBtn'),msg=document.getElementById('msg');
 function show(text,type='err'){msg.textContent=text;msg.className='msg '+type}
+// Remove the old auth service-worker which was causing the second login screen.
+if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister())).catch(()=>{});}
 form.addEventListener('submit',async e=>{
  e.preventDefault();msg.className='msg';msg.textContent='';btn.disabled=true;btn.textContent='Logging in...';
  try{
@@ -38,9 +41,10 @@ form.addEventListener('submit',async e=>{
   const session={access_token:data.session.access_token,refresh_token:data.session.refresh_token};
   localStorage.setItem('balaji_admin_session',JSON.stringify(session));
   localStorage.setItem('balaji_admin_email',data.user.email||email);
+  // Persist to the normal Supabase storage used by dashboard.html.
   await sb.auth.setSession(session);
   show('Login सफल। Dashboard खोला जा रहा है...','ok');
-  setTimeout(()=>{window.location.href='dashboard.html?admin=1';},150);
+  setTimeout(()=>{window.location.href='dashboard.html?admin=1&v='+Date.now();},200);
  }catch(err){show(err?.message||String(err));btn.disabled=false;btn.textContent='Login'}
 });
 </script>
