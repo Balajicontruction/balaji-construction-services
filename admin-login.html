@@ -10,8 +10,8 @@
 </head>
 <body>
 <main class="card">
-<div class="brand"><div class="logo">BC</div><div><h1>BALAJI Construction</h1><p>Private Admin / Staff Management</p></div></div>
-<div class="tag">ADMIN / STAFF ACCESS</div><div class="h">Admin / Staff Login</div><p class="muted">Owner / Manager / Staff account से login करें।</p>
+<div class="brand"><div class="logo">BC</div><div><h1>BALAJI Construction</h1><p>Private Admin Management</p></div></div>
+<div class="tag">ADMIN ACCESS</div><div class="h">Admin Login</div><p class="muted">केवल Admin account से login करें।</p>
 <form id="loginForm">
 <label for="email">Email</label><input id="email" type="email" value="satpalswami22742@gmail.com" autocomplete="username" required>
 <label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required>
@@ -38,8 +38,7 @@ form.addEventListener('submit',async e=>{
   if(!data.session||!data.user) throw new Error('Login हुआ लेकिन session नहीं बनी।');
   localStorage.setItem('balaji_admin_session',JSON.stringify({access_token:data.session.access_token,refresh_token:data.session.refresh_token}));
   localStorage.setItem('balaji_admin_email',data.user.email||email);
-  show('Login सफल। Dashboard खोला जा रहा है...','ok');
-  // Token को Dashboard URL hash में भी भेज रहे हैं ताकि Dashboard session race के कारण वापस Staff Login पर न जाए।
+  show('Login सफल। Admin Dashboard खोला जा रहा है...','ok');
   const a=encodeURIComponent(data.session.access_token),r=encodeURIComponent(data.session.refresh_token);
   setTimeout(()=>{window.location.replace('dashboard.html#access_token='+a+'&refresh_token='+r+'&type=bearer');},150);
  }catch(err){show(err?.message||String(err));btn.disabled=false;btn.textContent='Login'}
