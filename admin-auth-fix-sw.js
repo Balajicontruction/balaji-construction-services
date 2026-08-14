@@ -18,15 +18,29 @@ self.addEventListener('fetch',event=>{
     const client=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
     async function forceAdminSession(){
       try{
-        const r=await client.auth.getSession();
-        if(!r.data||!r.data.session) return;
-        const session=r.data.session;
+        let session=null;
+        const bridge=localStorage.getItem('balaji_admin_session');
+        if(bridge){
+          try{
+            const saved=JSON.parse(bridge);
+            if(saved&&saved.access_token&&saved.refresh_token){
+              const restored=await client.auth.setSession({access_token:saved.access_token,refresh_token:saved.refresh_token});
+              session=restored.data&&restored.data.session||null;
+            }
+          }catch(e){console.warn('Saved admin session restore failed',e)}
+        }
+        if(!session){
+          const r=await client.auth.getSession();
+          session=r.data&&r.data.session||null;
+        }
+        if(!session) return;
+        localStorage.setItem('balaji_admin_session',JSON.stringify({access_token:session.access_token,refresh_token:session.refresh_token}));
         const auth=document.getElementById('auth');
         const app=document.getElementById('app');
         if(auth) auth.classList.add('hidden');
         if(app) app.classList.remove('hidden');
         const email=document.getElementById('userEmail');
-        if(email) email.textContent=session.user.email||'';
+        if(email) email.textContent=session.user.email||localStorage.getItem('balaji_admin_email')||'';
         if(typeof window.start==='function' && !(window.__balajiStarted)){window.__balajiStarted=true; await window.start(session.user);}
       }catch(e){console.error('Admin session bootstrap failed',e);}
     }
