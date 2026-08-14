@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BALAJI Construction | Admin Dashboard</title>
+<style>
+body{margin:0;min-height:100vh;display:grid;place-items:center;font-family:Arial,"Noto Sans Devanagari",sans-serif;background:#f4f7fb;color:#142235}.box{background:#fff;padding:30px;border-radius:20px;box-shadow:0 20px 60px #0002;text-align:center}.spin{font-size:40px;margin-bottom:10px}
+</style>
+</head>
+<body>
+<div class="box"><div class="spin">⏳</div><b>Admin Dashboard खोला जा रहा है...</b><p id="msg">Authentication session सुरक्षित रूप से तैयार हो रही है।</p></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const URL='https://iefxfyjmyssuiuyncfqz.supabase.co';
+const KEY='sb_publishable_45zaRM5LLByFABddU5hm9g_4UwfnT7t';
+(async()=>{
+ try{
+  const bridge=supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,storageKey:'balaji-admin-auth'}});
+  const {data,error}=await bridge.auth.getSession();
+  if(error||!data.session) throw new Error('Admin session नहीं मिली। कृपया दोबारा Admin Login करें।');
+  const main=supabase.createClient(URL,KEY,{auth:{persistSession:true,autoRefreshToken:true,storageKey:'sb-iefxfyjmyssuiuyncfqz-auth-token'}});
+  const {error:setError}=await main.auth.setSession({access_token:data.session.access_token,refresh_token:data.session.refresh_token});
+  if(setError) throw setError;
+  window.location.replace('dashboard.html');
+ }catch(e){
+  document.getElementById('msg').textContent=e.message||String(e);
+  setTimeout(()=>window.location.replace('admin-login.html'),1800);
+ }
+})();
+</script>
+</body>
+</html>
