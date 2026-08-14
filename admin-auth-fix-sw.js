@@ -15,7 +15,7 @@ self.addEventListener('fetch',event=>{
   try{
     const SUPABASE_URL=${JSON.stringify(SUPABASE_URL)};
     const SUPABASE_KEY=${JSON.stringify(SUPABASE_KEY)};
-    const client=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'balaji-admin-auth'}});
+    const client=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
     async function forceAdminSession(){
       try{
         const r=await client.auth.getSession();
@@ -28,7 +28,6 @@ self.addEventListener('fetch',event=>{
         const email=document.getElementById('userEmail');
         if(email) email.textContent=session.user.email||'';
         if(typeof window.start==='function' && !(window.__balajiStarted)){window.__balajiStarted=true; await window.start(session.user);}
-        if(typeof window.refreshAll==='function') await window.refreshAll();
       }catch(e){console.error('Admin session bootstrap failed',e);}
     }
     window.addEventListener('load',()=>setTimeout(forceAdminSession,50));
