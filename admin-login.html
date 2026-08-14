@@ -24,11 +24,9 @@
 <script>
 const SUPABASE_URL='https://iefxfyjmyssuiuyncfqz.supabase.co';
 const SUPABASE_KEY='sb_publishable_45zaRM5LLByFABddU5hm9g_4UwfnT7t';
-const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false,storageKey:'balaji-admin-auth'}});
 const form=document.getElementById('loginForm'),btn=document.getElementById('loginBtn'),msg=document.getElementById('msg');
 function show(text,type='err'){msg.textContent=text;msg.className='msg '+type}
-async function installFix(){try{if('serviceWorker' in navigator){const reg=await navigator.serviceWorker.register('admin-auth-fix-sw.js?v=4',{scope:'./'});await reg.update();await navigator.serviceWorker.ready;}}catch(e){console.warn('Auth bridge registration:',e)}}
-installFix();
 form.addEventListener('submit',async e=>{
  e.preventDefault();msg.className='msg';msg.textContent='';btn.disabled=true;btn.textContent='Logging in...';
  try{
@@ -36,12 +34,13 @@ form.addEventListener('submit',async e=>{
   const password=document.getElementById('password').value;
   const {data,error}=await sb.auth.signInWithPassword({email,password});
   if(error) throw error;
-  if(!data.session||!data.user) throw new Error('Login हुआ लेकिन session नहीं बनी। कृपया फिर Login करें।');
-  await sb.auth.setSession({access_token:data.session.access_token,refresh_token:data.session.refresh_token});
-  localStorage.setItem('balaji_admin_session',JSON.stringify({access_token:data.session.access_token,refresh_token:data.session.refresh_token}));
-  localStorage.setItem('balaji_admin_email',data.user.email||'');
-  show('Login सफल। Admin Dashboard खोला जा रहा है...','ok');
-  setTimeout(()=>location.replace('dashboard.html?admin=1&v=4'),300);
+  if(!data.session||!data.user) throw new Error('Login हुआ लेकिन session नहीं बनी।');
+  const session={access_token:data.session.access_token,refresh_token:data.session.refresh_token};
+  localStorage.setItem('balaji_admin_session',JSON.stringify(session));
+  localStorage.setItem('balaji_admin_email',data.user.email||email);
+  await sb.auth.setSession(session);
+  show('Login सफल। Dashboard खोला जा रहा है...','ok');
+  setTimeout(()=>{window.location.href='dashboard.html?admin=1';},150);
  }catch(err){show(err?.message||String(err));btn.disabled=false;btn.textContent='Login'}
 });
 </script>
