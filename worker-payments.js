@@ -1,66 +1,145 @@
-/* BALAJI Construction - Worker Payment Module
-   Admin-only controls. Worker payment/attendance remains read-only for workers.
-   v3 trigger: 2026-08-14 face verification restore
+/* BALAJI Construction — Admin Worker Payments
+   Stable overlay module: never replaces worker cards, so Face Verification and Attendance stay intact.
+   v4: payment panel + paid/pending + UPI + receipt history
 */
-(function(){
-  'use strict';
-  const wait=ms=>new Promise(r=>setTimeout(r,ms));
-  const esc=v=>String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
-  const money=v=>'₹'+Number(v||0).toLocaleString('en-IN');
-  const num=v=>Number(v||0);
-  const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
-  let wpRows=[];
-  function style(){if(document.getElementById('workerPaymentStyles'))return;const s=document.createElement('style');s.id='workerPaymentStyles';s.textContent=`.workerPayBox{margin-top:18px;padding:16px;border-radius:16px;background:#f7fafc;border:1px solid #e1e8ef}.workerPayGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.workerPayStat{background:#fff;border-radius:12px;padding:12px;border:1px solid #e5ebf0}.workerPayStat span{display:block;color:#60738a;font-size:12px;font-weight:700}.workerPayStat strong{display:block;margin-top:5px;font-size:19px}.workerPayActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.workerPayHistory{margin-top:12px;font-size:12px}.workerPayHistory details{background:#fff;border:1px solid #e5ebf0;border-radius:10px;padding:8px}.workerPayHistory table{min-width:0;font-size:12px}.workerPayHistory td,.workerPayHistory th{padding:7px}.upiPay{background:#16a34a!important;color:#fff!important}.receiptLink{display:inline-block;margin-left:6px}.faceVerifyBtn{background:#7c3aed!important;color:#fff!important}.faceVerifyOk{margin-top:10px;padding:10px;border-radius:10px;background:#ecfdf5;color:#166534;font-weight:800}.faceVerifyErr{margin-top:10px;padding:10px;border-radius:10px;background:#fff1f2;color:#9f1239;font-weight:800}@media(max-width:700px){.workerPayGrid{grid-template-columns:1fr 1fr}}`;document.head.appendChild(s)}
-  async function load(){if(!window.sb||!Array.isArray(window.workers))return false;const {data,error}=await sb.from('worker_payments').select('*').order('payment_date',{ascending:false}).order('created_at',{ascending:false});if(error){console.warn('worker_payments load:',error);wpRows=[]}else wpRows=data||[];render();return true}
-  function attendanceFor(w){const a=window.workerAttendanceMap?.[w.id];return a?Number(a.present||0):0}
-  function paidFor(w){return wpRows.filter(p=>String(p.worker_id)===String(w.id)).reduce((s,p)=>s+num(p.amount),0)}
-  function render(){const box=document.getElementById('workersList');if(!box||!Array.isArray(window.workers))return;box.innerHTML=workers.length?workers.map(workerHTML).join(''):'<div class="empty">कोई Worker नहीं मिला।</div>'}
-  function workerHTML(w){const name=w.name||w.worker_name||'Worker',role=w.work_role||w.role||w.designation||'—';const wage=num(w.daily_rate??w.daily_wage??w.wage??w.daily_salary),present=attendanceFor(w),earned=wage*present,paid=paidFor(w),pending=Math.max(0,earned-paid),phone=w.phone||w.mobile||'—',hist=wpRows.filter(p=>String(p.worker_id)===String(w.id)),upi=String(w.upi_id||'').trim();const upiLink=upi?`upi://pay?pa=${encodeURIComponent(upi)}&pn=${encodeURIComponent(name)}&am=${encodeURIComponent(pending.toFixed(2))}&cu=INR`:'#';return `<div class="workerCard"><div class="workerHead"><div class="avatar">${esc(name.charAt(0)).toUpperCase()}</div><div><h3>${esc(name)}</h3><p>${esc(role)}</p></div></div><div class="workerInfo"><div class="workerRow"><span>Mobile</span><strong>${esc(phone)}</strong></div><div class="workerRow"><span>Daily Wage</span><strong>${money(wage)}</strong></div><div class="workerRow"><span>Attendance</span><strong>${present} days</strong></div><div class="workerRow"><span>Village</span><strong>${esc(w.village||'—')}</strong></div><div class="workerPayBox"><strong style="font-size:17px">💰 Worker Payment</strong><div class="workerPayGrid" style="margin-top:10px"><div class="workerPayStat"><span>Total Earnings</span><strong>${money(earned)}</strong></div><div class="workerPayStat"><span>Paid</span><strong class="green">${money(paid)}</strong></div><div class="workerPayStat"><span>Pending</span><strong class="red">${money(pending)}</strong></div></div><div class="workerPayActions"><button class="btn btn-primary btn-sm" onclick="openWorkerPayment('${esc(w.id)}')">💸 Payment Update</button>${pending>0&&upi?`<a class="btn btn-green btn-sm upiPay" href="${esc(upiLink)}">📲 UPI से ₹${Number(pending).toLocaleString('en-IN')} Pay</a>`:''}${w.face_registered&&Array.isArray(w.face_descriptor)?`<button class="btn btn-sm faceVerifyBtn" onclick="verifyWorkerFace('${esc(w.id)}')">🔐 Verify Face</button>`:`<span class="uploadHint" style="align-self:center">⚠️ Face register नहीं है</span>`}${upi?`<span class="uploadHint" style="align-self:center">UPI: ${esc(upi)}</span>`:''}</div><div id="faceVerifyStatus_${esc(w.id)}"></div>${hist.length?`<div class="workerPayHistory"><details><summary>📜 Payment History (${hist.length})</summary><div class="tableWrap"><table><thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Receipt</th></tr></thead><tbody>${hist.map(p=>`<tr><td>${esc(p.payment_date||'—')}</td><td><strong>${money(p.amount)}</strong></td><td>${esc(p.payment_method||'—')}</td><td>${p.receipt_url?`<a class="btn btn-blue btn-sm receiptLink" href="${esc(p.receipt_url)}" target="_blank" rel="noopener">🧾 Receipt</a>`:'—'}</td></tr>`).join('')}</tbody></table></div></details></div>`:''}</div><div class="actions" style="margin-top:15px"><button class="btn btn-blue btn-sm" onclick="editWorker('${esc(w.id)}')">✏️ Edit</button><button class="btn btn-red btn-sm" onclick="deleteWorker('${esc(w.id)}')">🗑️ Delete</button></div></div></div>`}
-  window.openWorkerPayment=async function(workerId){const w=workers.find(x=>String(x.id)===String(workerId));if(!w)return;const earned=num(w.daily_rate??w.daily_wage??w.wage??0)*attendanceFor(w),paid=paidFor(w),pending=Math.max(0,earned-paid);const amount=prompt(`Worker: ${w.name||'Worker'}\nTotal earnings: ${money(earned)}\nAlready paid: ${money(paid)}\nPending: ${money(pending)}\n\nआज कितना भुगतान किया?`,pending>0?String(pending):'');if(amount===null)return;const val=num(amount);if(!(val>0)){alert('सही payment amount डालें।');return}if(val>pending&&!confirm(`Payment ${money(val)} है जबकि pending ${money(pending)} है। फिर भी save करना है?`))return;const method=prompt('Payment method लिखें (UPI / Cash / Bank):','UPI');if(method===null)return;const ref=prompt('Reference / UTR number (optional):','');let receipt=null;const pick=document.createElement('input');pick.type='file';pick.accept='image/*,application/pdf';const file=await new Promise(resolve=>{pick.onchange=()=>resolve(pick.files[0]||null);pick.click();setTimeout(()=>{if(!pick.files.length)resolve(null)},120000)});if(file){try{receipt=await fileToDataUrl(file)}catch(e){alert('Receipt process नहीं हुई: '+e.message);return}}const user=(await sb.auth.getUser()).data?.user;const payload={worker_id:workerId,payment_date:today(),amount:val,payment_method:method.trim(),notes:'Admin worker payment',created_by:user?.id||null,receipt_url:receipt,reference_no:ref?.trim()||null};const {error}=await sb.from('worker_payments').insert(payload);if(error){alert('Payment save नहीं हुई: '+error.message);return}alert('✅ Worker payment save हो गई');await load()}
-  function fileToDataUrl(file){return new Promise((resolve,reject)=>{if(file.size>4*1024*1024)return reject(new Error('Receipt 4MB से छोटी रखें'));const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(new Error('File read failed'));r.readAsDataURL(file)})}
-  async function boot(){style();for(let i=0;i<80;i++){if(window.sb&&window.workers&&document.getElementById('workersList'))break;await wait(250)}if(!window.sb)return;await load();const originalLoadAll=window.loadAll;if(originalLoadAll&&!originalLoadAll.__workerPaymentWrapped){window.loadAll=async function(){const r=await originalLoadAll.apply(this,arguments);await load();return r};window.loadAll.__workerPaymentWrapped=true}}
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
-})();
-
-/* =========================================================
-   ADMIN WORKER FACE VERIFICATION
-   Uses the face already registered in workers.face_descriptor.
-========================================================= */
 (()=>{
 'use strict';
-let verifyStream=null,verifyBusy=false,verifyModels=false;
-const MODEL_URL='https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
-const stop=()=>{if(verifyStream){verifyStream.getTracks().forEach(t=>t.stop());verifyStream=null;}const v=document.getElementById('adminFaceVideo');if(v)v.srcObject=null;};
-const status=(id,text,ok)=>{const e=document.getElementById('faceVerifyStatus_'+id);if(e)e.innerHTML=`<div class="${ok?'faceVerifyOk':'faceVerifyErr'}">${text}</div>`};
-async function models(){if(verifyModels)return;await faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL);await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL);await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL);verifyModels=true;}
-function modal(){let m=document.getElementById('adminFaceModal');if(m)return m;m=document.createElement('div');m.className='modal';m.id='adminFaceModal';m.innerHTML=`<div class="modalBox" style="max-width:560px"><div class="modalHead"><h3>🔐 Worker Face Verification</h3><button class="close" type="button" onclick="closeAdminFaceVerify()">×</button></div><div id="adminFaceText" style="padding:10px;border-radius:10px;background:#eff6ff;color:#1d4ed8;font-weight:800;margin-bottom:12px">Camera शुरू हो रहा है...</div><div style="max-width:480px;margin:auto;background:#081827;border-radius:16px;overflow:hidden"><video id="adminFaceVideo" autoplay playsinline muted style="width:100%;display:block;transform:scaleX(-1)"></video></div><div class="modalActions"><button class="btn btn-light" type="button" onclick="closeAdminFaceVerify()">Cancel</button><button class="btn btn-green" type="button" id="adminFaceScanBtn">🔎 Verify Now</button></div></div>`;document.body.appendChild(m);m.addEventListener('click',e=>{if(e.target===m)window.closeAdminFaceVerify()});return m;}
-window.closeAdminFaceVerify=()=>{stop();document.getElementById('adminFaceModal')?.classList.remove('show');};
-window.verifyWorkerFace=async function(workerId){
- const w=(window.workers||[]).find(x=>String(x.id)===String(workerId));
- if(!w)return;
- if(!Array.isArray(w.face_descriptor)||w.face_descriptor.length!==128){status(workerId,'❌ इस Worker का registered face नहीं मिला। पहले Edit करके Face Register करें।',false);return;}
- const m=modal();document.getElementById('adminFaceModal').classList.add('show');document.getElementById('adminFaceText').textContent='Face model और camera तैयार हो रहा है...';
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+const esc=v=>String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
+const num=v=>{const n=Number(String(v??'').replace(/[^0-9.-]/g,''));return Number.isFinite(n)?n:0};
+const money=v=>'₹'+num(v).toLocaleString('en-IN');
+const today=()=>{const d=new Date(),z=n=>String(n).padStart(2,'0');return `${d.getFullYear()}-${z(d.getMonth()+1)}-${z(d.getDate())}`};
+let rows=[];
+let observerStarted=false;
+
+function styles(){
+ if(document.getElementById('workerPaymentOverlayStyles'))return;
+ const s=document.createElement('style');s.id='workerPaymentOverlayStyles';
+ s.textContent=`
+ .adminWorkerPay{margin:16px 0 4px;padding:15px;border:1px solid #e2e8f0;border-radius:15px;background:#f8fafc}
+ .adminWorkerPayTitle{font-size:17px;font-weight:900;margin-bottom:10px}
+ .adminWorkerPayGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+ .adminWorkerPayStat{background:#fff;border:1px solid #e5eaf0;border-radius:11px;padding:10px}
+ .adminWorkerPayStat span{display:block;font-size:11px;font-weight:800;color:#64748b}
+ .adminWorkerPayStat strong{display:block;margin-top:4px;font-size:18px}
+ .adminWorkerPayActions{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}
+ .adminWorkerPayHistory{margin-top:10px}
+ .adminWorkerPayHistory details{background:#fff;border:1px solid #e5eaf0;border-radius:10px;padding:8px}
+ .adminWorkerPayHistory table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px}
+ .adminWorkerPayHistory th,.adminWorkerPayHistory td{padding:7px;border-bottom:1px solid #edf0f3;text-align:left}
+ .adminUpi{background:#16a34a!important;color:#fff!important;border-color:#16a34a!important}
+ .adminReceipt{display:inline-block;margin-top:4px}
+ @media(max-width:700px){.adminWorkerPayGrid{grid-template-columns:1fr 1fr}.adminWorkerPayStat:last-child{grid-column:1/-1}}
+ `;
+ document.head.appendChild(s);
+}
+
+function attendanceDays(w){
+ const a=window.workerAttendanceMap?.[w.id];
+ if(a&&Number.isFinite(Number(a.present)))return Number(a.present);
+ const rows=window.__workerAttendanceRows||[];
+ let d=0;rows.filter(x=>String(x.worker_id)===String(w.id)).forEach(x=>{const st=String(x.status||'').toLowerCase();if(['present','p','yes','1','full day'].includes(st))d++;else if(['half','half day','0.5'].includes(st))d+=.5});
+ return d;
+}
+function paid(w){return rows.filter(p=>String(p.worker_id)===String(w.id)).reduce((s,p)=>s+num(p.amount),0)}
+function workerByCard(card,index){
+ const ws=window.workers||[];
+ const edit=card.querySelector('button[onclick*="editWorker("]');
+ const m=edit?.getAttribute('onclick')?.match(/editWorker\(['\"]([^'\"]+)/);
+ if(m){const w=ws.find(x=>String(x.id)===String(m[1]));if(w)return w}
+ return ws[index]||null;
+}
+function paymentRows(w){return rows.filter(p=>String(p.worker_id)===String(w.id))}
+function upiUrl(w,pending){
+ const pa=String(w.upi_id||'').trim();if(!pa||pending<=0)return '';
+ return `upi://pay?pa=${encodeURIComponent(pa)}&pn=${encodeURIComponent(w.name||w.worker_name||'Worker')}&am=${pending.toFixed(2)}&cu=INR`;
+}
+function panelHTML(w){
+ const wage=num(w.daily_rate??w.daily_wage??w.wage??w.daily_salary);
+ const days=attendanceDays(w),earned=wage*days,already=paid(w),pending=Math.max(0,earned-already),hist=paymentRows(w),upi=String(w.upi_id||'').trim(),link=upiUrl(w,pending);
+ return `<div class="adminWorkerPay" data-worker-payment-panel="${esc(w.id)}">
+   <div class="adminWorkerPayTitle">💰 Worker Payment</div>
+   <div class="adminWorkerPayGrid">
+    <div class="adminWorkerPayStat"><span>Total Earnings</span><strong>${money(earned)}</strong></div>
+    <div class="adminWorkerPayStat"><span>Paid / दिया हुआ</span><strong class="green">${money(already)}</strong></div>
+    <div class="adminWorkerPayStat"><span>Pending / बाकी</span><strong class="red">${money(pending)}</strong></div>
+   </div>
+   <div class="adminWorkerPayActions">
+    <button type="button" class="btn btn-primary btn-sm" onclick="adminWorkerPayment('${esc(w.id)}')">💸 Payment Update</button>
+    ${link?`<a class="btn btn-sm adminUpi" href="${esc(link)}">📲 UPI से ${money(pending)} Pay</a>`:''}
+    <button type="button" class="btn btn-light btn-sm" onclick="adminSetWorkerUpi('${esc(w.id)}')">📲 ${upi?'UPI Edit':'UPI Set'}</button>
+   </div>
+   ${upi?`<div style="font-size:12px;margin-top:7px;color:#64748b">UPI: <strong>${esc(upi)}</strong></div>`:''}
+   ${hist.length?`<div class="adminWorkerPayHistory"><details><summary>📜 Payment History (${hist.length})</summary><table><thead><tr><th>Date</th><th>Amount</th><th>Method</th><th>Receipt</th></tr></thead><tbody>${hist.map(p=>`<tr><td>${esc(p.payment_date||p.date||'—')}</td><td><strong>${money(p.amount)}</strong></td><td>${esc(p.payment_method||p.method||'—')}</td><td>${p.receipt_url?`<a class="btn btn-light btn-sm adminReceipt" href="${esc(p.receipt_url)}" target="_blank" rel="noopener">🧾 Receipt</a>`:'—'}</td></tr>`).join('')}</tbody></table></details></div>`:''}
+ </div>`;
+}
+function patchCards(){
+ const box=document.getElementById('workersList');
+ const ws=window.workers;
+ if(!box||!Array.isArray(ws))return;
+ const cards=[...box.querySelectorAll('.workerCard')];
+ cards.forEach((card,i)=>{
+  const w=workerByCard(card,i);if(!w)return;
+  const old=card.querySelector('[data-worker-payment-panel]');
+  if(old)old.remove();
+  const actions=card.querySelector('.actions');
+  if(!actions)return;
+  actions.insertAdjacentHTML('beforebegin',panelHTML(w));
+ });
+}
+async function loadRows(){
+ const sb=window.sb;if(!sb)return false;
  try{
-  await models();
-  verifyStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:640},height:{ideal:480}},audio:false});
-  const v=document.getElementById('adminFaceVideo');v.srcObject=verifyStream;await new Promise(r=>{v.onloadedmetadata=()=>r()});
-  document.getElementById('adminFaceText').textContent=`${w.name||'Worker'} का चेहरा camera के सामने रखें और Verify Now दबाएँ।`;
-  document.getElementById('adminFaceScanBtn').onclick=async()=>{
-   if(verifyBusy)return;verifyBusy=true;document.getElementById('adminFaceText').textContent='🔎 Face match हो रहा है...';
-   try{
-    const d=await faceapi.detectSingleFace(v,new faceapi.TinyFaceDetectorOptions({inputSize:320,scoreThreshold:.55})).withFaceLandmarks().withFaceDescriptor();
-    if(!d){document.getElementById('adminFaceText').textContent='❌ चेहरा detect नहीं हुआ।';return;}
-    const distance=faceapi.euclideanDistance(d.descriptor,new Float32Array(w.face_descriptor));
-    if(distance>.50){document.getElementById('adminFaceText').textContent=`❌ Face match नहीं हुआ (score ${(1-distance).toFixed(2)}).`;status(workerId,'❌ Verification failed — Attendance नहीं लगाई गई।',false);return;}
-    if(typeof window.saveWorkerAttendance==='function'){
-      await window.saveWorkerAttendance(workerId,'present');
-    }else{
-      const payload={worker_id:workerId,status:'present'};const q=await sb.from('worker_attendance').select('*').eq('worker_id',workerId);const rows=q.data||[];const td=today();const row=rows.find(r=>String(r.attendance_date||r.date||r.work_date||r.day||'').slice(0,10)===td);if(row)await sb.from('worker_attendance').update({status:'present'}).eq('id',row.id);else await sb.from('worker_attendance').insert({...payload,attendance_date:td});
-    }
-    document.getElementById('adminFaceText').textContent='✅ Face verified successfully!';status(workerId,'✅ Face Verified — आज की Attendance PRESENT कर दी गई।',true);await wait(700);window.closeAdminFaceVerify();if(typeof window.loadAll==='function')await window.loadAll();
-   }catch(e){document.getElementById('adminFaceText').textContent='❌ Verification error: '+e.message;status(workerId,'❌ Verification error: '+e.message,false)}finally{verifyBusy=false;}
-  };
- }catch(e){document.getElementById('adminFaceText').textContent='❌ Camera/model error: '+e.message;}
+  const r=await sb.from('worker_payments').select('*').order('payment_date',{ascending:false}).order('created_at',{ascending:false});
+  if(r.error){console.warn('worker_payments:',r.error);rows=[]}else rows=r.data||[];
+ }catch(e){console.warn('worker_payments load failed',e);rows=[]}
+ patchCards();return true;
+}
+function fileToDataUrl(file){return new Promise((resolve,reject)=>{if(!file)return resolve(null);if(file.size>4*1024*1024)return reject(new Error('Receipt 4MB से छोटी रखें'));const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(new Error('File read failed'));r.readAsDataURL(file)})}
+window.adminSetWorkerUpi=async function(workerId){
+ const sb=window.sb,w=(window.workers||[]).find(x=>String(x.id)===String(workerId));if(!sb||!w)return;
+ const current=w.upi_id||'';const value=prompt(`Worker: ${w.name||'Worker'}\nUPI ID डालें (जैसे 9876543210@upi):`,current);if(value===null)return;
+ const r=await sb.from('workers').update({upi_id:value.trim()||null}).eq('id',workerId);
+ if(r.error){toast('❌ UPI save नहीं हुआ: '+r.error.message);return}
+ w.upi_id=value.trim()||null;toast('✅ Worker UPI updated');await loadRows();
 };
-window.addEventListener('beforeunload',stop);
+window.adminWorkerPayment=async function(workerId){
+ const sb=window.sb,w=(window.workers||[]).find(x=>String(x.id)===String(workerId));if(!sb||!w)return;
+ const wage=num(w.daily_rate??w.daily_wage??w.wage??w.daily_salary),days=attendanceDays(w),earned=wage*days,already=paid(w),pending=Math.max(0,earned-already);
+ const amount=prompt(`Worker: ${w.name||'Worker'}\nTotal earnings: ${money(earned)}\nAlready paid: ${money(already)}\nPending: ${money(pending)}\n\nआज कितना payment दिया?`,pending>0?String(pending):'');
+ if(amount===null)return;const val=num(amount);if(val<=0)return toast('❌ सही payment amount डालें');
+ if(val>pending&&pending>0&&!confirm(`यह payment ${money(val)} है और pending ${money(pending)} है। फिर भी save करें?`))return;
+ const method=prompt('Payment method: UPI / Cash / Bank','UPI');if(method===null)return;
+ const ref=prompt('UTR / Reference number (optional)','');
+ const pick=document.createElement('input');pick.type='file';pick.accept='image/*,.pdf';
+ const file=await new Promise(resolve=>{let done=false;const finish=x=>{if(done)return;done=true;resolve(x)};pick.onchange=()=>finish(pick.files?.[0]||null);pick.click();setTimeout(()=>finish(null),120000)});
+ let receipt=null;try{receipt=await fileToDataUrl(file)}catch(e){return toast('❌ Receipt process नहीं हुई: '+e.message)}
+ const user=await sb.auth.getUser();
+ const payload={worker_id:workerId,payment_date:today(),amount:val,payment_method:method.trim(),notes:'Admin worker payment',created_by:user.data?.user?.id||null,receipt_url:receipt,reference_no:ref?.trim()||null};
+ const r=await sb.from('worker_payments').insert(payload);
+ if(r.error){toast('❌ Worker payment save नहीं हुई: '+r.error.message);return}
+ toast('✅ Worker payment save हो गई और receipt भी save हो गई');await loadRows();
+};
+async function boot(){
+ styles();
+ for(let i=0;i<100;i++){
+  if(window.sb&&document.getElementById('workersList'))break;
+  await wait(200);
+ }
+ if(!document.getElementById('workersList'))return;
+ await loadRows();
+ if(!observerStarted){
+  observerStarted=true;
+  const box=document.getElementById('workersList');
+  new MutationObserver(()=>{setTimeout(patchCards,30)}).observe(box,{childList:true,subtree:true});
+ }
+ // Dashboard loadAll is defined before this script, but wrap it without replacing its rendering.
+ const old=window.loadAll;
+ if(old&&!old.__adminWorkerPaymentWrapped){
+  const wrapped=async function(...args){const r=await old.apply(this,args);await wait(50);await loadRows();return r};
+  wrapped.__adminWorkerPaymentWrapped=true;window.loadAll=wrapped;
+ }
+ patchCards();
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
