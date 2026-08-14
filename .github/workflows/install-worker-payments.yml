@@ -1,0 +1,35 @@
+name: Install worker payment module
+on:
+  push:
+    paths:
+      - 'worker-payments.js'
+      - '.github/workflows/install-worker-payments.yml'
+permissions:
+  contents: write
+jobs:
+  install:
+    if: ${{ !contains(github.event.head_commit.message, 'Install worker payment module') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inject worker payment script into dashboard
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('dashboard.html')
+          s=p.read_text(encoding='utf-8')
+          tag='<script src="worker-payments.js"></script>'
+          if tag not in s:
+              marker='<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>'
+              if marker not in s:
+                  raise SystemExit('dashboard injection marker not found')
+              s=s.replace(marker,tag+'\n'+marker,1)
+              p.write_text(s,encoding='utf-8')
+          PY
+      - name: Commit dashboard injection
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add dashboard.html
+          git diff --cached --quiet || git commit -m 'Install worker payment module'
+          git push
