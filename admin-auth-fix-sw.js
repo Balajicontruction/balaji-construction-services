@@ -6,51 +6,44 @@ self.addEventListener('fetch',event=>{
   const u=new URL(event.request.url);
   if(event.request.method!=='GET' || !u.pathname.endsWith('/dashboard.html')) return;
   event.respondWith((async()=>{
-    const response=await fetch(event.request);
+    const response=await fetch(event.request,{cache:'no-store'});
     const type=response.headers.get('content-type')||'';
     if(!type.includes('text/html')) return response;
     let html=await response.text();
     const fix=`<script>
 (function(){
   try{
-    const SUPABASE_URL=${JSON.stringify(SUPABASE_URL)};
-    const SUPABASE_KEY=${JSON.stringify(SUPABASE_KEY)};
-    const client=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-    async function forceAdminSession(){
-      try{
-        let session=null;
-        const bridge=localStorage.getItem('balaji_admin_session');
-        if(bridge){
-          try{
-            const saved=JSON.parse(bridge);
-            if(saved&&saved.access_token&&saved.refresh_token){
-              const restored=await client.auth.setSession({access_token:saved.access_token,refresh_token:saved.refresh_token});
-              session=restored.data&&restored.data.session||null;
-            }
-          }catch(e){console.warn('Saved admin session restore failed',e)}
-        }
-        if(!session){
-          const r=await client.auth.getSession();
-          session=r.data&&r.data.session||null;
-        }
-        if(!session) return;
-        localStorage.setItem('balaji_admin_session',JSON.stringify({access_token:session.access_token,refresh_token:session.refresh_token}));
-        const auth=document.getElementById('auth');
-        const app=document.getElementById('app');
-        if(auth) auth.classList.add('hidden');
-        if(app) app.classList.remove('hidden');
-        const email=document.getElementById('userEmail');
-        if(email) email.textContent=session.user.email||localStorage.getItem('balaji_admin_email')||'';
-        if(typeof window.start==='function' && !(window.__balajiStarted)){window.__balajiStarted=true; await window.start(session.user);}
-      }catch(e){console.error('Admin session bootstrap failed',e);}
-    }
-    window.addEventListener('load',()=>setTimeout(forceAdminSession,50));
-    setTimeout(forceAdminSession,250);
-    setTimeout(forceAdminSession,1000);
-  }catch(e){console.error(e)}
+    if(!window.supabase || !window.supabase.createClient) return;
+    const originalCreateClient=window.supabase.createClient;
+    window.supabase.createClient=function(url,key,options){
+      const client=originalCreateClient.call(this,url,key,options);
+      if(url!==${JSON.stringify('https://iefxfyjmyssuiuyncfqz.supabase.co')}) return client;
+      const originalGetSession=client.auth.getSession.bind(client.auth);
+      const originalGetUser=client.auth.getUser.bind(client.auth);
+      const saved=localStorage.getItem('balaji_admin_session');
+      let restorePromise=null;
+      if(saved){
+        try{
+          const s=JSON.parse(saved);
+          if(s&&s.access_token&&s.refresh_token){
+            restorePromise=client.auth.setSession({access_token:s.access_token,refresh_token:s.refresh_token}).then(r=>r.data&&r.data.session||null).catch(()=>null);
+          }
+        }catch(e){}
+      }
+      client.auth.getSession=async function(){
+        if(restorePromise){const restored=await restorePromise;if(restored)return {data:{session:restored},error:null};}
+        return originalGetSession();
+      };
+      client.auth.getUser=async function(){
+        if(restorePromise){const restored=await restorePromise;if(restored)return {data:{user:restored.user},error:null};}
+        return originalGetUser();
+      };
+      return client;
+    };
+  }catch(e){console.error('BALAJI auth bootstrap',e)}
 })();
 </script>`;
-    html=html.replace('</body>',fix+'</body>');
+    html=html.replace('</head>',fix+'</head>');
     return new Response(html,{status:response.status,statusText:response.statusText,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'}});
   })());
 });
