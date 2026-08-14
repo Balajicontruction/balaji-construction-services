@@ -4,16 +4,22 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
-<title>BALAJI Construction • Worker Attendance</title>
+<title>BALAJI Construction • Worker Login</title>
 
+<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<!-- Face API -->
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
+
 <style>
+
 :root{
   --navy:#0b1f33;
   --orange:#f58220;
   --green:#16a34a;
   --red:#dc2626;
+  --blue:#2563eb;
   --bg:#f4f7fb;
   --white:#fff;
   --text:#142235;
@@ -44,7 +50,7 @@ body{
 }
 
 .card{
-  width:min(480px,100%);
+  width:min(500px,100%);
   background:#fff;
   border:1px solid var(--line);
   border-radius:24px;
@@ -105,6 +111,11 @@ input:focus{
   margin-top:15px;
 }
 
+.btn:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
+
 .primary{
   background:var(--orange);
   color:#fff;
@@ -122,6 +133,11 @@ input:focus{
 
 .red{
   background:#dc2626;
+  color:#fff;
+}
+
+.blue{
+  background:#2563eb;
   color:#fff;
 }
 
@@ -167,6 +183,10 @@ input:focus{
   display:grid;
   place-items:center;
   font-size:25px;
+}
+
+.worker-info{
+  flex:1;
 }
 
 .worker-info h2{
@@ -229,7 +249,7 @@ input:focus{
   border-radius:18px;
   overflow:hidden;
   background:#111827;
-  display:none;
+  position:relative;
 }
 
 .camera-box video{
@@ -237,11 +257,62 @@ input:focus{
   display:block;
   aspect-ratio:4/3;
   object-fit:cover;
+  transform:scaleX(-1);
 }
 
-.face-note{
-  padding:13px;
+.face-overlay{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+
+.face-guide{
+  position:absolute;
+  width:58%;
+  height:72%;
+  left:21%;
+  top:14%;
+  border:3px solid rgba(255,255,255,.8);
+  border-radius:50%;
+  box-shadow:0 0 0 999px rgba(0,0,0,.12);
+}
+
+.camera-status{
+  padding:12px;
   background:#fff;
+  color:var(--text);
+  font-size:13px;
+  font-weight:700;
+}
+
+.verification-box{
+  margin-top:15px;
+  padding:15px;
+  border-radius:15px;
+  background:#f8fafc;
+  border:1px solid var(--line);
+  text-align:center;
+}
+
+.verification-icon{
+  font-size:32px;
+}
+
+.verification-title{
+  font-weight:900;
+  margin-top:5px;
+}
+
+.distance{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:5px;
+}
+
+.loading{
+  text-align:center;
+  padding:10px;
+  color:var(--muted);
   font-size:13px;
 }
 
@@ -249,7 +320,15 @@ input:focus{
   margin-top:10px;
 }
 
+.small{
+  font-size:11px;
+  color:var(--muted);
+  line-height:1.5;
+  margin-top:10px;
+}
+
 @media(max-width:500px){
+
   .card{
     padding:18px;
   }
@@ -257,11 +336,18 @@ input:focus{
   .attendance-info{
     grid-template-columns:1fr;
   }
+
 }
+
 </style>
 </head>
 
 <body>
+
+
+<!-- =====================================================
+     LOGIN PAGE
+===================================================== -->
 
 <div id="loginPage" class="page">
 
@@ -309,7 +395,9 @@ input:focus{
         id="loginBtn"
         class="btn primary"
         type="submit">
+
         🔐 Worker Login
+
       </button>
 
     </form>
@@ -320,6 +408,10 @@ input:focus{
 
 </div>
 
+
+<!-- =====================================================
+     ATTENDANCE PAGE
+===================================================== -->
 
 <div id="attendancePage" class="page hidden">
 
@@ -346,28 +438,38 @@ input:focus{
     </div>
 
 
+    <!-- STATUS -->
+
     <div class="status-box">
 
       <div
         id="statusIcon"
         class="status-icon">
+
         🕘
+
       </div>
 
       <div
         id="statusTitle"
         class="status-title">
+
         Attendance
+
       </div>
 
       <div
         id="statusText"
         class="subtitle">
+
         आज की attendance check करें
+
       </div>
 
     </div>
 
+
+    <!-- INFO -->
 
     <div class="attendance-info">
 
@@ -383,6 +485,7 @@ input:focus{
 
       </div>
 
+
       <div class="info">
 
         <small>
@@ -395,6 +498,7 @@ input:focus{
 
       </div>
 
+
       <div class="info">
 
         <small>
@@ -406,6 +510,7 @@ input:focus{
         </b>
 
       </div>
+
 
       <div class="info">
 
@@ -422,33 +527,70 @@ input:focus{
     </div>
 
 
+    <!-- CAMERA -->
+
     <div
       id="cameraBox"
-      class="camera-box">
+      class="camera-box hidden">
 
       <video
         id="camera"
         autoplay
+        muted
         playsinline>
       </video>
 
-      <div class="face-note">
+      <div class="face-overlay">
 
-        📷 Camera खुलने के बाद अपना चेहरा कैमरे के सामने रखें।
+        <div class="face-guide"></div>
 
-        <br><br>
+      </div>
 
-        <b>
-          ध्यान दें:
-        </b>
+      <div
+        id="cameraStatus"
+        class="camera-status">
 
-        इस version में camera capture केवल verification प्रक्रिया के लिए तैयार किया गया है।
-        Attendance को अपने-आप verified घोषित नहीं किया जाएगा।
+        📷 चेहरा कैमरे के सामने रखें।
 
       </div>
 
     </div>
 
+
+    <!-- FACE VERIFICATION -->
+
+    <div
+      id="verificationBox"
+      class="verification-box">
+
+      <div
+        id="verificationIcon"
+        class="verification-icon">
+
+        🔒
+
+      </div>
+
+      <div
+        id="verificationTitle"
+        class="verification-title">
+
+        Face Verification बाकी है
+
+      </div>
+
+      <div
+        id="verificationDistance"
+        class="distance">
+
+        Camera खोलकर verification शुरू करें।
+
+      </div>
+
+    </div>
+
+
+    <!-- CAMERA BUTTON -->
 
     <button
       id="startCameraBtn"
@@ -460,6 +602,20 @@ input:focus{
     </button>
 
 
+    <!-- VERIFY BUTTON -->
+
+    <button
+      id="verifyBtn"
+      class="btn blue hidden"
+      onclick="verifyFace()">
+
+      🧠 Face Verify करें
+
+    </button>
+
+
+    <!-- CHECK IN -->
+
     <button
       id="checkInBtn"
       class="btn green hidden"
@@ -469,6 +625,8 @@ input:focus{
 
     </button>
 
+
+    <!-- CHECK OUT -->
 
     <button
       id="checkOutBtn"
@@ -489,7 +647,20 @@ input:focus{
     </button>
 
 
-    <div id="attendanceMessage"></div>
+    <div
+      id="attendanceMessage">
+    </div>
+
+
+    <div class="small">
+
+      सुरक्षा सूचना: Face matching browser में registered
+      face descriptor के विरुद्ध किया जाता है। वास्तविक
+      biometric identity/liveness verification के लिए
+      production में server-side validation और anti-spoofing
+      जोड़ना उचित है।
+
+    </div>
 
   </div>
 
@@ -509,38 +680,64 @@ const sb = window.supabase.createClient(
 
 
 /* =========================================================
-   GLOBAL
+   FACE API MODEL URL
 ========================================================= */
 
-let session = null;
-let worker = null;
-let attendance = null;
-let cameraStream = null;
-
-const q = id => document.getElementById(id);
+const MODEL_URL =
+  'https://justadudewhohacks.github.io/face-api.js/models';
 
 
 /* =========================================================
-   HELPERS
+   GLOBAL VARIABLES
 ========================================================= */
 
-function esc(v){
+let session = null;
 
-  return String(v ?? '')
-    .replace(/[&<>"']/g,c=>({
+let worker = null;
 
-      '&':'&amp;',
-      '<':'&lt;',
-      '>':'&gt;',
-      '"':'&quot;',
-      "'":'&#39;'
+let attendance = null;
 
-    }[c]));
+let cameraStream = null;
 
-}
+let faceModelsLoaded = false;
+
+let faceVerified = false;
+
+let lastFaceDistance = null;
 
 
-function message(text,type='notice'){
+/*
+  Face matching threshold.
+
+  Lower = ज्यादा strict
+  Higher = ज्यादा tolerant
+
+  0.50 काफी strict
+  0.55 balanced
+  0.60 tolerant
+
+  शुरुआत में 0.55 रखा गया है।
+*/
+
+const FACE_MATCH_THRESHOLD = 0.55;
+
+
+/* =========================================================
+   HELPER
+========================================================= */
+
+const q = id =>
+  document.getElementById(id);
+
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+function message(
+  text,
+  type='notice'
+){
 
   const box =
     q('attendanceMessage');
@@ -552,7 +749,14 @@ function message(text,type='notice'){
 }
 
 
-function loginMessage(text,type='error'){
+/* =========================================================
+   LOGIN MESSAGE
+========================================================= */
+
+function loginMessage(
+  text,
+  type='error'
+){
 
   const box =
     q('loginMessage');
@@ -564,14 +768,36 @@ function loginMessage(text,type='error'){
 }
 
 
+/* =========================================================
+   TODAY
+========================================================= */
+
 function today(){
 
-  return new Date()
-    .toISOString()
-    .slice(0,10);
+  const d =
+    new Date();
+
+  const year =
+    d.getFullYear();
+
+  const month =
+    String(
+      d.getMonth()+1
+    ).padStart(2,'0');
+
+  const day =
+    String(
+      d.getDate()
+    ).padStart(2,'0');
+
+  return `${year}-${month}-${day}`;
 
 }
 
+
+/* =========================================================
+   TIME
+========================================================= */
 
 function formatTime(value){
 
@@ -592,10 +818,87 @@ function formatTime(value){
 
 
 /* =========================================================
+   LOAD FACE MODELS
+========================================================= */
+
+async function loadFaceModels(){
+
+  if(faceModelsLoaded)
+    return true;
+
+  try{
+
+    q('verificationIcon')
+      .textContent='⏳';
+
+    q('verificationTitle')
+      .textContent=
+      'Face system load हो रहा है...';
+
+    await faceapi
+      .nets.tinyFaceDetector
+      .loadFromUri(MODEL_URL);
+
+    await faceapi
+      .nets.faceLandmark68Net
+      .loadFromUri(MODEL_URL);
+
+    await faceapi
+      .nets.faceRecognitionNet
+      .loadFromUri(MODEL_URL);
+
+    faceModelsLoaded=true;
+
+    q('verificationIcon')
+      .textContent='🔒';
+
+    q('verificationTitle')
+      .textContent=
+      'Face Verification तैयार है';
+
+    q('verificationDistance')
+      .textContent=
+      'Camera खोलें।';
+
+    return true;
+
+  }catch(err){
+
+    console.error(
+      'Face model error:',
+      err
+    );
+
+    q('verificationIcon')
+      .textContent='❌';
+
+    q('verificationTitle')
+      .textContent=
+      'Face system load नहीं हुआ';
+
+    q('verificationDistance')
+      .textContent=
+      err.message ||
+      'Models load नहीं हो पाए।';
+
+    message(
+      'Face verification models load नहीं हुए। Internet connection और HTTPS check करें।',
+      'error'
+    );
+
+    return false;
+
+  }
+
+}
+
+
+/* =========================================================
    LOGIN
 ========================================================= */
 
-q('loginForm').addEventListener(
+q('loginForm')
+.addEventListener(
   'submit',
   async e => {
 
@@ -609,6 +912,7 @@ q('loginForm').addEventListener(
 
     if(!email || !password)
       return;
+
 
     q('loginBtn').disabled=true;
 
@@ -624,10 +928,11 @@ q('loginForm').addEventListener(
         data,
         error
       } =
-      await sb.auth.signInWithPassword({
-        email,
-        password
-      });
+      await sb.auth
+        .signInWithPassword({
+          email,
+          password
+        });
 
 
       if(error)
@@ -640,7 +945,9 @@ q('loginForm').addEventListener(
         );
 
 
-      session=data.session;
+      session =
+        data.session;
+
 
       await loadWorker();
 
@@ -687,11 +994,17 @@ async function loadWorker(){
         phone,
         village,
         work_role,
-        daily_rate
+        daily_rate,
+        user_id,
+        auth_user_id,
+        login_email,
+        login_id,
+        face_descriptor,
+        face_registered,
+        active
       `)
-      .eq(
-        'user_id',
-        session.user.id
+      .or(
+        `user_id.eq.${session.user.id},auth_user_id.eq.${session.user.id}`
       )
       .maybeSingle();
 
@@ -702,20 +1015,23 @@ async function loadWorker(){
 
     if(!data){
 
-      /*
-        Important:
-        Worker account और workers row के बीच
-        user_id relation होना जरूरी है.
-      */
-
       throw new Error(
-        'इस Login Account से कोई Worker profile जुड़ी नहीं है। Admin Dashboard में Worker account/profile सही तरह link करें।'
+        'इस Login Account से Worker profile जुड़ी नहीं है।'
       );
 
     }
 
 
     worker=data;
+
+
+    if(worker.active === false){
+
+      throw new Error(
+        'यह Worker account अभी inactive है।'
+      );
+
+    }
 
 
     q('loginPage')
@@ -725,14 +1041,20 @@ async function loadWorker(){
       .classList.remove('hidden');
 
 
-    q('workerName').textContent =
-      worker.name || 'Worker';
+    q('workerName')
+      .textContent =
+      worker.name ||
+      'Worker';
 
-    q('workerRole').textContent =
-      worker.work_role || 'Worker';
+
+    q('workerRole')
+      .textContent =
+      worker.work_role ||
+      'Worker';
 
 
-    q('todayDate').textContent =
+    q('todayDate')
+      .textContent =
       new Date()
         .toLocaleDateString(
           'hi-IN'
@@ -740,6 +1062,13 @@ async function loadWorker(){
 
 
     await loadTodayAttendance();
+
+
+    /*
+      Face models background में load
+    */
+
+    await loadFaceModels();
 
 
   }catch(err){
@@ -765,7 +1094,7 @@ async function loadWorker(){
 
 
 /* =========================================================
-   TODAY ATTENDANCE
+   LOAD TODAY ATTENDANCE
 ========================================================= */
 
 async function loadTodayAttendance(){
@@ -796,17 +1125,22 @@ async function loadTodayAttendance(){
 
     console.error(error);
 
-    return message(
+    message(
       'आज की attendance load नहीं हुई: '+
       error.message,
       'error'
     );
 
+    return;
+
   }
 
 
-  attendance=data || null;
+  attendance =
+    data || null;
 
+
+  faceVerified=false;
 
   renderAttendance();
 
@@ -819,19 +1153,22 @@ async function loadTodayAttendance(){
 
 function renderAttendance(){
 
-  q('checkInTime').textContent =
+  q('checkInTime')
+    .textContent =
     formatTime(
       attendance?.check_in
     );
 
 
-  q('checkOutTime').textContent =
+  q('checkOutTime')
+    .textContent =
     formatTime(
       attendance?.check_out
     );
 
 
-  q('faceStatus').textContent =
+  q('faceStatus')
+    .textContent =
     attendance?.face_verified
       ? '✅ Verified'
       : 'Pending';
@@ -840,22 +1177,43 @@ function renderAttendance(){
   q('checkInBtn')
     .classList.add('hidden');
 
+
   q('checkOutBtn')
+    .classList.add('hidden');
+
+
+  q('verifyBtn')
     .classList.add('hidden');
 
 
   if(!attendance){
 
-    q('statusIcon').textContent='🕘';
+    q('statusIcon')
+      .textContent='🕘';
 
-    q('statusTitle').textContent=
+    q('statusTitle')
+      .textContent=
       'Check-in बाकी है';
 
-    q('statusText').textContent=
-      'पहले Face Verification करें।';
+    q('statusText')
+      .textContent=
+      'Face Verification करके Check-in करें।';
 
-    q('checkInBtn')
-      .classList.remove('hidden');
+    if(faceVerified){
+
+      q('checkInBtn')
+        .classList.remove('hidden');
+
+    }else{
+
+      if(cameraStream){
+
+        q('verifyBtn')
+          .classList.remove('hidden');
+
+      }
+
+    }
 
     return;
 
@@ -867,16 +1225,32 @@ function renderAttendance(){
     !attendance.check_out
   ){
 
-    q('statusIcon').textContent='🟢';
+    q('statusIcon')
+      .textContent='🟢';
 
-    q('statusTitle').textContent=
+    q('statusTitle')
+      .textContent=
       'आप आज Present हैं';
 
-    q('statusText').textContent=
-      'Check-out के समय फिर से verification करें।';
+    q('statusText')
+      .textContent=
+      'Check-out के लिए Face Verification करें।';
 
-    q('checkOutBtn')
-      .classList.remove('hidden');
+    if(faceVerified){
+
+      q('checkOutBtn')
+        .classList.remove('hidden');
+
+    }else{
+
+      if(cameraStream){
+
+        q('verifyBtn')
+          .classList.remove('hidden');
+
+      }
+
+    }
 
     return;
 
@@ -888,12 +1262,15 @@ function renderAttendance(){
     attendance.check_out
   ){
 
-    q('statusIcon').textContent='✅';
+    q('statusIcon')
+      .textContent='✅';
 
-    q('statusTitle').textContent=
+    q('statusTitle')
+      .textContent=
       'आज की Attendance Complete';
 
-    q('statusText').textContent=
+    q('statusText')
+      .textContent=
       'Check-in और Check-out दोनों दर्ज हैं।';
 
   }
@@ -902,15 +1279,28 @@ function renderAttendance(){
 
 
 /* =========================================================
-   CAMERA
+   START CAMERA
 ========================================================= */
 
 async function startCamera(){
 
   try{
 
-    if(!navigator.mediaDevices ||
-       !navigator.mediaDevices.getUserMedia){
+    if(!faceModelsLoaded){
+
+      const loaded =
+        await loadFaceModels();
+
+      if(!loaded)
+        return;
+
+    }
+
+
+    if(
+      !navigator.mediaDevices ||
+      !navigator.mediaDevices.getUserMedia
+    ){
 
       throw new Error(
         'इस browser में Camera access उपलब्ध नहीं है।'
@@ -919,22 +1309,44 @@ async function startCamera(){
     }
 
 
+    if(cameraStream){
+
+      stopCamera();
+
+    }
+
+
     cameraStream =
       await navigator.mediaDevices
         .getUserMedia({
+
           video:{
-            facingMode:'user'
+            facingMode:'user',
+            width:{
+              ideal:640
+            },
+            height:{
+              ideal:480
+            }
           },
+
           audio:false
+
         });
 
 
-    q('camera').srcObject =
+    const video =
+      q('camera');
+
+    video.srcObject =
       cameraStream;
 
 
+    await video.play();
+
+
     q('cameraBox')
-      .style.display='block';
+      .classList.remove('hidden');
 
 
     q('startCameraBtn')
@@ -942,9 +1354,48 @@ async function startCamera(){
       '📷 Camera चालू है';
 
 
-    message(
-      'Camera चालू है। Face verification के लिए चेहरा कैमरे के सामने रखें।'
-    );
+    q('startCameraBtn')
+      .disabled=true;
+
+
+    q('cameraStatus')
+      .textContent=
+      '👤 चेहरा अंडाकार के अंदर रखें।';
+
+
+    q('verificationIcon')
+      .textContent='🔎';
+
+    q('verificationTitle')
+      .textContent=
+      'Face Verification के लिए तैयार';
+
+
+    q('verificationDistance')
+      .textContent=
+      'अब Face Verify करें।';
+
+
+    if(
+      !worker.face_registered ||
+      !worker.face_descriptor
+    ){
+
+      message(
+        'इस Worker का registered face descriptor उपलब्ध नहीं है। पहले Dashboard में Face Registration करें।',
+        'error'
+      );
+
+      return;
+
+    }
+
+
+    q('verifyBtn')
+      .classList.remove('hidden');
+
+
+    renderAttendance();
 
 
   }catch(err){
@@ -972,36 +1423,173 @@ function stopCamera(){
 
     cameraStream
       .getTracks()
-      .forEach(track=>{
-        track.stop();
-      });
+      .forEach(
+        track => track.stop()
+      );
 
     cameraStream=null;
 
   }
 
+
+  const video =
+    q('camera');
+
+  if(video)
+    video.srcObject=null;
+
+
+  q('cameraBox')
+    .classList.add('hidden');
+
 }
 
 
 /* =========================================================
-   FACE VERIFICATION PLACEHOLDER
+   NORMALIZE DESCRIPTOR
 ========================================================= */
 
-/*
-  IMPORTANT:
+function normalizeDescriptor(value){
 
-  यह function अभी वास्तविक biometric face matching नहीं करता।
+  if(!value)
+    return null;
 
-  जब Admin Dashboard में worker का वास्तविक
-  face descriptor register होगा, तब इसी जगह
-  registered descriptor और live camera face
-  का comparison जोड़ा जाएगा।
 
-  बिना actual matching के attendance को
-  "face verified" नहीं किया जा रहा है।
-*/
+  /*
+    Possible formats:
+
+    [0.1,0.2...]
+
+    {"descriptor":[...]}
+
+    {"values":[...]}
+
+    Float32Array
+  */
+
+
+  if(
+    Array.isArray(value)
+  ){
+
+    return new Float32Array(
+      value.map(Number)
+    );
+
+  }
+
+
+  if(
+    value.descriptor &&
+    Array.isArray(
+      value.descriptor
+    )
+  ){
+
+    return new Float32Array(
+      value.descriptor.map(Number)
+    );
+
+  }
+
+
+  if(
+    value.values &&
+    Array.isArray(
+      value.values
+    )
+  ){
+
+    return new Float32Array(
+      value.values.map(Number)
+    );
+
+  }
+
+
+  return null;
+
+}
+
+
+/* =========================================================
+   GET REGISTERED DESCRIPTOR
+========================================================= */
+
+function getRegisteredDescriptor(){
+
+  const descriptor =
+    normalizeDescriptor(
+      worker.face_descriptor
+    );
+
+
+  if(!descriptor)
+    return null;
+
+
+  if(descriptor.length !== 128)
+    return null;
+
+
+  return descriptor;
+
+}
+
+
+/* =========================================================
+   REAL FACE VERIFICATION
+========================================================= */
 
 async function verifyFace(){
+
+  faceVerified=false;
+
+  lastFaceDistance=null;
+
+
+  if(!worker){
+
+    message(
+      'Worker profile उपलब्ध नहीं है।',
+      'error'
+    );
+
+    return false;
+
+  }
+
+
+  if(
+    !worker.face_registered ||
+    !worker.face_descriptor
+  ){
+
+    message(
+      'Worker का registered face उपलब्ध नहीं है। पहले Dashboard में Face Registration करें।',
+      'error'
+    );
+
+    return false;
+
+  }
+
+
+  const registered =
+    getRegisteredDescriptor();
+
+
+  if(!registered){
+
+    message(
+      'Registered face descriptor सही format में नहीं है। Dashboard में face दोबारा register करें।',
+      'error'
+    );
+
+    return false;
+
+  }
+
 
   if(!cameraStream){
 
@@ -1015,19 +1603,283 @@ async function verifyFace(){
   }
 
 
-  message(
-    'Face verification अभी पूरा setup नहीं है। Admin में Face Registration और biometric matching जोड़ने के बाद यह step active होगा।',
-    'notice'
-  );
+  const video =
+    q('camera');
 
 
-  return false;
+  if(
+    !video ||
+    video.readyState < 2
+  ){
+
+    message(
+      'Camera अभी तैयार नहीं है।',
+      'error'
+    );
+
+    return false;
+
+  }
+
+
+  q('verifyBtn')
+    .disabled=true;
+
+  q('verifyBtn')
+    .textContent=
+    '🔎 Face scan हो रहा है...';
+
+
+  q('verificationIcon')
+    .textContent='🔎';
+
+  q('verificationTitle')
+    .textContent=
+    'चेहरा scan हो रहा है...';
+
+  q('verificationDistance')
+    .textContent=
+    'कृपया चेहरा स्थिर रखें।';
+
+
+  try{
+
+    /*
+      Tiny Face Detector
+    */
+
+    const options =
+      new faceapi
+        .TinyFaceDetectorOptions({
+          inputSize:320,
+          scoreThreshold:0.5
+        });
+
+
+    /*
+      Detect ALL faces.
+    */
+
+    const detections =
+      await faceapi
+        .detectAllFaces(
+          video,
+          options
+        )
+        .withFaceLandmarks()
+        .withFaceDescriptors();
+
+
+    /*
+      No face
+    */
+
+    if(
+      !detections ||
+      detections.length === 0
+    ){
+
+      q('verificationIcon')
+        .textContent='❌';
+
+      q('verificationTitle')
+        .textContent=
+        'चेहरा नहीं मिला';
+
+      q('verificationDistance')
+        .textContent=
+        'चेहरा कैमरे के सामने साफ रखें।';
+
+      message(
+        'Face detect नहीं हुआ। Camera के सामने सीधे देखें।',
+        'error'
+      );
+
+      return false;
+
+    }
+
+
+    /*
+      Multiple faces
+    */
+
+    if(
+      detections.length > 1
+    ){
+
+      q('verificationIcon')
+        .textContent='⚠️';
+
+      q('verificationTitle')
+        .textContent=
+        'एक से अधिक चेहरे मिले';
+
+      q('verificationDistance')
+        .textContent=
+        'केवल Worker का चेहरा camera में होना चाहिए।';
+
+      message(
+        'Camera में केवल Worker का एक चेहरा होना चाहिए।',
+        'error'
+      );
+
+      return false;
+
+    }
+
+
+    /*
+      One face
+    */
+
+    const liveDescriptor =
+      detections[0]
+        .descriptor;
+
+
+    /*
+      Euclidean distance
+    */
+
+    const distance =
+      faceapi.euclideanDistance(
+        registered,
+        liveDescriptor
+      );
+
+
+    lastFaceDistance =
+      distance;
+
+
+    q('verificationDistance')
+      .textContent=
+      'Face distance: '+
+      distance.toFixed(4);
+
+
+    /*
+      Match
+    */
+
+    if(
+      distance <=
+      FACE_MATCH_THRESHOLD
+    ){
+
+      faceVerified=true;
+
+
+      q('verificationIcon')
+        .textContent='✅';
+
+      q('verificationTitle')
+        .textContent=
+        'Face Verified';
+
+      q('verificationDistance')
+        .textContent=
+        'Match सफल • Distance: '+
+        distance.toFixed(4);
+
+
+      q('faceStatus')
+        .textContent=
+        '✅ Verified';
+
+
+      message(
+        '✅ Face Verification सफल हो गया। अब Attendance दर्ज की जा सकती है।',
+        'success'
+      );
+
+
+      /*
+        Verification button hide
+      */
+
+      q('verifyBtn')
+        .classList.add('hidden');
+
+
+      /*
+        Attendance buttons
+      */
+
+      renderAttendance();
+
+
+      return true;
+
+    }
+
+
+    /*
+      No match
+    */
+
+    faceVerified=false;
+
+
+    q('verificationIcon')
+      .textContent='❌';
+
+    q('verificationTitle')
+      .textContent=
+      'Face Match नहीं हुआ';
+
+    q('verificationDistance')
+      .textContent=
+      'Distance: '+
+      distance.toFixed(4)+
+      ' • Required ≤ '+
+      FACE_MATCH_THRESHOLD;
+
+
+    message(
+      '❌ यह चेहरा Registered Worker से match नहीं हुआ।',
+      'error'
+    );
+
+
+    return false;
+
+
+  }catch(err){
+
+    console.error(
+      'Face verification error:',
+      err
+    );
+
+
+    message(
+      'Face verification में समस्या: '+
+      err.message,
+      'error'
+    );
+
+
+    return false;
+
+
+  }finally{
+
+    q('verifyBtn')
+      .disabled=false;
+
+    q('verifyBtn')
+      .textContent=
+      '🧠 Face Verify करें';
+
+  }
 
 }
 
 
 /* =========================================================
-   CHECK-IN
+   CHECK IN
 ========================================================= */
 
 async function requestCheckIn(){
@@ -1036,17 +1888,24 @@ async function requestCheckIn(){
     return;
 
 
-  const verified =
-    await verifyFace();
+  if(!faceVerified){
 
+    const verified =
+      await verifyFace();
 
-  if(!verified)
-    return;
+    if(!verified)
+      return;
+
+  }
 
 
   const now =
     new Date()
       .toISOString();
+
+
+  q('checkInBtn')
+    .disabled=true;
 
 
   const {
@@ -1093,29 +1952,44 @@ async function requestCheckIn(){
 
     console.error(error);
 
-    return message(
+    q('checkInBtn')
+      .disabled=false;
+
+    message(
       'Check-in save नहीं हुआ: '+
       error.message,
       'error'
     );
+
+    return;
 
   }
 
 
   attendance=data;
 
+  faceVerified=false;
+
   renderAttendance();
+
 
   message(
     '🟢 Check-in successfully दर्ज हो गया।',
     'success'
   );
 
+
+  /*
+    Camera बंद
+  */
+
+  stopCamera();
+
 }
 
 
 /* =========================================================
-   CHECK-OUT
+   CHECK OUT
 ========================================================= */
 
 async function requestCheckOut(){
@@ -1127,34 +2001,45 @@ async function requestCheckOut(){
 
   if(!attendance.check_in){
 
-    return message(
+    message(
       'पहले Check-in करें।',
       'error'
     );
+
+    return;
 
   }
 
 
   if(attendance.check_out){
 
-    return message(
+    message(
       'आज का Check-out पहले ही हो चुका है।'
     );
+
+    return;
 
   }
 
 
-  const verified =
-    await verifyFace();
+  if(!faceVerified){
 
+    const verified =
+      await verifyFace();
 
-  if(!verified)
-    return;
+    if(!verified)
+      return;
+
+  }
 
 
   const now =
     new Date()
       .toISOString();
+
+
+  q('checkOutBtn')
+    .disabled=true;
 
 
   const {
@@ -1190,23 +2075,34 @@ async function requestCheckOut(){
 
     console.error(error);
 
-    return message(
+    q('checkOutBtn')
+      .disabled=false;
+
+    message(
       'Check-out save नहीं हुआ: '+
       error.message,
       'error'
     );
+
+    return;
 
   }
 
 
   attendance=data;
 
+  faceVerified=false;
+
   renderAttendance();
+
 
   message(
     '🔴 Check-out successfully दर्ज हो गया।',
     'success'
   );
+
+
+  stopCamera();
 
 }
 
@@ -1221,9 +2117,15 @@ async function logout(){
 
   await sb.auth.signOut();
 
+
   session=null;
+
   worker=null;
+
   attendance=null;
+
+  faceVerified=false;
+
 
   q('attendancePage')
     .classList.add('hidden');
@@ -1231,7 +2133,15 @@ async function logout(){
   q('loginPage')
     .classList.remove('hidden');
 
+
   q('password').value='';
+
+
+  q('email').value='';
+
+
+  q('cameraBox')
+    .classList.add('hidden');
 
 }
 
@@ -1242,17 +2152,26 @@ async function logout(){
 
 async function checkSession(){
 
-  const {
-    data
-  } =
-  await sb.auth.getSession();
+  try{
+
+    const {
+      data
+    } =
+    await sb.auth.getSession();
 
 
-  if(data.session){
+    if(data.session){
 
-    session=data.session;
+      session =
+        data.session;
 
-    await loadWorker();
+      await loadWorker();
+
+    }
+
+  }catch(err){
+
+    console.error(err);
 
   }
 
@@ -1264,11 +2183,26 @@ async function checkSession(){
 ========================================================= */
 
 sb.auth.onAuthStateChange(
-  (event,newSession)=>{
+  (
+    event,
+    newSession
+  ) => {
 
-    if(event==='SIGNED_OUT'){
+    if(
+      event ===
+      'SIGNED_OUT'
+    ){
 
       stopCamera();
+
+      session=null;
+
+      worker=null;
+
+      attendance=null;
+
+      faceVerified=false;
+
 
       q('attendancePage')
         .classList.add('hidden');
