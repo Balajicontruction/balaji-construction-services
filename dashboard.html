@@ -3454,7 +3454,7 @@ function openWorkerModal(id=''){
       w.daily_salary ??
       '';
 
-    document.getElementById('workerVillage').value=w.village||'';
+    document.getElementById('workerVillage').value=w.village||'';document.getElementById('workerUpi').value=w.upi_id||'';
     const wa=workerAttendanceMap[w.id];
     document.getElementById('workerAttendanceStatus').value='';
 
@@ -3515,7 +3515,10 @@ document.getElementById(
         ),
 
       village:
-        document.getElementById('workerVillage').value.trim()
+        document.getElementById('workerVillage').value.trim(),
+
+      upi_id:
+        document.getElementById('workerUpi').value.trim()
 
     };
 
