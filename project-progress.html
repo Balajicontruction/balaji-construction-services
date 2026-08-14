@@ -1,2 +1,590 @@
 <!doctype html>
-<html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BALAJI • Project Progress</title></head><body style="margin:0;background:#f4f7fb"><iframe src="project-progress-photos.html" title="Project Progress Photo Upload" style="display:block;width:100%;height:100vh;min-height:900px;border:0"></iframe></body></html>
+<html lang="hi">
+
+<head>
+
+<meta charset="utf-8">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1"
+>
+
+<title>BALAJI • Project Progress</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,"Noto Sans Devanagari",sans-serif;
+  background:#f4f7fb;
+  color:#142235;
+}
+
+.wrap{
+  max-width:1000px;
+  margin:auto;
+  padding:20px;
+}
+
+.box{
+  background:#fff;
+  border:1px solid #e4e9f0;
+  border-radius:18px;
+  padding:20px;
+  margin-bottom:16px;
+  box-shadow:0 5px 20px rgba(15,23,42,.05);
+}
+
+h1,
+h2,
+h3{
+  margin-top:0;
+}
+
+.muted{
+  color:#64748b;
+}
+
+.status{
+  padding:12px;
+  border-radius:10px;
+  margin:12px 0;
+  font-weight:700;
+}
+
+.ok{
+  background:#f0fdf4;
+  color:#15803d;
+  border:1px solid #bbf7d0;
+}
+
+.err{
+  background:#fef2f2;
+  color:#dc2626;
+  border:1px solid #fecaca;
+}
+
+.info{
+  background:#eff6ff;
+  color:#1d4ed8;
+  border:1px solid #bfdbfe;
+}
+
+.project{
+  background:#fff7ed;
+  border:1px solid #fed7aa;
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:18px;
+}
+
+.progressArea{
+  margin-top:15px;
+}
+
+.progressBar{
+  height:18px;
+  background:#e5e7eb;
+  border-radius:20px;
+  overflow:hidden;
+}
+
+.progressFill{
+  height:100%;
+  width:0%;
+  background:#f58220;
+  transition:.5s;
+}
+
+.progressNumber{
+  font-size:28px;
+  font-weight:900;
+  margin-bottom:8px;
+}
+
+.update{
+  border:1px solid #e2e8f0;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:16px;
+  background:#fff;
+}
+
+.date{
+  color:#64748b;
+  font-size:13px;
+  margin-bottom:8px;
+}
+
+.work{
+  font-size:18px;
+  font-weight:900;
+  margin-bottom:8px;
+}
+
+.details{
+  line-height:1.6;
+}
+
+.photo{
+  width:100%;
+  max-height:500px;
+  object-fit:cover;
+  border-radius:14px;
+  margin-top:14px;
+  cursor:pointer;
+}
+
+.empty{
+  text-align:center;
+  padding:35px 15px;
+  color:#64748b;
+}
+
+@media(max-width:700px){
+
+  .wrap{
+    padding:12px;
+  }
+
+  .box{
+    padding:15px;
+  }
+
+  .photo{
+    max-height:350px;
+  }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="wrap">
+
+
+<div class="box">
+
+<h1>📈 Project Progress</h1>
+
+<p class="muted">
+आपके Project में अब तक हुए काम की जानकारी और Photos
+</p>
+
+<div id="message"></div>
+
+<div id="projectInfo"></div>
+
+</div>
+
+
+<div class="box">
+
+<h2>📋 काम की Updates</h2>
+
+<div id="updates">
+
+Loading...
+
+</div>
+
+</div>
+
+
+</div>
+
+
+<script>
+
+const SUPABASE_URL =
+'https://iefxfyjmyssuiuyncfqz.supabase.co';
+
+const SUPABASE_KEY =
+'sb_publishable_45zaRM5LLByFABddU5hm9g_4UwfnT7t';
+
+const sb =
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+const params =
+new URLSearchParams(
+  window.location.search
+);
+
+
+const projectId =
+params.get('project_id');
+
+
+function esc(value){
+
+  return String(value ?? '')
+    .replace(/[&<>"']/g,c=>({
+
+      '&':'&amp;',
+      '<':'&lt;',
+      '>':'&gt;',
+      '"':'&quot;',
+      "'":'&#39;'
+
+    }[c]));
+
+}
+
+
+function message(text,type='info'){
+
+  document.getElementById(
+    'message'
+  ).innerHTML =
+  `<div class="status ${type}">
+    ${text}
+  </div>`;
+
+}
+
+
+async function loadProject(){
+
+  if(!projectId){
+
+    message(
+      '❌ Project नहीं चुना गया।',
+      'err'
+    );
+
+    document.getElementById(
+      'updates'
+    ).innerHTML =
+    '<div class="empty">Project उपलब्ध नहीं है।</div>';
+
+    return;
+
+  }
+
+
+  const {
+    data,
+    error
+  } =
+  await sb
+  .from('projects')
+  .select(`
+    id,
+    project_name,
+    work_type,
+    location,
+    status
+  `)
+  .eq('id',projectId)
+  .single();
+
+
+  if(error){
+
+    message(
+      '❌ Project load नहीं हुआ।',
+      'err'
+    );
+
+    return;
+
+  }
+
+
+  document.getElementById(
+    'projectInfo'
+  ).innerHTML = `
+
+    <div class="project">
+
+      <h2>
+        🏠 ${esc(
+          data.project_name ||
+          'Project'
+        )}
+      </h2>
+
+      <p>
+        <b>काम:</b>
+        ${esc(data.work_type || '—')}
+      </p>
+
+      <p>
+        <b>स्थान:</b>
+        ${esc(data.location || '—')}
+      </p>
+
+      <p>
+        <b>Status:</b>
+        ${esc(data.status || '—')}
+      </p>
+
+      <div class="progressArea">
+
+        <div class="progressNumber">
+          <span id="currentProgress">
+            0
+          </span>%
+        </div>
+
+        <div class="progressBar">
+
+          <div
+            id="progressFill"
+            class="progressFill"
+          ></div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  `;
+
+
+  await loadUpdates();
+
+}
+
+
+async function loadUpdates(){
+
+  const {
+    data,
+    error
+  } =
+  await sb
+  .from('project_updates')
+  .select(`
+    id,
+    update_date,
+    title,
+    details,
+    progress_percent,
+    photo_url,
+    created_at
+  `)
+  .eq(
+    'project_id',
+    projectId
+  )
+  .order(
+    'update_date',
+    {
+      ascending:false
+    }
+  )
+  .order(
+    'created_at',
+    {
+      ascending:false
+    }
+  );
+
+
+  if(error){
+
+    document.getElementById(
+      'updates'
+    ).innerHTML =
+    `<div class="status err">
+      ${esc(error.message)}
+    </div>`;
+
+    return;
+
+  }
+
+
+  if(!data?.length){
+
+    document.getElementById(
+      'updates'
+    ).innerHTML = `
+
+      <div class="empty">
+
+        📋 अभी कोई Progress Update उपलब्ध नहीं है।
+
+      </div>
+
+    `;
+
+    return;
+
+  }
+
+
+  /*
+    सबसे नई update की progress
+  */
+
+  const latestProgress =
+  Number(
+    data[0].progress_percent || 0
+  );
+
+
+  const progress =
+  Math.max(
+    0,
+    Math.min(100,latestProgress)
+  );
+
+
+  const current =
+  document.getElementById(
+    'currentProgress'
+  );
+
+  const fill =
+  document.getElementById(
+    'progressFill'
+  );
+
+
+  if(current)
+    current.textContent =
+    progress;
+
+
+  if(fill)
+    fill.style.width =
+    progress+'%';
+
+
+  /*
+    सभी updates
+  */
+
+  document.getElementById(
+    'updates'
+  ).innerHTML =
+
+  data.map(update=>{
+
+    const progress =
+    Math.max(
+      0,
+      Math.min(
+        100,
+        Number(
+          update.progress_percent || 0
+        )
+      )
+    );
+
+
+    return `
+
+      <div class="update">
+
+        <div class="date">
+
+          📅
+          ${esc(
+            update.update_date ||
+            'Date नहीं'
+          )}
+
+        </div>
+
+
+        <div class="work">
+
+          🏗️
+          ${esc(
+            update.title ||
+            'काम का Update'
+          )}
+
+        </div>
+
+
+        <div class="details">
+
+          ${esc(
+            update.details || ''
+          ).replace(
+            /\n/g,
+            '<br>'
+          )}
+
+        </div>
+
+
+        <br>
+
+
+        <div>
+
+          <b>
+            📊 उस दिन की Progress:
+            ${progress}%
+          </b>
+
+        </div>
+
+
+        ${
+          update.photo_url
+
+          ?
+
+          `
+
+          <a
+            href="${esc(update.photo_url)}"
+            target="_blank"
+            rel="noopener"
+          >
+
+            <img
+              class="photo"
+              src="${esc(update.photo_url)}"
+              alt="Project Progress Photo"
+              loading="lazy"
+            >
+
+          </a>
+
+          `
+
+          :
+
+          ''
+
+        }
+
+      </div>
+
+    `;
+
+  }).join('');
+
+}
+
+
+loadProject();
+
+</script>
+
+</body>
+
+</html>
