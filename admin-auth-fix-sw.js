@@ -42,6 +42,26 @@ self.addEventListener('fetch',event=>{
     };
   }catch(e){console.error('BALAJI auth bootstrap',e)}
 })();
+</script>
+<script>
+(function(){
+  // Dashboard अब public Staff Login page नहीं दिखाएगा।
+  // Valid admin session न होने पर सीधे एक ही Admin Login page पर भेजेगा।
+  function enforceAdminOnly(){
+    try{
+      const auth=document.getElementById('auth');
+      const app=document.getElementById('app');
+      if(!auth || !app) return;
+      const visible=getComputedStyle(auth).display!=='none' && !auth.classList.contains('hidden');
+      const appVisible=getComputedStyle(app).display!=='none' && !app.classList.contains('hidden');
+      if(visible && !appVisible){
+        window.location.replace('admin-login.html');
+      }
+    }catch(e){}
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',()=>setTimeout(enforceAdminOnly,900));
+  else setTimeout(enforceAdminOnly,900);
+})();
 </script>`;
     html=html.replace('</head>',fix+'</head>');
     return new Response(html,{status:response.status,statusText:response.statusText,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'}});
