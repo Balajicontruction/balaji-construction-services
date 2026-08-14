@@ -1,0 +1,1294 @@
+<!doctype html>
+<html lang="hi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>BALAJI Construction • Worker Attendance</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root{
+  --navy:#0b1f33;
+  --orange:#f58220;
+  --green:#16a34a;
+  --red:#dc2626;
+  --bg:#f4f7fb;
+  --white:#fff;
+  --text:#142235;
+  --muted:#6b7788;
+  --line:#e4e9f0;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:Arial,"Noto Sans Devanagari",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+.hidden{
+  display:none!important;
+}
+
+.page{
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  padding:20px;
+}
+
+.card{
+  width:min(480px,100%);
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:25px;
+  box-shadow:0 20px 60px #00000012;
+}
+
+.logo{
+  width:65px;
+  height:65px;
+  border-radius:19px;
+  background:linear-gradient(135deg,#ffb34f,#f47718);
+  display:grid;
+  place-items:center;
+  color:#fff;
+  font-weight:900;
+  font-size:24px;
+  margin:auto;
+}
+
+h1{
+  text-align:center;
+  margin:15px 0 5px;
+}
+
+.subtitle{
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
+}
+
+label{
+  display:block;
+  font-weight:800;
+  font-size:13px;
+  margin:16px 0 7px;
+}
+
+input{
+  width:100%;
+  padding:13px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  outline:none;
+}
+
+input:focus{
+  border-color:var(--orange);
+}
+
+.btn{
+  width:100%;
+  border:0;
+  border-radius:13px;
+  padding:13px 16px;
+  font-weight:800;
+  cursor:pointer;
+  margin-top:15px;
+}
+
+.primary{
+  background:var(--orange);
+  color:#fff;
+}
+
+.secondary{
+  background:#eef2f7;
+  color:var(--text);
+}
+
+.green{
+  background:#16a34a;
+  color:#fff;
+}
+
+.red{
+  background:#dc2626;
+  color:#fff;
+}
+
+.notice{
+  padding:13px;
+  border-radius:13px;
+  background:#fff7ed;
+  margin-top:15px;
+  font-size:13px;
+}
+
+.error{
+  padding:13px;
+  border-radius:13px;
+  background:#fee2e2;
+  color:#991b1b;
+  margin-top:15px;
+  font-size:13px;
+}
+
+.success{
+  padding:13px;
+  border-radius:13px;
+  background:#dcfce7;
+  color:#166534;
+  margin-top:15px;
+  font-size:13px;
+}
+
+.worker-head{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding-bottom:18px;
+  border-bottom:1px solid var(--line);
+}
+
+.worker-avatar{
+  width:55px;
+  height:55px;
+  border-radius:16px;
+  background:#eef2f7;
+  display:grid;
+  place-items:center;
+  font-size:25px;
+}
+
+.worker-info h2{
+  margin:0;
+  font-size:18px;
+}
+
+.worker-info div{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:3px;
+}
+
+.status-box{
+  text-align:center;
+  padding:20px 10px;
+  margin-top:18px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:#f8fafc;
+}
+
+.status-icon{
+  font-size:45px;
+}
+
+.status-title{
+  font-size:20px;
+  font-weight:900;
+  margin-top:7px;
+}
+
+.attendance-info{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:15px;
+}
+
+.info{
+  padding:13px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:#fff;
+}
+
+.info small{
+  display:block;
+  color:var(--muted);
+  margin-bottom:5px;
+}
+
+.info b{
+  font-size:14px;
+}
+
+.camera-box{
+  margin-top:18px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  overflow:hidden;
+  background:#111827;
+  display:none;
+}
+
+.camera-box video{
+  width:100%;
+  display:block;
+  aspect-ratio:4/3;
+  object-fit:cover;
+}
+
+.face-note{
+  padding:13px;
+  background:#fff;
+  font-size:13px;
+}
+
+.logout{
+  margin-top:10px;
+}
+
+@media(max-width:500px){
+  .card{
+    padding:18px;
+  }
+
+  .attendance-info{
+    grid-template-columns:1fr;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div id="loginPage" class="page">
+
+  <div class="card">
+
+    <div class="logo">
+      BC
+    </div>
+
+    <h1>
+      Worker Login
+    </h1>
+
+    <div class="subtitle">
+      BALAJI Construction Services
+    </div>
+
+    <form id="loginForm">
+
+      <label>
+        Worker Login Email
+      </label>
+
+      <input
+        id="email"
+        type="email"
+        placeholder="worker@example.com"
+        required
+        autocomplete="username"
+      >
+
+      <label>
+        Password
+      </label>
+
+      <input
+        id="password"
+        type="password"
+        placeholder="Password"
+        required
+        autocomplete="current-password"
+      >
+
+      <button
+        id="loginBtn"
+        class="btn primary"
+        type="submit">
+        🔐 Worker Login
+      </button>
+
+    </form>
+
+    <div id="loginMessage"></div>
+
+  </div>
+
+</div>
+
+
+<div id="attendancePage" class="page hidden">
+
+  <div class="card">
+
+    <div class="worker-head">
+
+      <div class="worker-avatar">
+        👷
+      </div>
+
+      <div class="worker-info">
+
+        <h2 id="workerName">
+          Worker
+        </h2>
+
+        <div id="workerRole">
+          Worker
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="status-box">
+
+      <div
+        id="statusIcon"
+        class="status-icon">
+        🕘
+      </div>
+
+      <div
+        id="statusTitle"
+        class="status-title">
+        Attendance
+      </div>
+
+      <div
+        id="statusText"
+        class="subtitle">
+        आज की attendance check करें
+      </div>
+
+    </div>
+
+
+    <div class="attendance-info">
+
+      <div class="info">
+
+        <small>
+          📅 आज की तारीख
+        </small>
+
+        <b id="todayDate">
+          —
+        </b>
+
+      </div>
+
+      <div class="info">
+
+        <small>
+          🟢 Check-in
+        </small>
+
+        <b id="checkInTime">
+          —
+        </b>
+
+      </div>
+
+      <div class="info">
+
+        <small>
+          🔴 Check-out
+        </small>
+
+        <b id="checkOutTime">
+          —
+        </b>
+
+      </div>
+
+      <div class="info">
+
+        <small>
+          📷 Face Verification
+        </small>
+
+        <b id="faceStatus">
+          Pending
+        </b>
+
+      </div>
+
+    </div>
+
+
+    <div
+      id="cameraBox"
+      class="camera-box">
+
+      <video
+        id="camera"
+        autoplay
+        playsinline>
+      </video>
+
+      <div class="face-note">
+
+        📷 Camera खुलने के बाद अपना चेहरा कैमरे के सामने रखें।
+
+        <br><br>
+
+        <b>
+          ध्यान दें:
+        </b>
+
+        इस version में camera capture केवल verification प्रक्रिया के लिए तैयार किया गया है।
+        Attendance को अपने-आप verified घोषित नहीं किया जाएगा।
+
+      </div>
+
+    </div>
+
+
+    <button
+      id="startCameraBtn"
+      class="btn secondary"
+      onclick="startCamera()">
+
+      📷 Camera खोलें
+
+    </button>
+
+
+    <button
+      id="checkInBtn"
+      class="btn green hidden"
+      onclick="requestCheckIn()">
+
+      🟢 Check-in करें
+
+    </button>
+
+
+    <button
+      id="checkOutBtn"
+      class="btn red hidden"
+      onclick="requestCheckOut()">
+
+      🔴 Check-out करें
+
+    </button>
+
+
+    <button
+      class="btn secondary logout"
+      onclick="logout()">
+
+      Logout
+
+    </button>
+
+
+    <div id="attendanceMessage"></div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   SUPABASE
+========================================================= */
+
+const sb = window.supabase.createClient(
+  'https://iefxfyjmyssuiuyncfqz.supabase.co',
+  'sb_publishable_45zaRM5LLByFABddU5hm9g_4UwfnT7t'
+);
+
+
+/* =========================================================
+   GLOBAL
+========================================================= */
+
+let session = null;
+let worker = null;
+let attendance = null;
+let cameraStream = null;
+
+const q = id => document.getElementById(id);
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+function esc(v){
+
+  return String(v ?? '')
+    .replace(/[&<>"']/g,c=>({
+
+      '&':'&amp;',
+      '<':'&lt;',
+      '>':'&gt;',
+      '"':'&quot;',
+      "'":'&#39;'
+
+    }[c]));
+
+}
+
+
+function message(text,type='notice'){
+
+  const box =
+    q('attendanceMessage');
+
+  box.className = type;
+
+  box.textContent = text;
+
+}
+
+
+function loginMessage(text,type='error'){
+
+  const box =
+    q('loginMessage');
+
+  box.className = type;
+
+  box.textContent = text;
+
+}
+
+
+function today(){
+
+  return new Date()
+    .toISOString()
+    .slice(0,10);
+
+}
+
+
+function formatTime(value){
+
+  if(!value)
+    return '—';
+
+  return new Date(value)
+    .toLocaleTimeString(
+      'en-IN',
+      {
+        hour:'2-digit',
+        minute:'2-digit',
+        second:'2-digit'
+      }
+    );
+
+}
+
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+q('loginForm').addEventListener(
+  'submit',
+  async e => {
+
+    e.preventDefault();
+
+    const email =
+      q('email').value.trim();
+
+    const password =
+      q('password').value;
+
+    if(!email || !password)
+      return;
+
+    q('loginBtn').disabled=true;
+
+    q('loginBtn').textContent=
+      'Login हो रहा है...';
+
+    loginMessage('');
+
+
+    try{
+
+      const {
+        data,
+        error
+      } =
+      await sb.auth.signInWithPassword({
+        email,
+        password
+      });
+
+
+      if(error)
+        throw error;
+
+
+      if(!data.session)
+        throw new Error(
+          'Worker session नहीं बनी।'
+        );
+
+
+      session=data.session;
+
+      await loadWorker();
+
+
+    }catch(err){
+
+      console.error(err);
+
+      loginMessage(
+        err.message ||
+        'Login failed'
+      );
+
+    }finally{
+
+      q('loginBtn').disabled=false;
+
+      q('loginBtn').textContent=
+        '🔐 Worker Login';
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   LOAD WORKER
+========================================================= */
+
+async function loadWorker(){
+
+  try{
+
+    const {
+      data,
+      error
+    } =
+    await sb
+      .from('workers')
+      .select(`
+        id,
+        name,
+        phone,
+        village,
+        work_role,
+        daily_rate
+      `)
+      .eq(
+        'user_id',
+        session.user.id
+      )
+      .maybeSingle();
+
+
+    if(error)
+      throw error;
+
+
+    if(!data){
+
+      /*
+        Important:
+        Worker account और workers row के बीच
+        user_id relation होना जरूरी है.
+      */
+
+      throw new Error(
+        'इस Login Account से कोई Worker profile जुड़ी नहीं है। Admin Dashboard में Worker account/profile सही तरह link करें।'
+      );
+
+    }
+
+
+    worker=data;
+
+
+    q('loginPage')
+      .classList.add('hidden');
+
+    q('attendancePage')
+      .classList.remove('hidden');
+
+
+    q('workerName').textContent =
+      worker.name || 'Worker';
+
+    q('workerRole').textContent =
+      worker.work_role || 'Worker';
+
+
+    q('todayDate').textContent =
+      new Date()
+        .toLocaleDateString(
+          'hi-IN'
+        );
+
+
+    await loadTodayAttendance();
+
+
+  }catch(err){
+
+    console.error(err);
+
+    await sb.auth.signOut();
+
+    q('attendancePage')
+      .classList.add('hidden');
+
+    q('loginPage')
+      .classList.remove('hidden');
+
+    loginMessage(
+      err.message ||
+      'Worker profile load नहीं हुई।'
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   TODAY ATTENDANCE
+========================================================= */
+
+async function loadTodayAttendance(){
+
+  if(!worker)
+    return;
+
+
+  const {
+    data,
+    error
+  } =
+  await sb
+    .from('worker_attendance')
+    .select('*')
+    .eq(
+      'worker_id',
+      worker.id
+    )
+    .eq(
+      'attendance_date',
+      today()
+    )
+    .maybeSingle();
+
+
+  if(error){
+
+    console.error(error);
+
+    return message(
+      'आज की attendance load नहीं हुई: '+
+      error.message,
+      'error'
+    );
+
+  }
+
+
+  attendance=data || null;
+
+
+  renderAttendance();
+
+}
+
+
+/* =========================================================
+   RENDER ATTENDANCE
+========================================================= */
+
+function renderAttendance(){
+
+  q('checkInTime').textContent =
+    formatTime(
+      attendance?.check_in
+    );
+
+
+  q('checkOutTime').textContent =
+    formatTime(
+      attendance?.check_out
+    );
+
+
+  q('faceStatus').textContent =
+    attendance?.face_verified
+      ? '✅ Verified'
+      : 'Pending';
+
+
+  q('checkInBtn')
+    .classList.add('hidden');
+
+  q('checkOutBtn')
+    .classList.add('hidden');
+
+
+  if(!attendance){
+
+    q('statusIcon').textContent='🕘';
+
+    q('statusTitle').textContent=
+      'Check-in बाकी है';
+
+    q('statusText').textContent=
+      'पहले Face Verification करें।';
+
+    q('checkInBtn')
+      .classList.remove('hidden');
+
+    return;
+
+  }
+
+
+  if(
+    attendance.check_in &&
+    !attendance.check_out
+  ){
+
+    q('statusIcon').textContent='🟢';
+
+    q('statusTitle').textContent=
+      'आप आज Present हैं';
+
+    q('statusText').textContent=
+      'Check-out के समय फिर से verification करें।';
+
+    q('checkOutBtn')
+      .classList.remove('hidden');
+
+    return;
+
+  }
+
+
+  if(
+    attendance.check_in &&
+    attendance.check_out
+  ){
+
+    q('statusIcon').textContent='✅';
+
+    q('statusTitle').textContent=
+      'आज की Attendance Complete';
+
+    q('statusText').textContent=
+      'Check-in और Check-out दोनों दर्ज हैं।';
+
+  }
+
+}
+
+
+/* =========================================================
+   CAMERA
+========================================================= */
+
+async function startCamera(){
+
+  try{
+
+    if(!navigator.mediaDevices ||
+       !navigator.mediaDevices.getUserMedia){
+
+      throw new Error(
+        'इस browser में Camera access उपलब्ध नहीं है।'
+      );
+
+    }
+
+
+    cameraStream =
+      await navigator.mediaDevices
+        .getUserMedia({
+          video:{
+            facingMode:'user'
+          },
+          audio:false
+        });
+
+
+    q('camera').srcObject =
+      cameraStream;
+
+
+    q('cameraBox')
+      .style.display='block';
+
+
+    q('startCameraBtn')
+      .textContent=
+      '📷 Camera चालू है';
+
+
+    message(
+      'Camera चालू है। Face verification के लिए चेहरा कैमरे के सामने रखें।'
+    );
+
+
+  }catch(err){
+
+    console.error(err);
+
+    message(
+      'Camera access नहीं मिला: '+
+      err.message,
+      'error'
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   STOP CAMERA
+========================================================= */
+
+function stopCamera(){
+
+  if(cameraStream){
+
+    cameraStream
+      .getTracks()
+      .forEach(track=>{
+        track.stop();
+      });
+
+    cameraStream=null;
+
+  }
+
+}
+
+
+/* =========================================================
+   FACE VERIFICATION PLACEHOLDER
+========================================================= */
+
+/*
+  IMPORTANT:
+
+  यह function अभी वास्तविक biometric face matching नहीं करता।
+
+  जब Admin Dashboard में worker का वास्तविक
+  face descriptor register होगा, तब इसी जगह
+  registered descriptor और live camera face
+  का comparison जोड़ा जाएगा।
+
+  बिना actual matching के attendance को
+  "face verified" नहीं किया जा रहा है।
+*/
+
+async function verifyFace(){
+
+  if(!cameraStream){
+
+    message(
+      'पहले Camera खोलें।',
+      'error'
+    );
+
+    return false;
+
+  }
+
+
+  message(
+    'Face verification अभी पूरा setup नहीं है। Admin में Face Registration और biometric matching जोड़ने के बाद यह step active होगा।',
+    'notice'
+  );
+
+
+  return false;
+
+}
+
+
+/* =========================================================
+   CHECK-IN
+========================================================= */
+
+async function requestCheckIn(){
+
+  if(!worker)
+    return;
+
+
+  const verified =
+    await verifyFace();
+
+
+  if(!verified)
+    return;
+
+
+  const now =
+    new Date()
+      .toISOString();
+
+
+  const {
+    data,
+    error
+  } =
+  await sb
+    .from('worker_attendance')
+    .upsert({
+
+      worker_id:
+        worker.id,
+
+      attendance_date:
+        today(),
+
+      check_in:
+        now,
+
+      status:
+        'present',
+
+      face_verified:
+        true,
+
+      check_in_face_verified:
+        true,
+
+      created_by:
+        session.user.id,
+
+      updated_at:
+        now
+
+    },{
+      onConflict:
+        'worker_id,attendance_date'
+    })
+    .select()
+    .single();
+
+
+  if(error){
+
+    console.error(error);
+
+    return message(
+      'Check-in save नहीं हुआ: '+
+      error.message,
+      'error'
+    );
+
+  }
+
+
+  attendance=data;
+
+  renderAttendance();
+
+  message(
+    '🟢 Check-in successfully दर्ज हो गया।',
+    'success'
+  );
+
+}
+
+
+/* =========================================================
+   CHECK-OUT
+========================================================= */
+
+async function requestCheckOut(){
+
+  if(!worker ||
+     !attendance)
+    return;
+
+
+  if(!attendance.check_in){
+
+    return message(
+      'पहले Check-in करें।',
+      'error'
+    );
+
+  }
+
+
+  if(attendance.check_out){
+
+    return message(
+      'आज का Check-out पहले ही हो चुका है।'
+    );
+
+  }
+
+
+  const verified =
+    await verifyFace();
+
+
+  if(!verified)
+    return;
+
+
+  const now =
+    new Date()
+      .toISOString();
+
+
+  const {
+    data,
+    error
+  } =
+  await sb
+    .from('worker_attendance')
+    .update({
+
+      check_out:
+        now,
+
+      check_out_face_verified:
+        true,
+
+      face_verified:
+        true,
+
+      updated_at:
+        now
+
+    })
+    .eq(
+      'id',
+      attendance.id
+    )
+    .select()
+    .single();
+
+
+  if(error){
+
+    console.error(error);
+
+    return message(
+      'Check-out save नहीं हुआ: '+
+      error.message,
+      'error'
+    );
+
+  }
+
+
+  attendance=data;
+
+  renderAttendance();
+
+  message(
+    '🔴 Check-out successfully दर्ज हो गया।',
+    'success'
+  );
+
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+async function logout(){
+
+  stopCamera();
+
+  await sb.auth.signOut();
+
+  session=null;
+  worker=null;
+  attendance=null;
+
+  q('attendancePage')
+    .classList.add('hidden');
+
+  q('loginPage')
+    .classList.remove('hidden');
+
+  q('password').value='';
+
+}
+
+
+/* =========================================================
+   SESSION CHECK
+========================================================= */
+
+async function checkSession(){
+
+  const {
+    data
+  } =
+  await sb.auth.getSession();
+
+
+  if(data.session){
+
+    session=data.session;
+
+    await loadWorker();
+
+  }
+
+}
+
+
+/* =========================================================
+   AUTH LISTENER
+========================================================= */
+
+sb.auth.onAuthStateChange(
+  (event,newSession)=>{
+
+    if(event==='SIGNED_OUT'){
+
+      stopCamera();
+
+      q('attendancePage')
+        .classList.add('hidden');
+
+      q('loginPage')
+        .classList.remove('hidden');
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   START
+========================================================= */
+
+checkSession();
+
+</script>
+
+</body>
+</html>
