@@ -9,36 +9,17 @@
 
 <style>
 :root{
---n:#0b1f33;
---o:#f58220;
---g:#16a34a;
---bg:#f4f7fb;
---c:#fff;
---t:#142235;
---m:#6b7788;
---l:#e4e9f0;
---r:#dc2626
+--n:#0b1f33;--o:#f58220;--g:#16a34a;--bg:#f4f7fb;
+--c:#fff;--t:#142235;--m:#6b7788;--l:#e4e9f0;--r:#dc2626
 }
 *{box-sizing:border-box}
 body{
-margin:0;
-font-family:Arial,"Noto Sans Devanagari",sans-serif;
-background:var(--bg);
-color:var(--t)
+margin:0;font-family:Arial,"Noto Sans Devanagari",sans-serif;
+background:var(--bg);color:var(--t)
 }
 button,input,select,textarea{font:inherit}
 button{cursor:pointer}
 .hidden{display:none!important}
-
-.btn{
-border:0;
-border-radius:12px;
-padding:12px 16px;
-font-weight:800
-}
-.primary{background:var(--o);color:#fff}
-.secondary{background:#eef2f7;color:var(--t)}
-.danger{background:#fee2e2;color:#991b1b}
 
 .shell{
 display:grid;
@@ -55,35 +36,20 @@ top:0;
 height:100vh
 }
 
+.logo{
+width:56px;height:56px;border-radius:18px;
+background:linear-gradient(135deg,#ffb34f,#f47718);
+display:grid;place-items:center;
+color:#fff;font-weight:900;font-size:22px
+}
+
 .brand{
-display:flex;
-gap:14px;
-align-items:center;
+display:flex;gap:14px;align-items:center;
 margin-bottom:24px
 }
 
-.logo{
-width:56px;
-height:56px;
-border-radius:18px;
-background:linear-gradient(135deg,#ffb34f,#f47718);
-display:grid;
-place-items:center;
-color:#fff;
-font-weight:900;
-font-size:22px
-}
-
-.brand h1{
-margin:0;
-font-size:21px
-}
-
-.brand p{
-margin:3px 0;
-color:var(--m);
-font-size:12px
-}
+.brand h1{margin:0;font-size:21px}
+.brand p{margin:3px 0;color:#9fb0c0;font-size:12px}
 
 .side nav button{
 width:100%;
@@ -116,19 +82,14 @@ gap:15px;
 margin-bottom:22px
 }
 
-.top h1{
-margin:0;
-font-size:28px
-}
+.top h1{margin:0;font-size:28px}
 
 .muted{
 color:var(--m);
 font-size:13px
 }
 
-.userbox,
-.row,
-.actions{
+.userbox,.row,.actions{
 display:flex;
 gap:9px;
 align-items:center;
@@ -141,8 +102,7 @@ grid-template-columns:repeat(5,1fr);
 gap:15px
 }
 
-.stat,
-.panel{
+.stat,.panel{
 background:var(--c);
 border:1px solid var(--l);
 border-radius:19px;
@@ -150,7 +110,6 @@ padding:19px
 }
 
 .stat small{color:var(--m)}
-
 .stat .num{
 font-size:27px;
 font-weight:900;
@@ -158,11 +117,7 @@ margin-top:4px
 }
 
 .panel{margin-top:17px}
-
-.panel h2{
-margin:0 0 14px;
-font-size:19px
-}
+.panel h2{margin:0 0 14px;font-size:19px}
 
 .forms{
 display:grid;
@@ -179,9 +134,7 @@ font-size:13px;
 margin:13px 0 6px
 }
 
-input,
-select,
-textarea{
+input,select,textarea{
 width:100%;
 padding:12px 13px;
 border:1px solid var(--l);
@@ -191,6 +144,17 @@ background:#fff
 
 textarea{min-height:90px}
 
+.btn{
+border:0;
+border-radius:12px;
+padding:12px 16px;
+font-weight:800
+}
+
+.primary{background:var(--o);color:#fff}
+.secondary{background:#eef2f7;color:var(--t)}
+.danger{background:#fee2e2;color:#991b1b}
+
 .tablewrap{overflow:auto}
 
 .table{
@@ -199,8 +163,7 @@ border-collapse:collapse;
 min-width:720px
 }
 
-.table th,
-.table td{
+.table th,.table td{
 padding:11px 9px;
 border-bottom:1px solid var(--l);
 text-align:left;
@@ -344,8 +307,7 @@ color:#991b1b
 }
 
 .customer-mini-photo{
-width:48px;
-height:48px;
+width:48px;height:48px;
 border-radius:12px;
 object-fit:cover;
 vertical-align:middle;
@@ -355,8 +317,7 @@ background:#eef2f7
 }
 
 .customer-mini-placeholder{
-width:48px;
-height:48px;
+width:48px;height:48px;
 border-radius:12px;
 background:#eef2f7;
 display:inline-grid;
@@ -398,8 +359,7 @@ border-bottom:1px solid var(--l)
 }
 
 .profile-big-photo{
-width:120px;
-height:120px;
+width:120px;height:120px;
 border-radius:22px;
 object-fit:cover;
 border:1px solid var(--l);
@@ -407,8 +367,7 @@ background:#eef2f7
 }
 
 .profile-big-placeholder{
-width:120px;
-height:120px;
+width:120px;height:120px;
 border-radius:22px;
 background:#eef2f7;
 display:grid;
@@ -436,21 +395,12 @@ color:var(--m);
 margin-bottom:5px
 }
 
-.profile-field b{
-word-break:break-word
-}
-
-.view-profile-btn{
-background:#e0f2fe;
-color:#075985
-}
+.profile-field b{word-break:break-word}
 
 .project-click{
 cursor:pointer;
 color:#075985
 }
-
-.project-click:hover{text-decoration:underline}
 
 .project-progress-box{
 margin-top:18px;
@@ -494,60 +444,34 @@ border:1px solid var(--l)
 }
 
 @media(max-width:1100px){
-.grid{
-grid-template-columns:repeat(3,1fr)
-}
+.grid{grid-template-columns:repeat(3,1fr)}
 }
 
 @media(max-width:950px){
-.shell{
-grid-template-columns:1fr
-}
-
+.shell{grid-template-columns:1fr}
 .side{
 position:static;
 height:auto
 }
-
 .side nav{
 display:grid;
 grid-template-columns:repeat(3,1fr)
 }
-
-.grid{
-grid-template-columns:repeat(2,1fr)
-}
+.grid{grid-template-columns:repeat(2,1fr)}
 }
 
 @media(max-width:600px){
-.main{
-padding:15px
-}
-
-.side nav{
-grid-template-columns:repeat(2,1fr)
-}
-
-.grid,
-.forms,
-.report,
-.profile-fields{
+.main{padding:15px}
+.side nav{grid-template-columns:repeat(2,1fr)}
+.grid,.forms,.report,.profile-fields{
 grid-template-columns:1fr
 }
-
-.full{
-grid-column:auto
-}
-
+.full{grid-column:auto}
 .top{
 align-items:flex-start;
 flex-direction:column
 }
-
-.enquiry-actions{
-min-width:0
-}
-
+.enquiry-actions{min-width:0}
 .profile-head{
 align-items:flex-start;
 flex-direction:column
@@ -558,26 +482,64 @@ flex-direction:column
 
 <body>
 
-<!--
-========================================================
-IMPORTANT:
-यहाँ कोई Staff Login / Admin Login form नहीं है।
-Dashboard केवल verified Supabase Admin session के बाद खुलेगा।
-========================================================
--->
+<!-- ================================
+     DIRECT ADMIN DASHBOARD
+     NO LOGIN FORM HERE
+================================ -->
+
+<div id="loadingScreen"
+style="
+min-height:100vh;
+display:grid;
+place-items:center;
+background:#0b1f33;
+color:#fff;
+font-family:Arial,sans-serif;
+text-align:center;
+padding:25px;
+">
+<div>
+<div style="
+width:70px;
+height:70px;
+border-radius:20px;
+background:#f58220;
+display:grid;
+place-items:center;
+font-weight:900;
+font-size:25px;
+margin:auto auto 18px;
+">BC</div>
+
+<h2 style="margin:0 0 8px">BALAJI Construction</h2>
+
+<div style="opacity:.8">
+Admin session verify हो रही है...
+</div>
+</div>
+</div>
+
 
 <div id="app" class="shell hidden">
 
 <aside class="side">
 
 <div class="brand">
+
 <div class="logo">BC</div>
 
 <div>
-<h1 style="color:#fff;font-size:17px">BALAJI</h1>
-<p style="color:#9fb0c0">Admin Dashboard</p>
+<h1 style="color:#fff;font-size:17px">
+BALAJI
+</h1>
+
+<p style="color:#9fb0c0">
+Private Management
+</p>
 </div>
+
 </div>
+
 
 <nav>
 
@@ -623,6 +585,7 @@ Dashboard केवल verified Supabase Admin session के बाद खु�
 
 </nav>
 
+
 <button
 class="btn secondary"
 style="width:100%;margin-top:18px"
@@ -639,21 +602,25 @@ Logout
 
 <div>
 
-<h1 id="title">Dashboard</h1>
+<h1 id="title">
+Dashboard
+</h1>
 
 <div class="muted">
-BALAJI Construction Services • Secure Admin Management
+BALAJI Construction Services • Secure Management
 </div>
 
 </div>
+
 
 <div class="userbox">
 
 <span id="userRole" class="pill">
-ADMIN
+Admin
 </span>
 
-<span id="userEmail" class="muted"></span>
+<span id="userEmail" class="muted">
+</span>
 
 <button
 class="btn secondary"
@@ -666,7 +633,7 @@ onclick="refreshAll()">
 </div>
 
 
-<!-- DASHBOARD -->
+<!-- ================= DASHBOARD ================= -->
 
 <section id="dashboard" class="section active">
 
@@ -702,11 +669,11 @@ onclick="refreshAll()">
 
 <div class="panel">
 
-<h2>Recent Projects</h2>
+<h2>
+Recent Projects
+</h2>
 
-<div
-id="recentProjects"
-class="tablewrap">
+<div id="recentProjects" class="tablewrap">
 </div>
 
 </div>
@@ -714,11 +681,11 @@ class="tablewrap">
 
 <div class="panel enquiry-card">
 
-<h2>📩 Latest Customer Enquiries</h2>
+<h2>
+📩 Latest Customer Enquiries
+</h2>
 
-<div
-id="recentEnquiries"
-class="tablewrap">
+<div id="recentEnquiries" class="tablewrap">
 </div>
 
 </div>
@@ -726,15 +693,13 @@ class="tablewrap">
 </section>
 
 
-<!-- ENQUIRIES -->
+<!-- ================= ENQUIRIES ================= -->
 
 <section id="enquiries" class="section">
 
 <div class="panel">
 
-<div
-class="row"
-style="justify-content:space-between">
+<div class="row" style="justify-content:space-between">
 
 <div>
 
@@ -744,7 +709,6 @@ style="justify-content:space-between">
 
 <div class="muted">
 Customer द्वारा भेजी गई enquiry यहाँ दिखाई देगी।
-पूरी जानकारी, Status और Admin Note यहीं से बदलें।
 </div>
 
 </div>
@@ -761,11 +725,6 @@ onclick="loadEnquiries()">
 id="enquiriesList"
 class="tablewrap"
 style="margin-top:15px">
-
-<div class="notice">
-Enquiries load हो रही हैं...
-</div>
-
 </div>
 
 </div>
@@ -773,13 +732,15 @@ Enquiries load हो रही हैं...
 </section>
 
 
-<!-- CUSTOMERS -->
+<!-- ================= CUSTOMERS ================= -->
 
 <section id="customers" class="section">
 
 <div class="panel">
 
-<h2>Customer जोड़ें</h2>
+<h2>
+Customer जोड़ें
+</h2>
 
 <form
 class="forms"
@@ -829,10 +790,12 @@ style="justify-content:space-between">
 
 <div>
 
-<h2>👥 Customers List</h2>
+<h2>
+👥 Customers List
+</h2>
 
 <div class="muted">
-Customer की photo और पूरी profile इसी section में देखें।
+Customer की पूरी profile यहाँ देखें।
 </div>
 
 </div>
@@ -855,13 +818,15 @@ class="tablewrap">
 </section>
 
 
-<!-- PROJECTS -->
+<!-- ================= PROJECTS ================= -->
 
 <section id="projects" class="section">
 
 <div class="panel">
 
-<h2>Project जोड़ें</h2>
+<h2>
+Project जोड़ें
+</h2>
 
 <form
 class="forms"
@@ -874,18 +839,14 @@ onsubmit="addProject(event)">
 
 <div>
 <label>Customer</label>
-
 <select id="pCustomer">
 <option value="">Select</option>
 </select>
-
 </div>
 
 <div>
 <label>Work Type</label>
-<input
-id="pType"
-placeholder="Makan / RCC / Renovation">
+<input id="pType">
 </div>
 
 <div>
@@ -959,14 +920,12 @@ Save Project
 
 <div class="panel">
 
-<h2>Projects List</h2>
+<h2>
+Projects List
+</h2>
 
-<div
-class="muted"
-style="margin-bottom:10px">
-
-Project के नाम पर tap/click करके उसका पूरा progress record देखें।
-
+<div class="muted">
+Project के नाम पर click करके progress देखें।
 </div>
 
 <div
@@ -979,7 +938,7 @@ class="tablewrap">
 </section>
 
 
-<!-- PROJECT PROGRESS -->
+<!-- ================= PROGRESS ================= -->
 
 <section id="progress" class="section">
 
@@ -989,8 +948,13 @@ style="padding:0;overflow:hidden">
 
 <iframe
 src="project-progress.html"
-title="Project Progress / Updates"
-style="display:block;width:100%;height:900px;border:0">
+title="Project Progress"
+style="
+display:block;
+width:100%;
+height:900px;
+border:0;
+">
 </iframe>
 
 </div>
@@ -998,13 +962,15 @@ style="display:block;width:100%;height:900px;border:0">
 </section>
 
 
-<!-- WORKERS -->
+<!-- ================= WORKERS ================= -->
 
 <section id="workers" class="section">
 
 <div class="panel">
 
-<h2>Worker जोड़ें</h2>
+<h2>
+Worker जोड़ें
+</h2>
 
 <form
 class="forms"
@@ -1027,10 +993,7 @@ onsubmit="addWorker(event)">
 
 <div>
 <label>Daily Rate</label>
-<input
-id="wRate"
-type="number"
-min="0">
+<input id="wRate" type="number" min="0">
 </div>
 
 <div>
@@ -1044,11 +1007,9 @@ min="0">
 </div>
 
 <div>
-
 <button class="btn primary">
 Save Worker
 </button>
-
 </div>
 
 </form>
@@ -1058,7 +1019,9 @@ Save Worker
 
 <div class="panel">
 
-<h2>Workers List</h2>
+<h2>
+Workers List
+</h2>
 
 <div id="workersList" class="tablewrap">
 </div>
@@ -1068,20 +1031,21 @@ Save Worker
 </section>
 
 
-<!-- WORK -->
+<!-- ================= WORK ================= -->
 
 <section id="work" class="section">
 
 <div class="panel">
 
-<h2>Daily Work Entry</h2>
+<h2>
+Daily Work Entry
+</h2>
 
 <form
 class="forms"
 onsubmit="addWork(event)">
 
 <div>
-
 <label>Project *</label>
 
 <select id="lProject" required>
@@ -1093,7 +1057,6 @@ Select Project
 </div>
 
 <div>
-
 <label>Worker</label>
 
 <select id="lWorker">
@@ -1105,60 +1068,41 @@ Select Worker
 </div>
 
 <div>
-
 <label>Date</label>
-
-<input
-id="lDate"
-type="date">
-
+<input id="lDate" type="date">
 </div>
 
 <div>
-
 <label>Days</label>
-
 <input
 id="lDays"
 type="number"
 step="0.5"
 value="1">
-
 </div>
 
 <div>
-
 <label>Work Description</label>
-
 <input id="lDesc">
-
 </div>
 
 <div>
-
 <label>Amount</label>
-
 <input
 id="lAmount"
 type="number"
 min="0">
-
 </div>
 
 <div class="full">
-
 <label>Notes</label>
-
 <textarea id="lNotes"></textarea>
-
 </div>
 
 <div>
-
 <button class="btn primary">
 Save Work Entry
 </button>
-
 </div>
 
 </form>
@@ -1168,7 +1112,9 @@ Save Work Entry
 
 <div class="panel">
 
-<h2>Recent Work</h2>
+<h2>
+Recent Work
+</h2>
 
 <div id="workList" class="tablewrap">
 </div>
@@ -1178,13 +1124,15 @@ Save Work Entry
 </section>
 
 
-<!-- PAYMENTS -->
+<!-- ================= PAYMENTS ================= -->
 
 <section id="payments" class="section">
 
 <div class="panel">
 
-<h2>Payment / ग्राहक से प्राप्त राशि</h2>
+<h2>
+Payment / ग्राहक से प्राप्त राशि
+</h2>
 
 <form
 class="forms"
@@ -1203,25 +1151,17 @@ Select Project
 </div>
 
 <div>
-
 <label>Date</label>
-
-<input
-id="payDate"
-type="date">
-
+<input id="payDate" type="date">
 </div>
 
 <div>
-
 <label>Amount *</label>
-
 <input
 id="payAmount"
 type="number"
 min="0"
 required>
-
 </div>
 
 <div>
@@ -1240,27 +1180,19 @@ required>
 </div>
 
 <div>
-
 <label>Reference No.</label>
-
 <input id="payRef">
-
 </div>
 
 <div>
-
 <label>Notes</label>
-
 <input id="payNotes">
-
 </div>
 
 <div>
-
 <button class="btn primary">
 Save Payment
 </button>
-
 </div>
 
 </form>
@@ -1270,11 +1202,11 @@ Save Payment
 
 <div class="panel">
 
-<h2>Payment History</h2>
+<h2>
+Payment History
+</h2>
 
-<div
-id="paymentsList"
-class="tablewrap">
+<div id="paymentsList" class="tablewrap">
 </div>
 
 </div>
@@ -1282,13 +1214,15 @@ class="tablewrap">
 </section>
 
 
-<!-- EXPENSES -->
+<!-- ================= EXPENSES ================= -->
 
 <section id="expenses" class="section">
 
 <div class="panel">
 
-<h2>Expense जोड़ें</h2>
+<h2>
+Expense जोड़ें
+</h2>
 
 <form
 class="forms"
@@ -1307,13 +1241,8 @@ General
 </div>
 
 <div>
-
 <label>Date</label>
-
-<input
-id="eDate"
-type="date">
-
+<input id="eDate" type="date">
 </div>
 
 <div>
@@ -1347,7 +1276,6 @@ required>
 <div class="full">
 
 <label>Description</label>
-
 <input id="eDesc">
 
 </div>
@@ -1355,7 +1283,6 @@ required>
 <div class="full">
 
 <label>Notes</label>
-
 <textarea id="eNotes"></textarea>
 
 </div>
@@ -1375,11 +1302,11 @@ Save Expense
 
 <div class="panel">
 
-<h2>Expense History</h2>
+<h2>
+Expense History
+</h2>
 
-<div
-id="expensesList"
-class="tablewrap">
+<div id="expensesList" class="tablewrap">
 </div>
 
 </div>
@@ -1387,7 +1314,7 @@ class="tablewrap">
 </section>
 
 
-<!-- REPORTS -->
+<!-- ================= REPORTS ================= -->
 
 <section id="reports" class="section">
 
@@ -1395,7 +1322,9 @@ class="tablewrap">
 class="row"
 style="justify-content:space-between">
 
-<h2>Financial & Project Report</h2>
+<h2>
+Financial & Project Report
+</h2>
 
 <button
 class="btn primary"
@@ -1409,39 +1338,62 @@ onclick="window.print()">
 <div class="report">
 
 <div class="stat">
-<small>Total Payments</small>
+
+<small>
+Total Payments
+</small>
+
 <div
 class="big"
 id="rPayments">
 ₹0
 </div>
+
 </div>
 
+
 <div class="stat">
-<small>Total Expenses</small>
+
+<small>
+Total Expenses
+</small>
+
 <div
 class="big"
 id="rExpenses">
 ₹0
 </div>
+
 </div>
 
+
 <div class="stat">
-<small>Net Cash Flow</small>
+
+<small>
+Net Cash Flow
+</small>
+
 <div
 class="big"
 id="rNet">
 ₹0
 </div>
+
 </div>
 
+
 <div class="stat">
-<small>Work Value</small>
+
+<small>
+Work Value
+</small>
+
 <div
 class="big"
 id="rWork">
 ₹0
 </div>
+
 </div>
 
 </div>
@@ -1449,7 +1401,9 @@ id="rWork">
 
 <div class="panel">
 
-<h2>Project-wise Summary</h2>
+<h2>
+Project-wise Summary
+</h2>
 
 <div
 id="reportProjects"
@@ -1461,7 +1415,6 @@ class="tablewrap">
 </section>
 
 </main>
-
 </div>
 
 
@@ -1504,7 +1457,7 @@ onclick="closeCustomerProfile()">
 </div>
 
 
-<!-- PROJECT PROGRESS MODAL -->
+<!-- PROJECT PROGRESS -->
 
 <div
 id="projectProgressOverlay"
@@ -1539,11 +1492,9 @@ onclick="closeProjectProgress()">
 </div>
 
 <div id="projectProgressContent">
-
 <div class="notice">
 Loading...
 </div>
-
 </div>
 
 </div>
@@ -1553,9 +1504,9 @@ Loading...
 
 <script>
 
-/* =====================================================
+/* =========================================================
    SUPABASE
-===================================================== */
+========================================================= */
 
 const sb = window.supabase.createClient(
 'https://iefxfyjmyssuiuyncfqz.supabase.co',
@@ -1575,21 +1526,178 @@ const money = n =>
 );
 
 
+/* =========================================================
+   SECURITY / SESSION
+========================================================= */
+
+async function checkAdminSession(){
+
+try{
+
+const {
+data:{session},
+error
+} = await sb.auth.getSession();
+
+if(error) throw error;
+
+
+/*
+   Dashboard अब खुद login नहीं करता।
+
+   केवल पहले से authenticated Supabase
+   session को check करता है.
+*/
+
+if(!session){
+
+window.location.replace('index.html');
+return;
+}
+
+user = session.user;
+
+
+/*
+   Admin profile verify
+*/
+
+const {
+data:p,
+error:pe
+} = await sb
+.from('profiles')
+.select('full_name,role')
+.eq('id',user.id)
+.maybeSingle();
+
+if(pe) throw pe;
+
+if(!p){
+
+await sb.auth.signOut();
+
+window.location.replace('index.html');
+
+return;
+}
+
+
+role = String(p.role || '').toLowerCase();
+
+
+/*
+   केवल Admin/Owner/Manager/Staff
+   dashboard access कर सकते हैं.
+*/
+
+if(
+!['owner','manager','staff','admin'].includes(role)
+){
+
+await sb.auth.signOut();
+
+window.location.replace('index.html');
+
+return;
+}
+
+
+/*
+   Login screen कभी नहीं दिखेगा.
+   सीधे Dashboard.
+*/
+
+q('loadingScreen').classList.add('hidden');
+q('app').classList.remove('hidden');
+
+q('userEmail').textContent =
+user.email || '';
+
+q('userRole').textContent =
+role === 'owner'
+? 'Admin'
+: role;
+
+
+await refreshAll();
+
+}catch(err){
+
+console.error(err);
+
+q('loadingScreen').innerHTML = `
+<div>
+<h2>Dashboard खुल नहीं पाया</h2>
+<p style="opacity:.8">
+${esc(err.message || String(err))}
+</p>
+<button
+class="btn primary"
+onclick="location.href='index.html'">
+← वापस Admin Login
+</button>
+</div>
+`;
+
+}
+
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+async function logout(){
+
+await sb.auth.signOut();
+
+window.location.replace('index.html');
+
+}
+
+
+/* =========================================================
+   AUTH STATE
+========================================================= */
+
+sb.auth.onAuthStateChange(
+(event,session)=>{
+
+if(event === 'SIGNED_OUT'){
+
+window.location.replace('index.html');
+
+}
+
+}
+);
+
+
+/* =========================================================
+   HTML ESCAPE
+========================================================= */
+
 function esc(v){
 
-return String(v ?? '').replace(
-/[&<>"']/g,
-c => ({
+return String(v ?? '')
+.replace(/[&<>"']/g,c=>({
+
 '&':'&amp;',
 '<':'&lt;',
 '>':'&gt;',
 '"':'&quot;',
 "'":'&#39;'
-}[c] || c)
-);
+
+}[c]));
 
 }
 
+
+/* =========================================================
+   TOAST
+========================================================= */
 
 function toast(t){
 
@@ -1598,17 +1706,22 @@ q('toast').textContent = t;
 q('toast').classList.remove('hidden');
 
 setTimeout(
-() => q('toast').classList.add('hidden'),
+()=>q('toast').classList.add('hidden'),
 2500
 );
 
 }
 
 
+/* =========================================================
+   TABLE
+========================================================= */
+
 function table(headers,rows){
 
-const hs = headers
-.map(h => '<th>'+esc(h)+'</th>')
+const hs =
+headers
+.map(h=>'<th>'+esc(h)+'</th>')
 .join('');
 
 return `
@@ -1616,15 +1729,19 @@ return `
 <thead>
 <tr>${hs}</tr>
 </thead>
-
 <tbody>
 
 ${
 rows && rows.length
-?
-rows.join('')
-:
-'<tr><td colspan="'+headers.length+'" class="muted">कोई रिकॉर्ड नहीं मिला।</td></tr>'
+? rows.join('')
+: `
+<tr>
+<td colspan="${headers.length}"
+class="muted">
+कोई रिकॉर्ड नहीं मिला।
+</td>
+</tr>
+`
 }
 
 </tbody>
@@ -1634,162 +1751,43 @@ rows.join('')
 }
 
 
-/* =====================================================
-   ADMIN SESSION SECURITY
-   =====================================================
-
-   IMPORTANT:
-   dashboard.html पर कोई login form नहीं है।
-
-   अगर valid Supabase session नहीं है:
-   → admin-login.html
-
-   अगर profile role admin नहीं है:
-   → sign out
-   → admin-login.html
-
-===================================================== */
-
-
-async function start(u){
-
-try{
-
-user = u;
-
-
-/* Get profile */
-
-const {
-data:p,
-error
-} = await sb
-.from('profiles')
-.select('full_name,role')
-.eq('id',u.id)
-.maybeSingle();
-
-
-if(error || !p){
-
-await sb.auth.signOut();
-
-location.replace('admin-login.html');
-
-return;
-
-}
-
-
-role = String(p.role || '').toLowerCase();
-
-
-/*
-ONLY ADMIN ACCESS
-
-Owner / Manager / Staff / Customer
-को dashboard access नहीं मिलेगा।
-*/
-
-if(role !== 'admin'){
-
-await sb.auth.signOut();
-
-location.replace('admin-login.html');
-
-return;
-
-}
-
-
-/* Show dashboard */
-
-q('app').classList.remove('hidden');
-
-q('userEmail').textContent =
-u.email || '';
-
-q('userRole').textContent =
-'ADMIN';
-
-
-await refreshAll();
-
-}
-catch(err){
-
-console.error(err);
-
-await sb.auth.signOut();
-
-location.replace('admin-login.html');
-
-}
-
-}
-
-
-/* =====================================================
-   LOGOUT
-===================================================== */
-
-async function logout(){
-
-await sb.auth.signOut();
-
-location.replace('admin-login.html');
-
-}
-
-
-/* =====================================================
+/* =========================================================
    NAVIGATION
-===================================================== */
+========================================================= */
 
 document
 .querySelectorAll('.side nav button')
-.forEach(b => {
+.forEach(b=>{
 
-b.onclick = () => {
+b.onclick=()=>{
 
 document
 .querySelectorAll('.section')
-.forEach(s =>
-s.classList.remove('active')
-);
+.forEach(s=>s.classList.remove('active'));
 
 q(b.dataset.s)
 .classList.add('active');
 
-
 document
 .querySelectorAll('.side nav button')
-.forEach(x =>
-x.classList.remove('active')
-);
+.forEach(x=>x.classList.remove('active'));
 
 b.classList.add('active');
 
-
 q('title').textContent =
-b.textContent.replace(
-/^\S+\s*/,
-''
-);
+b.textContent.replace(/^\S+\s*/,'');
 
-
-if(b.dataset.s === 'enquiries'){
+if(b.dataset.s === 'enquiries')
 loadEnquiries();
-}
 
 };
 
 });
 
 
-/* =====================================================
+/* =========================================================
    GET ALL
-===================================================== */
+========================================================= */
 
 async function getAll(t){
 
@@ -1797,13 +1795,9 @@ const r =
 await sb
 .from(t)
 .select('*')
-.order(
-'created_at',
-{ascending:false}
-);
+.order('created_at',{ascending:false});
 
-if(r.error)
-throw r.error;
+if(r.error) throw r.error;
 
 return Array.isArray(r.data)
 ? r.data
@@ -1812,9 +1806,9 @@ return Array.isArray(r.data)
 }
 
 
-/* =====================================================
-   CUSTOMER
-===================================================== */
+/* =========================================================
+   CUSTOMER ADD
+========================================================= */
 
 async function addCustomer(e){
 
@@ -1825,27 +1819,34 @@ await sb
 .from('customers')
 .insert({
 
-name:q('cName').value,
-phone:q('cPhone').value,
-email:q('cEmail').value,
-address:q('cAddress').value,
-notes:q('cNotes').value,
+name:q('cName').value.trim(),
+phone:q('cPhone').value.trim(),
+email:q('cEmail').value.trim(),
+address:q('cAddress').value.trim(),
+notes:q('cNotes').value.trim(),
 created_by:user.id
 
 });
 
+if(r.error){
 
-if(r.error)
-return toast(r.error.message);
+toast(r.error.message);
+return;
+
+}
 
 e.target.reset();
 
 toast('Customer saved');
 
-refreshAll();
+await refreshAll();
 
 }
 
+
+/* =========================================================
+   CUSTOMER EDIT
+========================================================= */
 
 async function editCustomer(id){
 
@@ -1855,12 +1856,9 @@ error
 } =
 await sb
 .from('customers')
-.select(
-'id,name,phone,email,address,notes'
-)
+.select('id,name,phone,email,address,notes')
 .eq('id',id)
 .maybeSingle();
-
 
 if(error)
 return toast(error.message);
@@ -1868,50 +1866,30 @@ return toast(error.message);
 if(!c)
 return toast('Customer नहीं मिला');
 
-
 const name =
-prompt(
-'Customer Name',
-c.name || ''
-);
+prompt('Customer Name',c.name || '');
 
-if(name === null)return;
-
+if(name===null)return;
 
 const phone =
-prompt(
-'Phone',
-c.phone || ''
-);
+prompt('Phone',c.phone || '');
 
-if(phone === null)return;
-
+if(phone===null)return;
 
 const email =
-prompt(
-'Email',
-c.email || ''
-);
+prompt('Email',c.email || '');
 
-if(email === null)return;
-
+if(email===null)return;
 
 const address =
-prompt(
-'Address',
-c.address || ''
-);
+prompt('Address',c.address || '');
 
-if(address === null)return;
-
+if(address===null)return;
 
 const notes =
-prompt(
-'Notes',
-c.notes || ''
-);
+prompt('Notes',c.notes || '');
 
-if(notes === null)return;
+if(notes===null)return;
 
 
 const {
@@ -1931,22 +1909,27 @@ updated_at:new Date().toISOString()
 })
 .eq('id',id);
 
+if(ue){
 
-if(ue)
-return toast(
+toast(
 'Customer update नहीं हुआ: '+
 ue.message
 );
 
+return;
 
-toast(
-'Customer updated successfully'
-);
+}
+
+toast('Customer updated successfully');
 
 await refreshAll();
 
 }
 
+
+/* =========================================================
+   CUSTOMER DELETE
+========================================================= */
 
 async function deleteCustomer(id){
 
@@ -1960,21 +1943,17 @@ await sb
 .eq('id',id)
 .maybeSingle();
 
-
 if(error)
 return toast(error.message);
 
 if(!c)
 return toast('Customer नहीं मिला');
 
-
-if(
-!confirm(
+if(!confirm(
 'क्या आप "'+
 (c.name || 'Customer')+
-'" को delete करना चाहते हैं? यह action वापस नहीं लिया जा सकता।'
-)
-)
+'" को delete करना चाहते हैं?\n\nयह action वापस नहीं लिया जा सकता।'
+))
 return;
 
 
@@ -1986,26 +1965,27 @@ await sb
 .delete()
 .eq('id',id);
 
+if(de){
 
-if(de)
-return toast(
+toast(
 'Customer delete नहीं हुआ: '+
 de.message
 );
 
+return;
 
-toast(
-'Customer deleted successfully'
-);
+}
+
+toast('Customer deleted successfully');
 
 await refreshAll();
 
 }
 
 
-/* =====================================================
-   PROJECT
-===================================================== */
+/* =========================================================
+   PROJECT ADD
+========================================================= */
 
 async function addProject(e){
 
@@ -2023,14 +2003,11 @@ location:q('pLocation').value,
 start_date:q('pStart').value || null,
 expected_end_date:q('pEnd').value || null,
 status:q('pStatus').value,
-agreed_amount:Number(
-q('pAmount').value || 0
-),
+agreed_amount:Number(q('pAmount').value || 0),
 notes:q('pNotes').value,
 created_by:user.id
 
 });
-
 
 if(r.error)
 return toast(r.error.message);
@@ -2039,10 +2016,14 @@ e.target.reset();
 
 toast('Project saved');
 
-refreshAll();
+await refreshAll();
 
 }
 
+
+/* =========================================================
+   PROJECT EDIT
+========================================================= */
 
 async function editProject(id){
 
@@ -2058,40 +2039,26 @@ await sb
 .eq('id',id)
 .maybeSingle();
 
-
 if(error)
 return toast(error.message);
 
 if(!p)
 return toast('Project नहीं मिला');
 
-
 const name =
-prompt(
-'Project Name',
-p.project_name || ''
-);
+prompt('Project Name',p.project_name || '');
 
-if(name === null)return;
-
+if(name===null)return;
 
 const type =
-prompt(
-'Work Type',
-p.work_type || ''
-);
+prompt('Work Type',p.work_type || '');
 
-if(type === null)return;
-
+if(type===null)return;
 
 const location =
-prompt(
-'Location',
-p.location || ''
-);
+prompt('Location',p.location || '');
 
-if(location === null)return;
-
+if(location===null)return;
 
 const status =
 prompt(
@@ -2099,8 +2066,7 @@ prompt(
 p.status || 'active'
 );
 
-if(status === null)return;
-
+if(status===null)return;
 
 const amount =
 prompt(
@@ -2108,16 +2074,12 @@ prompt(
 p.agreed_amount ?? 0
 );
 
-if(amount === null)return;
-
+if(amount===null)return;
 
 const notes =
-prompt(
-'Notes',
-p.notes || ''
-);
+prompt('Notes',p.notes || '');
 
-if(notes === null)return;
+if(notes===null)return;
 
 
 const {
@@ -2138,22 +2100,27 @@ updated_at:new Date().toISOString()
 })
 .eq('id',id);
 
+if(ue){
 
-if(ue)
-return toast(
+toast(
 'Project update नहीं हुआ: '+
 ue.message
 );
 
+return;
 
-toast(
-'Project updated successfully'
-);
+}
+
+toast('Project updated successfully');
 
 await refreshAll();
 
 }
 
+
+/* =========================================================
+   PROJECT DELETE
+========================================================= */
 
 async function deleteProject(id){
 
@@ -2167,21 +2134,17 @@ await sb
 .eq('id',id)
 .maybeSingle();
 
-
 if(error)
 return toast(error.message);
 
 if(!p)
 return toast('Project नहीं मिला');
 
-
-if(
-!confirm(
+if(!confirm(
 'क्या आप "'+
 (p.project_name || 'Project')+
 '" को delete करना चाहते हैं?'
-)
-)
+))
 return;
 
 
@@ -2193,26 +2156,27 @@ await sb
 .delete()
 .eq('id',id);
 
+if(de){
 
-if(de)
-return toast(
+toast(
 'Project delete नहीं हुआ: '+
 de.message
 );
 
+return;
 
-toast(
-'Project deleted successfully'
-);
+}
+
+toast('Project deleted successfully');
 
 await refreshAll();
 
 }
 
 
-/* =====================================================
-   WORKERS
-===================================================== */
+/* =========================================================
+   WORKER
+========================================================= */
 
 async function addWorker(e){
 
@@ -2227,14 +2191,11 @@ name:q('wName').value,
 phone:q('wPhone').value,
 village:q('wVillage').value,
 work_role:q('wRole').value,
-daily_rate:Number(
-q('wRate').value || 0
-),
+daily_rate:Number(q('wRate').value || 0),
 notes:q('wNotes').value,
 created_by:user.id
 
 });
-
 
 if(r.error)
 return toast(r.error.message);
@@ -2243,14 +2204,14 @@ e.target.reset();
 
 toast('Worker saved');
 
-refreshAll();
+await refreshAll();
 
 }
 
 
-/* =====================================================
-   WORK
-===================================================== */
+/* =========================================================
+   WORK ENTRY
+========================================================= */
 
 async function addWork(e){
 
@@ -2274,7 +2235,6 @@ created_by:user.id
 
 });
 
-
 if(r.error)
 return toast(r.error.message);
 
@@ -2282,14 +2242,14 @@ e.target.reset();
 
 toast('Work entry saved');
 
-refreshAll();
+await refreshAll();
 
 }
 
 
-/* =====================================================
-   PAYMENTS
-===================================================== */
+/* =========================================================
+   PAYMENT
+========================================================= */
 
 async function addPayment(e){
 
@@ -2301,25 +2261,16 @@ await sb
 .insert({
 
 project_id:q('payProject').value,
-
 payment_date:
 q('payDate').value ||
 new Date().toISOString().slice(0,10),
-
-amount:Number(
-q('payAmount').value
-),
-
+amount:Number(q('payAmount').value),
 payment_method:q('payMethod').value,
-
 reference_no:q('payRef').value,
-
 notes:q('payNotes').value,
-
 created_by:user.id
 
 });
-
 
 if(r.error)
 return toast(r.error.message);
@@ -2328,14 +2279,14 @@ e.target.reset();
 
 toast('Payment saved');
 
-refreshAll();
+await refreshAll();
 
 }
 
 
-/* =====================================================
+/* =========================================================
    EXPENSE
-===================================================== */
+========================================================= */
 
 async function addExpense(e){
 
@@ -2346,27 +2297,17 @@ await sb
 .from('expenses')
 .insert({
 
-project_id:
-q('eProject').value || null,
-
+project_id:q('eProject').value || null,
 expense_date:
 q('eDate').value ||
 new Date().toISOString().slice(0,10),
-
 category:q('eCategory').value,
-
 description:q('eDesc').value,
-
-amount:Number(
-q('eAmount').value
-),
-
+amount:Number(q('eAmount').value),
 notes:q('eNotes').value,
-
 created_by:user.id
 
 });
-
 
 if(r.error)
 return toast(r.error.message);
@@ -2375,14 +2316,458 @@ e.target.reset();
 
 toast('Expense saved');
 
-refreshAll();
+await refreshAll();
 
 }
 
 
-/* =====================================================
-   ENQUIRY → PROJECT
-===================================================== */
+/* =========================================================
+   CUSTOMER PHOTO
+========================================================= */
+
+function customerPhotoHtml(c){
+
+return c.photo_url
+
+? `<img
+class="customer-mini-photo"
+src="${esc(c.photo_url)}"
+alt="Customer Photo">`
+
+: `<span class="customer-mini-placeholder">
+👤
+</span>`;
+
+}
+
+
+/* =========================================================
+   CUSTOMER PROFILE
+========================================================= */
+
+async function viewCustomerProfile(id){
+
+const {
+data:c,
+error
+} =
+await sb
+.from('customers')
+.select('*')
+.eq('id',id)
+.maybeSingle();
+
+if(error)
+return toast(
+'Customer profile load नहीं हुई: '+
+error.message
+);
+
+if(!c)
+return toast('Customer नहीं मिला');
+
+
+const photo =
+c.photo_url
+
+? `<img
+class="profile-big-photo"
+src="${esc(c.photo_url)}"
+alt="Customer Photo">`
+
+: `<div class="profile-big-placeholder">
+👤
+</div>`;
+
+
+q('customerProfileContent').innerHTML = `
+
+<div class="profile-head">
+
+${photo}
+
+<div>
+
+<h2 style="margin:0 0 6px">
+${esc(c.name || 'Customer')}
+</h2>
+
+<div class="muted">
+Customer Profile
+</div>
+
+</div>
+
+</div>
+
+
+<div class="profile-fields">
+
+<div class="profile-field">
+<small>👤 Customer Name</small>
+<b>${esc(c.name || 'Not available')}</b>
+</div>
+
+<div class="profile-field">
+<small>📱 Phone Number</small>
+<b>${esc(c.phone || 'Not available')}</b>
+</div>
+
+<div class="profile-field">
+<small>📧 Email</small>
+<b>${esc(c.email || 'Not available')}</b>
+</div>
+
+<div
+class="profile-field"
+style="grid-column:1/-1">
+
+<small>📍 पूरा Address</small>
+
+<b>
+${esc(c.address || 'Not available')}
+</b>
+
+</div>
+
+<div
+class="profile-field"
+style="grid-column:1/-1">
+
+<small>📝 Notes</small>
+
+<b>
+${esc(c.notes || '—')}
+</b>
+
+</div>
+
+</div>
+
+
+<div
+class="actions"
+style="margin-top:18px">
+
+<a
+class="btn primary"
+href="tel:${esc(c.phone || '')}">
+📞 Call Customer
+</a>
+
+${
+c.photo_url
+?
+`<a
+class="btn secondary"
+href="${esc(c.photo_url)}"
+target="_blank">
+📷 Photo खोलें
+</a>`
+:''
+}
+
+</div>
+`;
+
+q('customerProfileOverlay')
+.classList.add('open');
+
+}
+
+
+function closeCustomerProfile(){
+
+q('customerProfileOverlay')
+.classList.remove('open');
+
+}
+
+
+/* =========================================================
+   PROJECT PROGRESS
+========================================================= */
+
+async function viewProjectProgress(id){
+
+q('projectProgressOverlay')
+.classList.add('open');
+
+q('projectProgressContent').innerHTML =
+'<div class="notice">Project record load हो रहा है...</div>';
+
+
+try{
+
+const {
+data:p,
+error:pe
+} =
+await sb
+.from('projects')
+.select(
+'id,project_name,work_type,location,status,agreed_amount,start_date,expected_end_date,notes'
+)
+.eq('id',id)
+.maybeSingle();
+
+if(pe)throw pe;
+
+if(!p){
+
+q('projectProgressContent').innerHTML =
+'<div class="notice">Project नहीं मिला।</div>';
+
+return;
+
+}
+
+
+q('projectProgressSubtitle').textContent =
+(p.work_type || 'Construction')+
+' • '+
+(p.location || '');
+
+
+const {
+data:updates,
+error:ue
+} =
+await sb
+.from('project_updates')
+.select(
+'id,project_id,update_date,title,details,progress_percent,photo_url'
+)
+.eq('project_id',id)
+.order(
+'update_date',
+{ascending:false}
+);
+
+if(ue)throw ue;
+
+const us = updates || [];
+
+const latest =
+us.length
+?
+Math.max(
+...us.map(
+x=>Number(x.progress_percent || 0)
+)
+)
+:0;
+
+const progress =
+Math.max(
+0,
+Math.min(100,latest)
+);
+
+
+let html = `
+
+<div class="profile-fields">
+
+<div class="profile-field">
+<small>🏗️ Project</small>
+<b>${esc(p.project_name)}</b>
+</div>
+
+<div class="profile-field">
+<small>📌 Status</small>
+<b>${esc(p.status || '—')}</b>
+</div>
+
+<div class="profile-field">
+<small>📅 Start Date</small>
+<b>${esc(p.start_date || '—')}</b>
+</div>
+
+<div class="profile-field">
+<small>📅 Expected End</small>
+<b>${esc(p.expected_end_date || '—')}</b>
+</div>
+
+</div>
+
+
+<div class="project-progress-box">
+
+<div
+class="row"
+style="justify-content:space-between">
+
+<b>
+📊 Current Work Progress
+</b>
+
+<strong>
+${progress}%
+</strong>
+
+</div>
+
+<div class="project-progress-bar">
+<span style="width:${progress}%"></span>
+</div>
+
+<div class="muted">
+Latest progress record
+</div>
+
+</div>
+`;
+
+
+if(!us.length){
+
+html += `
+<div class="notice">
+अभी इस project के लिए कोई progress update नहीं है।
+</div>
+`;
+
+}else{
+
+html += `
+<div class="project-progress-box">
+
+<h3 style="margin-top:0">
+📋 काम की पूरी Progress / Updates
+</h3>
+`;
+
+
+us.forEach(x=>{
+
+const pr =
+Math.max(
+0,
+Math.min(
+100,
+Number(x.progress_percent || 0)
+)
+);
+
+html += `
+
+<div class="project-update">
+
+<div
+class="row"
+style="justify-content:space-between">
+
+<b>
+${esc(x.title || 'काम का अपडेट')}
+</b>
+
+<span class="muted">
+${esc(x.update_date || '')}
+</span>
+
+</div>
+
+<div style="margin-top:7px">
+${esc(x.details || '')}
+</div>
+
+<div class="project-progress-bar">
+<span style="width:${pr}%"></span>
+</div>
+
+<small>
+<b>${pr}%</b> complete
+</small>
+
+${
+x.photo_url
+?
+`
+<div>
+<a
+href="${esc(x.photo_url)}"
+target="_blank">
+
+<img
+class="project-update-photo"
+src="${esc(x.photo_url)}"
+alt="काम की Photo">
+
+</a>
+</div>
+`
+:''
+}
+
+</div>
+`;
+
+});
+
+html += '</div>';
+
+}
+
+
+if(p.notes){
+
+html += `
+<div class="notice">
+
+<b>Project Notes:</b>
+<br>
+
+${esc(p.notes)}
+
+</div>
+`;
+
+}
+
+
+q('projectProgressContent').innerHTML =
+html;
+
+
+}catch(err){
+
+q('projectProgressContent').innerHTML = `
+
+<div class="enquiry-error">
+
+<b>
+Project progress load नहीं हुआ:
+</b>
+
+<br>
+
+${esc(err.message || String(err))}
+
+</div>
+`;
+
+toast(
+err.message ||
+'Project progress error'
+);
+
+}
+
+}
+
+
+function closeProjectProgress(){
+
+q('projectProgressOverlay')
+.classList.remove('open');
+
+}
+
+
+/* =========================================================
+   ENSURE PROJECT FOR ENQUIRY
+========================================================= */
 
 async function ensureProjectForEnquiry(id){
 
@@ -2398,12 +2783,9 @@ await sb
 .eq('id',id)
 .maybeSingle();
 
+if(re)throw re;
 
-if(re)
-throw re;
-
-if(!req)
-return;
+if(!req)return;
 
 
 let {
@@ -2421,9 +2803,7 @@ req.customer_user_id
 )
 .maybeSingle();
 
-
-if(ce)
-throw ce;
+if(ce)throw ce;
 
 
 if(!c){
@@ -2434,18 +2814,11 @@ error:pe
 } =
 await sb
 .from('profiles')
-.select(
-'full_name,phone'
-)
-.eq(
-'id',
-req.customer_user_id
-)
+.select('full_name,phone')
+.eq('id',req.customer_user_id)
 .maybeSingle();
 
-
-if(pe)
-throw pe;
+if(pe)throw pe;
 
 
 const {
@@ -2457,17 +2830,9 @@ await sb
 .insert({
 
 user_id:req.customer_user_id,
-
-name:
-p?.full_name ||
-'Customer',
-
-phone:
-p?.phone || '',
-
-address:
-req.site_location || '',
-
+name:p?.full_name || 'Customer',
+phone:p?.phone || '',
+address:req.site_location || '',
 created_by:user.id
 
 })
@@ -2476,11 +2841,9 @@ created_by:user.id
 )
 .single();
 
+if(ne)throw ne;
 
-if(ne)
-throw ne;
-
-c = nc;
+c=nc;
 
 }
 
@@ -2492,15 +2855,10 @@ error:ee
 await sb
 .from('projects')
 .select('id')
-.eq(
-'customer_id',
-c.id
-)
+.eq('customer_id',c.id)
 .limit(1);
 
-
-if(ee)
-throw ee;
+if(ee)throw ee;
 
 
 if(
@@ -2539,23 +2897,20 @@ created_by:user.id
 
 });
 
-
-if(pe)
-throw pe;
+if(pe)throw pe;
 
 }
 
 }
 
 
-/* =====================================================
-   ENQUIRIES
-===================================================== */
+/* =========================================================
+   LOAD ENQUIRIES
+========================================================= */
 
 async function loadEnquiries(){
 
-const box =
-q('enquiriesList');
+const box=q('enquiriesList');
 
 box.innerHTML =
 '<div class="notice">Enquiries load हो रही हैं...</div>';
@@ -2577,15 +2932,12 @@ await sb
 {ascending:false}
 );
 
-
-if(error)
-throw error;
-
+if(error)throw error;
 
 const reqs =
 Array.isArray(req)
-? req
-: [];
+?req
+:[];
 
 
 if(!reqs.length){
@@ -2599,27 +2951,24 @@ return;
 
 
 const rows =
-reqs.map(x => {
+reqs.map(x=>{
 
 const c =
-customerCache[x.customer_user_id] ||
-{};
+customerCache[x.customer_user_id] || {};
 
 const status =
 x.status || 'pending';
 
-
 const statusClass =
 status === 'approved'
-? 'approved'
+?'approved'
 :
 status === 'rejected'
-? 'rejected'
+?'rejected'
 :
 status === 'contacted'
-? 'contacted'
-:
-'pending';
+?'contacted'
+:'pending';
 
 
 const action =
@@ -2662,23 +3011,31 @@ onclick="saveEnquiryNote('${x.id}')">
 `
 
 :
-
 '<span class="muted">— Action complete</span>';
 
 
 return `
+
 <tr>
 
 <td>
-${new Date(x.created_at).toLocaleString('en-IN')}
+${new Date(x.created_at)
+.toLocaleString('en-IN')}
 </td>
 
 <td>
-<b>${esc(c.name || 'Customer')}</b>
+
+<b>
+${esc(c.name || 'Customer')}
+</b>
+
 <br>
+
 <span class="small">
-User ID: ${esc(x.customer_user_id)}
+User ID:
+${esc(x.customer_user_id)}
 </span>
+
 </td>
 
 <td>
@@ -2690,14 +3047,24 @@ ${esc(c.address || '')}
 </td>
 
 <td>
-<b>${esc(x.request_type || '')}</b>
+
+<b>
+${esc(x.request_type || '')}
+</b>
+
 <br>
+
 <span class="small">
+
 Site:
 ${esc(x.site_location || '')}
+
 <br>
+
 ${esc(x.details || '')}
+
 </span>
+
 </td>
 
 <td>
@@ -2705,9 +3072,12 @@ ${money(x.budget)}
 </td>
 
 <td>
-<span class="pill ${statusClass}">
+
+<span
+class="pill ${statusClass}">
 ${esc(status)}
 </span>
+
 </td>
 
 <td>
@@ -2715,8 +3085,9 @@ ${esc(status)}
 <textarea
 id="note_${x.id}"
 style="min-height:65px"
-${status !== 'pending' ? 'disabled' : ''}
->${esc(x.admin_notes || '')}</textarea>
+${status !== 'pending'?'disabled':''}>
+${esc(x.admin_notes || '')}
+</textarea>
 
 </td>
 
@@ -2747,11 +3118,10 @@ rows
 );
 
 
-}
-catch(err){
+}catch(err){
 
-box.innerHTML =
-`
+box.innerHTML = `
+
 <div class="enquiry-error">
 
 <b>
@@ -2760,7 +3130,10 @@ Enquiry load नहीं हो पाई:
 
 <br>
 
-${esc(err.message || String(err))}
+${esc(
+err.message ||
+String(err)
+)}
 
 </div>
 `;
@@ -2775,9 +3148,9 @@ err.message ||
 }
 
 
-/* =====================================================
+/* =========================================================
    ENQUIRY STATUS
-===================================================== */
+========================================================= */
 
 async function setEnquiryStatus(id,status){
 
@@ -2791,10 +3164,8 @@ error
 await sb
 .from('contract_requests')
 .update({
-
 status,
 admin_notes:note
-
 })
 .eq('id',id);
 
@@ -2809,8 +3180,7 @@ try{
 
 await ensureProjectForEnquiry(id);
 
-}
-catch(e){
+}catch(e){
 
 toast(
 'Enquiry approved, लेकिन Project create नहीं हुआ: '+
@@ -2818,7 +3188,6 @@ toast(
 );
 
 await loadEnquiries();
-
 await refreshAll();
 
 return;
@@ -2842,15 +3211,14 @@ status === 'contacted'
 
 
 await loadEnquiries();
-
 await refreshAll();
 
 }
 
 
-/* =====================================================
+/* =========================================================
    SAVE ENQUIRY NOTE
-===================================================== */
+========================================================= */
 
 async function saveEnquiryNote(id){
 
@@ -2879,380 +3247,13 @@ await loadEnquiries();
 }
 
 
-/* =====================================================
-   PROJECT PROGRESS
-===================================================== */
-
-async function viewProjectProgress(id){
-
-q('projectProgressOverlay')
-.classList.add('open');
-
-q('projectProgressContent')
-.innerHTML =
-'<div class="notice">Project record load हो रहा है...</div>';
-
-
-try{
-
-const {
-data:p,
-error:pe
-} =
-await sb
-.from('projects')
-.select(
-'id,project_name,work_type,location,status,agreed_amount,start_date,expected_end_date,notes'
-)
-.eq('id',id)
-.maybeSingle();
-
-
-if(pe)
-throw pe;
-
-
-if(!p){
-
-q('projectProgressContent')
-.innerHTML =
-'<div class="notice">Project नहीं मिला।</div>';
-
-return;
-
-}
-
-
-q('projectProgressSubtitle')
-.textContent =
-(p.work_type || 'Construction')+
-' • '+
-(p.location || '');
-
-
-const {
-data:updates,
-error:ue
-} =
-await sb
-.from('project_updates')
-.select(
-'id,project_id,update_date,title,details,progress_percent,photo_url'
-)
-.eq('project_id',id)
-.order(
-'update_date',
-{ascending:false}
-);
-
-
-if(ue)
-throw ue;
-
-
-const us =
-updates || [];
-
-
-const latest =
-us.length
-?
-Math.max(
-...us.map(
-x => Number(x.progress_percent || 0)
-)
-)
-:
-0;
-
-
-const progress =
-Math.max(
-0,
-Math.min(
-100,
-latest
-)
-);
-
-
-let html = `
-
-<div class="profile-fields">
-
-<div class="profile-field">
-
-<small>🏗️ Project</small>
-
-<b>
-${esc(p.project_name)}
-</b>
-
-</div>
-
-
-<div class="profile-field">
-
-<small>📌 Status</small>
-
-<b>
-${esc(p.status || '—')}
-</b>
-
-</div>
-
-
-<div class="profile-field">
-
-<small>📅 Start Date</small>
-
-<b>
-${esc(p.start_date || '—')}
-</b>
-
-</div>
-
-
-<div class="profile-field">
-
-<small>📅 Expected End</small>
-
-<b>
-${esc(p.expected_end_date || '—')}
-</b>
-
-</div>
-
-</div>
-
-
-<div class="project-progress-box">
-
-<div
-class="row"
-style="justify-content:space-between">
-
-<b>
-📊 Current Work Progress
-</b>
-
-<strong>
-${progress}%
-</strong>
-
-</div>
-
-<div class="project-progress-bar">
-
-<span
-style="width:${progress}%">
-</span>
-
-</div>
-
-<div class="muted">
-Customer को दिखाई देने वाला latest progress record
-</div>
-
-</div>
-
-`;
-
-
-if(!us.length){
-
-html +=
-`
-<div class="notice">
-अभी इस project के लिए कोई progress update नहीं है।
-</div>
-`;
-
-}
-else{
-
-html +=
-`
-<div class="project-progress-box">
-
-<h3 style="margin-top:0">
-📋 काम की पूरी Progress / Updates
-</h3>
-`;
-
-
-us.forEach(x => {
-
-const pr =
-Math.max(
-0,
-Math.min(
-100,
-Number(
-x.progress_percent || 0
-)
-)
-);
-
-
-html +=
-`
-
-<div class="project-update">
-
-<div
-class="row"
-style="justify-content:space-between">
-
-<b>
-${esc(
-x.title ||
-'काम का अपडेट'
-)}
-</b>
-
-<span class="muted">
-${esc(
-x.update_date ||
-''
-)}
-</span>
-
-</div>
-
-
-<div style="margin-top:7px">
-${esc(x.details || '')}
-</div>
-
-
-<div class="project-progress-bar">
-
-<span
-style="width:${pr}%">
-</span>
-
-</div>
-
-
-<small>
-<b>${pr}%</b>
-complete
-</small>
-
-
-${
-x.photo_url
-?
-`
-<div>
-
-<a
-href="${esc(x.photo_url)}"
-target="_blank">
-
-<img
-class="project-update-photo"
-src="${esc(x.photo_url)}"
-alt="काम की Photo">
-
-</a>
-
-</div>
-`
-:
-''
-}
-
-</div>
-
-`;
-
-});
-
-
-html +=
-'</div>';
-
-}
-
-
-if(p.notes){
-
-html +=
-`
-
-<div class="notice">
-
-<b>
-Project Notes:
-</b>
-
-<br>
-
-${esc(p.notes)}
-
-</div>
-
-`;
-
-}
-
-
-q('projectProgressContent')
-.innerHTML = html;
-
-
-}
-catch(err){
-
-q('projectProgressContent')
-.innerHTML =
-`
-
-<div class="enquiry-error">
-
-<b>
-Project progress load नहीं हुआ:
-</b>
-
-<br>
-
-${esc(
-err.message ||
-String(err)
-)}
-
-</div>
-
-`;
-
-toast(
-err.message ||
-'Project progress error'
-);
-
-}
-
-}
-
-
-function closeProjectProgress(){
-
-q('projectProgressOverlay')
-.classList.remove('open');
-
-}
-
-
-/* =====================================================
-   REFRESH ALL DATA
-===================================================== */
+/* =========================================================
+   MAIN REFRESH
+========================================================= */
 
 async function refreshAll(){
 
-if(!user)
-return;
+if(!user)return;
 
 
 try{
@@ -3264,8 +3265,7 @@ ws,
 logs,
 pays,
 exps
-] =
-await Promise.all([
+] = await Promise.all([
 
 getAll('customers'),
 getAll('projects'),
@@ -3291,54 +3291,45 @@ await sb
 {ascending:false}
 );
 
-
-if(rq)
-throw rq;
+if(rq)throw rq;
 
 
-customerCache = {};
+customerCache={};
 
 
-cs.forEach(c => {
+cs.forEach(c=>{
 
 if(c.user_id)
-customerCache[c.user_id] = c;
+customerCache[c.user_id]=c;
 
 });
 
 
-/* Dashboard counters */
+/* DASHBOARD COUNTS */
 
-q('mCustomers').textContent =
-cs.length;
+q('mCustomers').textContent=cs.length;
+q('mProjects').textContent=ps.length;
+q('mWorkers').textContent=ws.length;
 
-q('mProjects').textContent =
-ps.length;
-
-q('mWorkers').textContent =
-ws.length;
-
-q('mEnquiries').textContent =
-(Array.isArray(req) ? req : [])
+q('mEnquiries').textContent=
+(Array.isArray(req)?req:[])
 .filter(
-x =>
-!['approved','rejected']
+x=>!['approved','rejected']
 .includes(x.status)
 )
 .length;
 
 
-q('mExpenses').textContent =
+q('mExpenses').textContent=
 money(
 exps.reduce(
-(a,x) =>
-a + Number(x.amount || 0),
+(a,x)=>a+Number(x.amount||0),
 0
 )
 );
 
 
-/* Customers */
+/* CUSTOMERS */
 
 q('customersList').innerHTML =
 table(
@@ -3351,7 +3342,7 @@ table(
 'Action'
 ],
 
-cs.map(x => `
+cs.map(x=>`
 
 <tr>
 
@@ -3374,7 +3365,7 @@ ${esc(x.email || '')}
 </td>
 
 <td>
-${esc(x.address)}
+${esc(x.address || '')}
 </td>
 
 <td>
@@ -3385,29 +3376,21 @@ ${esc(x.address)}
 type="button"
 class="btn view-profile-btn"
 onclick="viewCustomerProfile('${x.id}')">
-
 👁️ View Profile
-
 </button>
-
 
 <button
 type="button"
 class="btn edit-btn"
 onclick="editCustomer('${x.id}')">
-
 ✏️ Edit
-
 </button>
-
 
 <button
 type="button"
 class="btn delete-btn"
 onclick="deleteCustomer('${x.id}')">
-
 🗑️ Delete
-
 </button>
 
 </div>
@@ -3421,7 +3404,7 @@ onclick="deleteCustomer('${x.id}')">
 );
 
 
-/* Projects */
+/* PROJECTS */
 
 q('projectsList').innerHTML =
 table(
@@ -3435,7 +3418,7 @@ table(
 'Action'
 ],
 
-ps.map(x => `
+ps.map(x=>`
 
 <tr>
 
@@ -3446,25 +3429,24 @@ type="button"
 class="btn secondary project-click"
 onclick="viewProjectProgress('${x.id}')">
 
-🏗️
-${esc(x.project_name)}
+🏗️ ${esc(x.project_name)}
 
 </button>
 
 </td>
 
 <td>
-${esc(x.work_type)}
+${esc(x.work_type || '')}
 </td>
 
 <td>
-${esc(x.location)}
+${esc(x.location || '')}
 </td>
 
 <td>
 
 <span class="pill">
-${esc(x.status)}
+${esc(x.status || '')}
 </span>
 
 </td>
@@ -3481,19 +3463,14 @@ ${money(x.agreed_amount)}
 type="button"
 class="btn edit-btn"
 onclick="editProject('${x.id}')">
-
 ✏️ Edit
-
 </button>
-
 
 <button
 type="button"
 class="btn delete-btn"
 onclick="deleteProject('${x.id}')">
-
 🗑️ Delete
-
 </button>
 
 </div>
@@ -3507,7 +3484,7 @@ onclick="deleteProject('${x.id}')">
 );
 
 
-/* Workers */
+/* WORKERS */
 
 q('workersList').innerHTML =
 table(
@@ -3520,22 +3497,20 @@ table(
 'Village'
 ],
 
-ws.map(x => `
+ws.map(x=>`
 
 <tr>
 
 <td>
-<b>
-${esc(x.name)}
-</b>
+<b>${esc(x.name)}</b>
 </td>
 
 <td>
-${esc(x.phone)}
+${esc(x.phone || '')}
 </td>
 
 <td>
-${esc(x.work_role)}
+${esc(x.work_role || '')}
 </td>
 
 <td>
@@ -3543,7 +3518,7 @@ ${money(x.daily_rate)}
 </td>
 
 <td>
-${esc(x.village)}
+${esc(x.village || '')}
 </td>
 
 </tr>
@@ -3553,7 +3528,7 @@ ${esc(x.village)}
 );
 
 
-/* Work */
+/* WORK */
 
 q('workList').innerHTML =
 table(
@@ -3566,7 +3541,7 @@ table(
 'Amount'
 ],
 
-logs.map(x => `
+logs.map(x=>`
 
 <tr>
 
@@ -3576,14 +3551,13 @@ ${esc(x.work_date)}
 
 <td>
 ${esc(
-(ps.find(
-p => p.id === x.project_id
-) || {}).project_name
+(ps.find(p=>p.id===x.project_id)||{})
+.project_name || ''
 )}
 </td>
 
 <td>
-${esc(x.work_description)}
+${esc(x.work_description || '')}
 </td>
 
 <td>
@@ -3601,7 +3575,7 @@ ${money(x.amount)}
 );
 
 
-/* Payments */
+/* PAYMENTS */
 
 q('paymentsList').innerHTML =
 table(
@@ -3614,7 +3588,7 @@ table(
 'Reference'
 ],
 
-pays.map(x => `
+pays.map(x=>`
 
 <tr>
 
@@ -3624,9 +3598,8 @@ ${esc(x.payment_date)}
 
 <td>
 ${esc(
-(ps.find(
-p => p.id === x.project_id
-) || {}).project_name
+(ps.find(p=>p.id===x.project_id)||{})
+.project_name || ''
 )}
 </td>
 
@@ -3635,11 +3608,11 @@ ${money(x.amount)}
 </td>
 
 <td>
-${esc(x.payment_method)}
+${esc(x.payment_method || '')}
 </td>
 
 <td>
-${esc(x.reference_no)}
+${esc(x.reference_no || '')}
 </td>
 
 </tr>
@@ -3649,7 +3622,7 @@ ${esc(x.reference_no)}
 );
 
 
-/* Expenses */
+/* EXPENSES */
 
 q('expensesList').innerHTML =
 table(
@@ -3662,7 +3635,7 @@ table(
 'Amount'
 ],
 
-exps.map(x => `
+exps.map(x=>`
 
 <tr>
 
@@ -3672,19 +3645,18 @@ ${esc(x.expense_date)}
 
 <td>
 ${esc(
-(ps.find(
-p => p.id === x.project_id
-) || {}).project_name ||
+(ps.find(p=>p.id===x.project_id)||{})
+.project_name ||
 'General'
 )}
 </td>
 
 <td>
-${esc(x.category)}
+${esc(x.category || '')}
 </td>
 
 <td>
-${esc(x.description)}
+${esc(x.description || '')}
 </td>
 
 <td>
@@ -3698,7 +3670,7 @@ ${money(x.amount)}
 );
 
 
-/* Recent Projects */
+/* RECENT PROJECTS */
 
 q('recentProjects').innerHTML =
 table(
@@ -3710,7 +3682,7 @@ table(
 'Amount'
 ],
 
-ps.slice(0,8).map(x => `
+ps.slice(0,8).map(x=>`
 
 <tr>
 
@@ -3728,13 +3700,13 @@ ${esc(x.project_name)}
 </td>
 
 <td>
-${esc(x.location)}
+${esc(x.location || '')}
 </td>
 
 <td>
 
 <span class="pill">
-${esc(x.status)}
+${esc(x.status || '')}
 </span>
 
 </td>
@@ -3750,10 +3722,10 @@ ${money(x.agreed_amount)}
 );
 
 
-/* Recent enquiries */
+/* RECENT ENQUIRIES */
 
 const latest =
-(Array.isArray(req) ? req : [])
+(Array.isArray(req)?req:[])
 .slice(0,6);
 
 
@@ -3771,48 +3743,46 @@ table(
 'Status'
 ],
 
-latest.map(x => `
+latest.map(x=>`
 
 <tr>
 
 <td>
-${new Date(
-x.created_at
-).toLocaleDateString('en-IN')}
+${new Date(x.created_at)
+.toLocaleDateString('en-IN')}
 </td>
 
 <td>
 ${esc(
-(customerCache[x.customer_user_id] || {})
+(customerCache[x.customer_user_id]||{})
 .name ||
 'Customer'
 )}
 </td>
 
 <td>
-${esc(x.request_type)}
+${esc(x.request_type || '')}
 </td>
 
 <td>
 
 <span
 class="pill ${
-x.status === 'pending'
-? 'pending'
+x.status==='pending'
+?'pending'
 :
-x.status === 'rejected'
-? 'rejected'
+x.status==='rejected'
+?'rejected'
 :
-x.status === 'contacted'
-? 'contacted'
+x.status==='contacted'
+?'contacted'
 :
-x.status === 'approved'
-? 'approved'
-:
-''
+x.status==='approved'
+?'approved'
+:''
 }">
 
-${esc(x.status)}
+${esc(x.status || '')}
 
 </span>
 
@@ -3829,16 +3799,12 @@ ${esc(x.status)}
 'अभी कोई enquiry नहीं।';
 
 
-/* Customer dropdown */
+/* CUSTOMER DROPDOWN */
 
 q('pCustomer').innerHTML =
-`
-<option value="">
-Select
-</option>
-` +
+'<option value="">Select</option>' +
 
-cs.map(x =>
+cs.map(x=>
 `
 <option value="${x.id}">
 ${esc(x.name)}
@@ -3847,10 +3813,10 @@ ${esc(x.name)}
 ).join('');
 
 
-/* Project dropdowns */
+/* PROJECT DROPDOWNS */
 
 ['lProject','payProject','eProject']
-.forEach(id => {
+.forEach(id=>{
 
 q(id).innerHTML =
 
@@ -3864,7 +3830,7 @@ id === 'eProject'
 
 +
 
-ps.map(x =>
+ps.map(x=>
 `
 <option value="${x.id}">
 ${esc(x.project_name)}
@@ -3875,16 +3841,12 @@ ${esc(x.project_name)}
 });
 
 
-/* Worker dropdown */
+/* WORKER DROPDOWN */
 
 q('lWorker').innerHTML =
-`
-<option value="">
-Select Worker
-</option>
-` +
+'<option value="">Select Worker</option>' +
 
-ws.map(x =>
+ws.map(x=>
 `
 <option value="${x.id}">
 ${esc(x.name)}
@@ -3893,26 +3855,23 @@ ${esc(x.name)}
 ).join('');
 
 
-/* Reports */
+/* REPORT */
 
 const totalP =
 pays.reduce(
-(a,x) =>
-a + Number(x.amount || 0),
+(a,x)=>a+Number(x.amount||0),
 0
 );
 
 const totalE =
 exps.reduce(
-(a,x) =>
-a + Number(x.amount || 0),
+(a,x)=>a+Number(x.amount||0),
 0
 );
 
 const totalW =
 logs.reduce(
-(a,x) =>
-a + Number(x.amount || 0),
+(a,x)=>a+Number(x.amount||0),
 0
 );
 
@@ -3924,13 +3883,13 @@ q('rExpenses').textContent =
 money(totalE);
 
 q('rNet').textContent =
-money(totalP - totalE);
+money(totalP-totalE);
 
 q('rWork').textContent =
 money(totalW);
 
 
-/* Project report */
+/* PROJECT REPORT */
 
 q('reportProjects').innerHTML =
 table(
@@ -3944,40 +3903,29 @@ table(
 'Balance'
 ],
 
-ps.map(p => {
+ps.map(p=>{
 
 const received =
 pays
-.filter(
-x => x.project_id === p.id
-)
+.filter(x=>x.project_id===p.id)
 .reduce(
-(a,x) =>
-a + Number(x.amount || 0),
+(a,x)=>a+Number(x.amount||0),
 0
 );
-
 
 const expense =
 exps
-.filter(
-x => x.project_id === p.id
-)
+.filter(x=>x.project_id===p.id)
 .reduce(
-(a,x) =>
-a + Number(x.amount || 0),
+(a,x)=>a+Number(x.amount||0),
 0
 );
 
-
 const work =
 logs
-.filter(
-x => x.project_id === p.id
-)
+.filter(x=>x.project_id===p.id)
 .reduce(
-(a,x) =>
-a + Number(x.amount || 0),
+(a,x)=>a+Number(x.amount||0),
 0
 );
 
@@ -4017,9 +3965,7 @@ ${money(work)}
 
 <td>
 ${money(
-Number(p.agreed_amount || 0)
--
-received
+Number(p.agreed_amount||0)-received
 )}
 </td>
 
@@ -4032,20 +3978,13 @@ received
 );
 
 
-/* If enquiry section is open */
-
 if(
-document.querySelector(
-'#enquiries.active'
+document.querySelector('#enquiries.active')
 )
-){
-
 await loadEnquiries();
 
-}
 
-}
-catch(err){
+}catch(err){
 
 console.error(err);
 
@@ -4059,365 +3998,11 @@ err.message ||
 }
 
 
-/* =====================================================
-   CUSTOMER PHOTO
-===================================================== */
-
-function customerPhotoHtml(c){
-
-return c.photo_url
-
-?
-
-`
-<img
-class="customer-mini-photo"
-src="${esc(c.photo_url)}"
-alt="Customer Photo">
-`
-
-:
-
-`
-<span
-class="customer-mini-placeholder">
-👤
-</span>
-`;
-
-}
-
-
-/* =====================================================
-   CUSTOMER PROFILE
-===================================================== */
-
-async function viewCustomerProfile(id){
-
-const {
-data:c,
-error
-} =
-await sb
-.from('customers')
-.select('*')
-.eq('id',id)
-.maybeSingle();
-
-
-if(error)
-return toast(
-'Customer profile load नहीं हुई: '+
-error.message
-);
-
-
-if(!c)
-return toast(
-'Customer नहीं मिला'
-);
-
-
-const photo =
-c.photo_url
-
-?
-
-`
-<img
-class="profile-big-photo"
-src="${esc(c.photo_url)}"
-alt="Customer Photo">
-`
-
-:
-
-`
-<div class="profile-big-placeholder">
-👤
-</div>
-`;
-
-
-q('customerProfileContent')
-.innerHTML = `
-
-<div class="profile-head">
-
-${photo}
-
-<div>
-
-<h2 style="margin:0 0 6px">
-
-${esc(
-c.name ||
-'Customer'
-)}
-
-</h2>
-
-<div class="muted">
-Customer Profile
-</div>
-
-</div>
-
-</div>
-
-
-<div class="profile-fields">
-
-
-<div class="profile-field">
-
-<small>
-👤 Customer Name
-</small>
-
-<b>
-${esc(
-c.name ||
-'Not available'
-)}
-</b>
-
-</div>
-
-
-<div class="profile-field">
-
-<small>
-📱 Phone Number
-</small>
-
-<b>
-${esc(
-c.phone ||
-'Not available'
-)}
-</b>
-
-</div>
-
-
-<div class="profile-field">
-
-<small>
-📧 Email
-</small>
-
-<b>
-${esc(
-c.email ||
-'Not available'
-)}
-</b>
-
-</div>
-
-
-<div
-class="profile-field"
-style="grid-column:1/-1">
-
-<small>
-📍 पूरा Address
-</small>
-
-<b>
-${esc(
-c.address ||
-'Not available'
-)}
-</b>
-
-</div>
-
-
-<div
-class="profile-field"
-style="grid-column:1/-1">
-
-<small>
-📝 Notes
-</small>
-
-<b>
-${esc(
-c.notes ||
-'—'
-)}
-</b>
-
-</div>
-
-
-</div>
-
-
-<div
-class="actions"
-style="margin-top:18px">
-
-<a
-class="btn primary"
-href="tel:${esc(c.phone || '')}">
-
-📞 Call Customer
-
-</a>
-
-
-${
-c.photo_url
-
-?
-
-`
-<a
-class="btn secondary"
-href="${esc(c.photo_url)}"
-target="_blank">
-
-📷 Photo खोलें
-
-</a>
-`
-
-:
-
-''
-}
-
-</div>
-
-`;
-
-
-q('customerProfileOverlay')
-.classList.add('open');
-
-}
-
-
-function closeCustomerProfile(){
-
-q('customerProfileOverlay')
-.classList.remove('open');
-
-}
-
-
-/* =====================================================
-   INITIAL ADMIN AUTH CHECK
-=====================================================
-
-IMPORTANT:
-
-dashboard.html direct open होने पर:
-
-1. Supabase session check होगी
-2. session नहीं है → admin-login.html
-3. session है → profiles table check
-4. role admin नहीं है → logout + admin-login.html
-5. role admin है → dashboard
-
-===================================================== */
-
-(async function initDashboard(){
-
-try{
-
-const {
-data,
-error
-} =
-await sb.auth.getSession();
-
-
-if(error){
-
-console.error(error);
-
-location.replace(
-'admin-login.html'
-);
-
-return;
-
-}
-
-
-const session =
-data?.session;
-
-
-if(!session){
-
-location.replace(
-'admin-login.html'
-);
-
-return;
-
-}
-
-
-await start(
-session.user
-);
-
-}
-catch(err){
-
-console.error(err);
-
-location.replace(
-'admin-login.html'
-);
-
-}
-
-})();
-
-
-/* =====================================================
-   AUTH STATE LISTENER
-===================================================== */
-
-sb.auth.onAuthStateChange(
-(event,session) => {
-
-if(event === 'SIGNED_OUT'){
-
-location.replace(
-'admin-login.html'
-);
-
-return;
-
-}
-
-
-/*
-SIGNED_IN होने पर Admin Login
-से dashboard में session आ जाएगा।
-*/
-
-if(
-event === 'SIGNED_IN' &&
-session
-){
-
-start(
-session.user
-);
-
-}
-
-}
-);
+/* =========================================================
+   START
+========================================================= */
+
+checkAdminSession();
 
 </script>
 
