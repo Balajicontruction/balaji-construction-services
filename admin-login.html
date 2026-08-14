@@ -27,7 +27,14 @@ const SUPABASE_KEY='sb_publishable_45zaRM5LLByFABddU5hm9g_4UwfnT7t';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:'balaji-admin-auth'}});
 const form=document.getElementById('loginForm'),btn=document.getElementById('loginBtn'),msg=document.getElementById('msg');
 function show(text,type='err'){msg.textContent=text;msg.className='msg '+type}
-if('serviceWorker' in navigator){navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister())).catch(()=>{});}
+async function registerAdminGuard(){
+ if(!('serviceWorker' in navigator)) return;
+ try{
+  const reg=await navigator.serviceWorker.register('admin-auth-fix-sw.js',{scope:'./'});
+  await navigator.serviceWorker.ready;
+  return reg;
+ }catch(e){console.warn('Admin guard registration failed',e);}
+}
 form.addEventListener('submit',async e=>{
  e.preventDefault();msg.className='msg';msg.textContent='';btn.disabled=true;btn.textContent='Logging in...';
  try{
@@ -39,8 +46,9 @@ form.addEventListener('submit',async e=>{
   localStorage.setItem('balaji_admin_session',JSON.stringify({access_token:data.session.access_token,refresh_token:data.session.refresh_token}));
   localStorage.setItem('balaji_admin_email',data.user.email||email);
   show('Login सफल। Admin Dashboard खोला जा रहा है...','ok');
+  await registerAdminGuard();
   const a=encodeURIComponent(data.session.access_token),r=encodeURIComponent(data.session.refresh_token);
-  setTimeout(()=>{window.location.replace('dashboard.html#access_token='+a+'&refresh_token='+r+'&type=bearer');},150);
+  setTimeout(()=>{window.location.replace('dashboard.html#access_token='+a+'&refresh_token='+r+'&type=bearer');},250);
  }catch(err){show(err?.message||String(err));btn.disabled=false;btn.textContent='Login'}
 });
 </script>
