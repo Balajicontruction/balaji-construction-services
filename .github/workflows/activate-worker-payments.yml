@@ -1,0 +1,72 @@
+name: Activate worker payments
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  activate:
+    if: github.event.head_commit.message != 'Activate worker payments in admin dashboard'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bind worker payment module and UPI field
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p = Path('dashboard.html')
+          s = p.read_text(encoding='utf-8')
+          original = s
+
+          # Load the worker payment module on the admin dashboard.
+          if 'src="worker-payments.js"' not in s and "src='worker-payments.js'" not in s:
+              marker = '<script src="worker-face.js"></script>'
+              if marker in s:
+                  s = s.replace(marker, marker + '\n<script src="worker-payments.js"></script>', 1)
+              elif '</body>' in s:
+                  s = s.replace('</body>', '<script src="worker-payments.js"></script>\n</body>', 1)
+
+          # Add UPI ID to worker edit/add form if it is not already present.
+          if 'id="workerUpi"' not in s:
+              village_marker = '<div class="field"><label>Village</label><input id="workerVillage"'
+              pos = s.find(village_marker)
+              if pos >= 0:
+                  end = s.find('</div>', pos)
+                  if end >= 0:
+                      end += len('</div>')
+                      field = '<div class="field"><label>UPI ID</label><input id="workerUpi" type="text" placeholder="example@upi"><small class="uploadHint">Worker का UPI ID, जैसे 9876543210@upi</small></div>'
+                      s = s[:end] + field + s[end:]
+
+          # Populate UPI when editing a worker.
+          if 'document.getElementById(\'workerUpi\').value=w.upi_id||\'\';' not in s:
+              needle = "document.getElementById('workerVillage').value=w.village||'';"
+              if needle in s:
+                  s = s.replace(needle, needle + "document.getElementById('workerUpi').value=w.upi_id||'';", 1)
+
+          # Save UPI ID with the worker.
+          if "upi_id:document.getElementById('workerUpi').value.trim()" not in s:
+              needle = "village:\n        document.getElementById('workerVillage').value.trim()"
+              if needle in s:
+                  s = s.replace(needle, needle + ",\n\n      upi_id:\n        document.getElementById('workerUpi').value.trim()", 1)
+              else:
+                  needle = "village:document.getElementById('workerVillage').value.trim()"
+                  if needle in s:
+                      s = s.replace(needle, needle + ",upi_id:document.getElementById('workerUpi').value.trim()", 1)
+
+          if s != original:
+              p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Commit dashboard activation
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add dashboard.html
+          git diff --cached --quiet && exit 0
+          git commit -m 'Activate worker payments in admin dashboard'
+          git push
