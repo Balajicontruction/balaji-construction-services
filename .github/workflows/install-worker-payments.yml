@@ -3,12 +3,10 @@ on:
   push:
     paths:
       - 'worker-payments.js'
-      - '.github/workflows/install-worker-payments.yml'
 permissions:
   contents: write
 jobs:
   install:
-    if: ${{ !contains(github.event.head_commit.message, 'Install worker payment module') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
