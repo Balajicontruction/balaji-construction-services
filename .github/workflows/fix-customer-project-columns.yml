@@ -1,0 +1,66 @@
+name: Normalize Customer Projects and Actions columns
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Keep one Projects column and move Edit Delete to Actions
+        shell: bash
+        run: |
+          cat >> worker-avatar.js <<'JS'
+
+/* BALAJI — Customer Records only: exactly one Projects column + one Actions column. */
+(()=>{
+  'use strict';
+  function normalize(){
+    const tb=document.getElementById('customersTable');
+    const table=tb?.closest('table');
+    if(!tb||!table)return;
+    const head=table.querySelector('thead tr');
+    if(head){
+      const projectHeads=[...head.children].filter(x=>x.textContent.trim().toLowerCase()==='projects');
+      projectHeads.slice(1).forEach(x=>x.remove());
+      const actionHeads=[...head.children].filter(x=>x.textContent.trim().toLowerCase()==='actions');
+      if(actionHeads.length){
+        actionHeads.slice(1).forEach(x=>x.remove());
+        head.appendChild(actionHeads[0]);
+      }
+    }
+    tb.querySelectorAll('tr').forEach(row=>{
+      const action=[...row.children].find(td=>td.querySelector('[onclick*="editCustomer"],[onclick*="deleteCustomer"]'));
+      if(!action)return;
+      const markedProjects=[...row.children].filter(td=>td.hasAttribute('data-customer-projects-cell')||td.hasAttribute('data-project-cell'));
+      let project=markedProjects.find(td=>td.hasAttribute('data-customer-projects-cell'))||markedProjects.find(td=>td.hasAttribute('data-project-cell'));
+      if(!project){
+        const heads=[...table.querySelectorAll('thead tr th')];
+        const pi=heads.findIndex(th=>th.textContent.trim().toLowerCase()==='projects');
+        if(pi>=0)project=row.children[pi];
+      }
+      markedProjects.filter(td=>td!==project).forEach(td=>td.remove());
+      if(project&&project!==action)row.insertBefore(project,action);
+      if(action!==row.lastElementChild)row.appendChild(action);
+    });
+  }
+  normalize();
+  setTimeout(normalize,300);
+  setTimeout(normalize,1000);
+  setInterval(normalize,2500);
+})();
+JS
+          git config user.name "Balajicontruction"
+          git config user.email "satpalnehra30@gmail.com"
+          git add worker-avatar.js
+          git diff --cached --quiet && exit 0 || true
+          git commit -m "Normalize customer Projects and Actions columns"
+          git push
+          git rm .github/workflows/fix-customer-project-columns.yml
+          git commit -m "Remove temporary customer columns workflow"
+          git push
