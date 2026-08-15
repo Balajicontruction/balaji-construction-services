@@ -1,65 +1,229 @@
 (()=>{
 'use strict';
+
 const S=()=>{try{return typeof sb!=='undefined'?sb:window.sb}catch(e){return window.sb||null}};
+
 let enquiryCustomers={};
 let enquiryProfiles={};
-function norm(v){v=String(v||'').toLowerCase().trim();if(['approved','approve','accepted','accept'].includes(v))return'approved';if(['cancelled','canceled','cancel','rejected','reject'].includes(v))return'cancelled';return'pending'}
-function label(v){return v==='approved'?'Approved':v==='cancelled'?'Cancelled':'Pending'}
-function customerFor(e){const uid=String(e?.customer_user_id||'');const c=enquiryCustomers[uid]||((typeof customers!=='undefined'?customers:[]).find(x=>String(x.user_id||'')===uid||String(x.id||'')===uid)||{});const p=enquiryProfiles[uid]||((typeof profileMap!=='undefined'?profileMap[uid]:null)||{});return{c,p}}
-function render(){const tb=document.getElementById('enquiriesTable');if(!tb)return;const list=(window.enquiries||[]);if(!list.length){tb.innerHTML='<tr><td colspan="5"><div class="empty">अभी कोई enquiry नहीं मिली।</div></td></tr>';return}tb.innerHTML=list.map(e=>{const {c,p}=customerFor(e);const name=e.name||e.customer_name||e.full_name||c.name||p.full_name||'—';const phone=e.phone||e.mobile||c.phone||p.phone||'—';const msg=e.message||e.details||e.enquiry||'—';const st=norm(e.status);return `<tr><td><strong>${esc(name)}</strong></td><td>${esc(phone)}</td><td style="max-width:360px;white-space:pre-wrap">${esc(msg)}</td><td><div class="actions"><button class="btn btn-green btn-sm" style="opacity:${st==='approved'?1:.5}" onclick="updateEnquiryStatus('${esc(e.id)}','approved')">Approve</button><button class="btn btn-red btn-sm" style="opacity:${st==='cancelled'?1:.5}" onclick="updateEnquiryStatus('${esc(e.id)}','cancelled')">Cancel</button><button class="btn btn-light btn-sm" style="opacity:${st==='pending'?1:.5}" onclick="updateEnquiryStatus('${esc(e.id)}','pending')">Pending</button></div><div style="margin-top:7px"><span class="status ${st==='approved'?'completed':st==='cancelled'?'cancelled':'pending'}">${label(st)}</span></div></td><td><div class="actions"><button class="btn btn-blue btn-sm" onclick="editEnquiry('${esc(e.id)}')">✏️ Edit</button><button class="btn btn-red btn-sm" onclick="deleteEnquiry('${esc(e.id)}')">🗑️ Delete</button></div></td></tr>`}).join('')}
-async function loadCustomerDirectory(list){const s=S();if(!s||!list.length)return;const ids=[...new Set(list.map(e=>String(e.customer_user_id||'')).filter(Boolean))];if(!ids.length)return;try{const existing=(typeof customers!=='undefined'?customers:[]);existing.forEach(c=>{const uid=String(c.user_id||'');const cid=String(c.id||'');if(uid)enquiryCustomers[uid]=c;if(cid)enquiryCustomers[cid]=c;});const r=await s.from('customers').select('id,user_id,name,phone,email').in('user_id',ids);if(!r.error)(r.data||[]).forEach(c=>{enquiryCustomers[String(c.user_id)] = c;enquiryCustomers[String(c.id)] = c;});}catch(e){console.warn('enquiry customer lookup:',e)}try{const r=await s.from('profiles').select('id,full_name,phone').in('id',ids);if(!r.error)(r.data||[]).forEach(p=>{enquiryProfiles[String(p.id)] = p;});}catch(e){console.warn('enquiry profile lookup:',e)}}
-async function load(){const s=S();if(!s)return;const r=await s.from('contract_requests').select('*').order('created_at',{ascending:false});if(r.error){console.error('contract_requests:',r.error);window.enquiries=[];render();return}window.enquiries=r.data||[];await loadCustomerDirectory(window.enquiries);render()}
-window.updateEnquiryStatus=async(id,status)=>{const r=await S().from('contract_requests').update({status:norm(status)}).eq('id',id);if(r.error){toast('❌ Status update नहीं हुआ: '+r.error.message);return}toast('✅ Status: '+label(norm(status)));await load()}
-window.editEnquiry=async id=>{const e=(window.enquiries||[]).find(x=>String(x.id)===String(id));if(!e)return;const msg=prompt('Enquiry Message edit करें:',e.details||e.message||e.enquiry||'');if(msg===null)return;const r=await S().from('contract_requests').update({details:msg.trim()}).eq('id',id);if(r.error){toast('❌ Enquiry edit नहीं हुई: '+r.error.message);return}toast('✅ Enquiry updated');await load()}
-window.deleteEnquiry=async id=>{if(!confirm('क्या इस enquiry को delete करना है?'))return;const r=await S().from('contract_requests').delete().eq('id',id);if(r.error){toast('❌ Enquiry delete नहीं हुई: '+r.error.message);return}toast('🗑️ Enquiry deleted');await load()}
+
+function norm(v){
+  v=String(v||'').toLowerCase().trim();
+  if(['approved','approve','accepted','accept'].includes(v))return 'approved';
+  if(['cancelled','canceled','cancel','rejected','reject'].includes(v))return 'cancelled';
+  return 'pending';
+}
+
+function label(v){
+  return v==='approved'?'Approved':v==='cancelled'?'Cancelled':'Pending';
+}
+
+function customerFor(e){
+  const uid=String(e?.customer_user_id||'');
+  const c=enquiryCustomers[uid] ||
+    ((typeof customers!=='undefined'?customers:[]).find(x=>
+      String(x.user_id||'')===uid || String(x.id||'')===uid
+    )||{});
+  const p=enquiryProfiles[uid] ||
+    ((typeof profileMap!=='undefined'?profileMap[uid]:null)||{});
+  return {c,p};
+}
 
 /* =========================================================
-   CUSTOMER RECORDS — ONLY ADD PROJECT COLUMN
+   CUSTOMER ENQUIRIES RENDER
+   Customer name/phone are resolved from customers/profiles
+   using customer_user_id before the table is rendered.
 ========================================================= */
-function renderCustomerProjectColumn(){const table=document.querySelector('#page-customers table');const tbody=document.getElementById('customersTable');if(!table||!tbody)return;const headRow=table.querySelector('thead tr');if(headRow&&!headRow.querySelector('.customer-project-head')){const th=document.createElement('th');th.className='customer-project-head';th.textContent='Project';const actionsTh=[...headRow.children].find(x=>String(x.textContent||'').trim().toLowerCase()==='actions');if(actionsTh)headRow.insertBefore(th,actionsTh);else headRow.appendChild(th)}const list=(typeof customers!=='undefined'?customers:[]);const listProjects=(typeof projects!=='undefined'?projects:[]);if(!list.length){const emptyCell=tbody.querySelector('td[colspan]');if(emptyCell)emptyCell.colSpan=7;return}[...tbody.querySelectorAll('tr')].forEach((row,index)=>{row.querySelector('.customer-project-cell')?.remove();const customer=list[index];const cell=document.createElement('td');cell.className='customer-project-cell';const matches=listProjects.filter(p=>String(p.customer_id||'')===String(customer?.id||''));if(matches.length){cell.innerHTML=matches.map(p=>{const name=esc(p.project_name||p.work_type||'Project');const status=String(p.status||'').trim();const href=`project-progress.html?project_id=${encodeURIComponent(p.id)}`;return `<div style="margin-bottom:7px"><a href="${href}" style="color:#1d4ed8;font-weight:800;text-decoration:underline;cursor:pointer" title="Project Progress देखें">${name}</a>${status?`<br><small style="color:#60738a">${esc(status)}</small>`:''}</div>`}).join('')}else{cell.textContent='—'}const actionsCell=row.lastElementChild;if(actionsCell)row.insertBefore(cell,actionsCell);else row.appendChild(cell)})}
-function hookCustomerRecords(){if(typeof window.renderCustomers==='function'&&!window.__customerProjectHook){const oldRenderCustomers=window.renderCustomers;window.renderCustomers=function(){const result=oldRenderCustomers.apply(this,arguments);setTimeout(renderCustomerProjectColumn,0);return result};window.__customerProjectHook=true}renderCustomerProjectColumn()}
+function render(){
+  const tb=document.getElementById('enquiriesTable');
+  if(!tb)return;
 
-/* =========================================================
-   PROJECTS — SHOW PROGRESS ONLY; DAILY UPDATE REMAINS THE UPDATE SOURCE
-========================================================= */
-function renderProjectProgressView(){const section=document.getElementById('page-projects');if(!section)return;const cards=[...section.querySelectorAll('.projectCard')];cards.forEach(card=>{const buttons=[...card.querySelectorAll('button')];const updateBtn=buttons.find(b=>String(b.textContent||'').includes('Progress Update'));if(!updateBtn||updateBtn.dataset.progressViewApplied==='1')return;const onclick=String(updateBtn.getAttribute('onclick')||'');const m=onclick.match(/openProgressModal\(['"]([^'"]+)['"]\)/);if(!m)return;const projectId=m[1];const link=document.createElement('a');link.className=updateBtn.className;link.href=`project-progress.html?project_id=${encodeURIComponent(projectId)}`;link.textContent='📊 Project Progress';link.title='इस project की progress देखें';link.style.textDecoration='none';link.style.display='inline-block';updateBtn.replaceWith(link)})}
-function hookProjectSection(){if(typeof window.renderProjects==='function'&&!window.__projectProgressHook){const oldRenderProjects=window.renderProjects;window.renderProjects=function(){const result=oldRenderProjects.apply(this,arguments);setTimeout(renderProjectProgressView,0);return result};window.__projectProgressHook=true}renderProjectProgressView()}
-const oldLoad=window.loadAll;window.loadAll=async function(){const r=await oldLoad.apply(this,arguments);await load();setTimeout(()=>{hookCustomerRecords();hookProjectSection()},0);return r};
-setTimeout(()=>{load();hookCustomerRecords();hookProjectSection()},0);
-setInterval(()=>{hookCustomerRecords();hookProjectSection()},1500);
+  const list=(window.enquiries||[]);
 
-/* =========================================================
-   MODERN ADMIN UI — VISUAL ONLY, DATA/FUNCTIONS UNCHANGED
-========================================================= */
-(function modernAdminUI(){
-  const css=`
-:root{--modern-bg:#f6f8fc;--modern-surface:rgba(255,255,255,.88);--modern-border:rgba(148,163,184,.20);--modern-shadow:0 18px 45px rgba(15,23,42,.08);--modern-shadow-hover:0 24px 60px rgba(15,23,42,.13);--modern-blue:#2563eb;--modern-cyan:#0ea5e9;--modern-orange:#ff7a18}
-html{scroll-behavior:smooth}
-body{background:radial-gradient(circle at 10% 0%,rgba(37,99,235,.07),transparent 30%),radial-gradient(circle at 95% 10%,rgba(255,122,24,.08),transparent 28%),#f6f8fc;overflow-x:hidden}
-.sidebar{width:268px;padding:20px 16px;background:linear-gradient(180deg,#071d31 0%,#0b2942 55%,#0a2035 100%);box-shadow:12px 0 40px rgba(2,18,35,.14);border-right:1px solid rgba(255,255,255,.06)}
-.brand{padding:10px 8px 18px;margin-bottom:18px}.logo{width:58px;height:58px;border-radius:17px;box-shadow:0 12px 28px rgba(255,127,31,.28);transition:transform .25s ease}.brand:hover .logo{transform:rotate(-3deg) scale(1.04)}
-.nav{gap:5px}.nav button{position:relative;padding:13px 14px;border:1px solid transparent;transition:transform .2s ease,background .2s ease,border-color .2s ease,box-shadow .2s ease}.nav button:hover{transform:translateX(3px);background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.07)}.nav button.active{background:linear-gradient(90deg,rgba(255,127,31,.18),rgba(37,99,235,.16));border-color:rgba(255,255,255,.10);box-shadow:inset 3px 0 0 var(--modern-orange)}
-.logout{transition:transform .2s ease,box-shadow .2s ease;background:linear-gradient(180deg,#fff,#eef4f9);box-shadow:0 10px 25px rgba(0,0,0,.12)}.logout:hover{transform:translateY(-2px);box-shadow:0 14px 30px rgba(0,0,0,.18)}
-.main{margin-left:268px}.topbar{height:76px;padding:0 clamp(16px,3vw,38px);background:rgba(255,255,255,.84);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid var(--modern-border);box-shadow:0 8px 30px rgba(15,23,42,.05)}.topTitle h1{font-size:clamp(21px,2.3vw,30px);letter-spacing:-.02em}.adminBadge{box-shadow:0 7px 18px rgba(22,163,74,.12)}
-.content{padding:clamp(18px,3vw,34px);max-width:1500px}.sectionHead{margin-bottom:20px}.sectionHead h2{font-size:clamp(25px,3vw,34px);letter-spacing:-.03em}
-.card,.stat,.projectCard,.workerCard,.updateCard,.globalSearch{border:1px solid var(--modern-border);background:var(--modern-surface);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:var(--modern-shadow);transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}.card:hover,.stat:hover,.projectCard:hover,.workerCard:hover,.updateCard:hover{transform:translateY(-3px);box-shadow:var(--modern-shadow-hover);border-color:rgba(37,99,235,.14)}
-.grid{gap:18px}.stat{min-height:140px;padding:22px}.statValue{font-size:clamp(30px,3vw,40px)}
-.btn{position:relative;overflow:hidden;border:1px solid transparent;transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}.btn:hover{transform:translateY(-2px);filter:brightness(1.03);box-shadow:0 9px 20px rgba(15,23,42,.12)}.btn:active{transform:translateY(0) scale(.98)}.btn-primary{background:linear-gradient(135deg,#ff8a26,#ff6b0b);box-shadow:0 8px 18px rgba(255,122,24,.22)}.btn-green{box-shadow:0 7px 17px rgba(22,163,74,.16)}.btn-blue{box-shadow:0 7px 17px rgba(37,99,235,.13)}
-table{border-collapse:separate;border-spacing:0;overflow:hidden;border-radius:16px}thead th{position:sticky;top:0;z-index:2;background:linear-gradient(180deg,#f7f9fc,#eef3f8);border-bottom:1px solid var(--modern-border)}tbody tr{transition:background .18s ease}tbody tr:hover{background:rgba(37,99,235,.035)}td{padding:16px;border-bottom:1px solid rgba(226,232,240,.75)}
-.projectCard,.workerCard,.updateCard{overflow:hidden;position:relative}.projectCard:before,.workerCard:before,.updateCard:before{content:"";position:absolute;left:0;top:0;width:4px;height:100%;background:linear-gradient(180deg,var(--modern-orange),var(--modern-blue));opacity:.85}.progressBar{height:13px;box-shadow:inset 0 1px 2px rgba(15,23,42,.08)}.progressFill{background:linear-gradient(90deg,#ff7a18,#ff9b42);box-shadow:0 0 14px rgba(255,122,24,.22);transition:width .7s cubic-bezier(.22,1,.36,1)}
-.modal{background:rgba(2,12,24,.64);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}.modalBox{border:1px solid var(--modern-border);box-shadow:0 30px 90px rgba(0,0,0,.25);animation:modernModalIn .25s ease both}@keyframes modernModalIn{from{opacity:0;transform:translateY(12px) scale(.985)}to{opacity:1;transform:none}}
-.field input,.field select,.field textarea,.globalSearch input{transition:border-color .18s ease,box-shadow .18s ease,background .18s ease}.field input:focus,.field select:focus,.field textarea:focus,.globalSearch input:focus{border-color:rgba(37,99,235,.45);box-shadow:0 0 0 4px rgba(37,99,235,.09)}
-#toast{border:1px solid rgba(255,255,255,.10);box-shadow:0 18px 45px rgba(0,0,0,.24);animation:toastIn .25s ease both}@keyframes toastIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-.customerThumb,.customerPlaceholder{box-shadow:0 5px 15px rgba(15,23,42,.08)}
-.mobileMenu{border:1px solid var(--modern-border);box-shadow:0 7px 18px rgba(15,23,42,.08)}
-@media(max-width:1100px){.sidebar{width:235px}.main{margin-left:235px}.grid4{grid-template-columns:repeat(2,minmax(0,1fr))}.grid3{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:800px){.sidebar{transform:translateX(-105%);transition:transform .28s ease;box-shadow:20px 0 50px rgba(2,18,35,.28)}.sidebar.mobile-open{transform:translateX(0)}.main{margin-left:0}.mobileMenu{display:inline-flex;align-items:center;justify-content:center;font-size:20px}.topbar{padding:0 14px}.userBox{gap:7px;font-size:13px}.userBox .adminBadge{padding:6px 9px}.content{padding:18px 14px}.grid2,.grid3,.grid4{grid-template-columns:1fr}.sectionHead{align-items:flex-start;flex-direction:column}.sectionHead .actions{width:100%}.sectionHead .actions .btn{flex:1}.card,.stat,.projectCard,.workerCard,.updateCard{border-radius:18px;padding:18px}.tableWrap{margin:0 -4px}.topTitle{gap:8px}.topTitle h1{font-size:21px}}
-@media(max-width:520px){.topbar{height:68px}.userBox{max-width:55%;overflow:hidden}.userBox>*:last-child{display:none}.content{padding:14px 10px}.sectionHead h2{font-size:25px}.btn{min-height:42px}.actions{gap:6px}.actions .btn{flex:1}.modal{padding:10px}.modalBox{margin:10px auto;padding:17px;border-radius:18px}.formGrid{grid-template-columns:1fr}.field.full{grid-column:auto}.moneyGrid{grid-template-columns:1fr}.tableWrap{overflow-x:auto;-webkit-overflow-scrolling:touch}table{min-width:680px}th,td{padding:12px 10px}.stat{min-height:120px}.statValue{margin-top:14px}}
-@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
-`;
-  if(!document.getElementById('balaji-modern-admin-style')){const style=document.createElement('style');style.id='balaji-modern-admin-style';style.textContent=css;document.head.appendChild(style)}
-  function setupMobile(){const sidebar=document.querySelector('.sidebar');if(!sidebar)return;let menu=document.querySelector('.mobileMenu');if(!menu){const topTitle=document.querySelector('.topTitle');if(!topTitle)return;menu=document.createElement('button');menu.className='mobileMenu';menu.type='button';menu.setAttribute('aria-label','Menu');menu.innerHTML='☰';topTitle.insertBefore(menu,topTitle.firstChild)}if(!menu.__modernBound){menu.__modernBound=true;menu.addEventListener('click',()=>sidebar.classList.toggle('mobile-open'));document.addEventListener('click',e=>{if(window.innerWidth<=800&&sidebar.classList.contains('mobile-open')&&!sidebar.contains(e.target)&&!menu.contains(e.target))sidebar.classList.remove('mobile-open')});sidebar.querySelectorAll('.nav button,.logout').forEach(b=>b.addEventListener('click',()=>{if(window.innerWidth<=800)sidebar.classList.remove('mobile-open')}))}}
-  setupMobile();
-  window.addEventListener('resize',setupMobile);
-})();
+  if(!list.length){
+    tb.innerHTML='<tr><td colspan="5"><div class="empty">अभी कोई enquiry नहीं मिली।</div></td></tr>';
+    return;
+  }
+
+  tb.innerHTML=list.map(e=>{
+    const {c,p}=customerFor(e);
+    const name=e.name||e.customer_name||e.full_name||c.name||c.customer_name||p.full_name||'—';
+    const phone=e.phone||e.mobile||c.phone||c.mobile||p.phone||'—';
+    const msg=e.message||e.details||e.enquiry||'—';
+    const st=norm(e.status);
+
+    return `<tr>
+      <td><strong>${esc(name)}</strong></td>
+      <td>${esc(phone)}</td>
+      <td style="max-width:360px;white-space:pre-wrap">${esc(msg)}</td>
+      <td>
+        <div class="actions">
+          <button class="btn btn-green btn-sm" style="opacity:${st==='approved'?1:.5}" onclick="updateEnquiryStatus('${esc(e.id)}','approved')">Approve</button>
+          <button class="btn btn-red btn-sm" style="opacity:${st==='cancelled'?1:.5}" onclick="updateEnquiryStatus('${esc(e.id)}','cancelled')">Cancel</button>
+          <button class="btn btn-light btn-sm" style="opacity:${st==='pending'?1:.5}" onclick="updateEnquiryStatus('${esc(e.id)}','pending')">Pending</button>
+        </div>
+        <div style="margin-top:7px">
+          <span class="status ${st==='approved'?'completed':st==='cancelled'?'cancelled':'pending'}">${label(st)}</span>
+        </div>
+      </td>
+      <td>
+        <div class="actions">
+          <button class="btn btn-blue btn-sm" onclick="editEnquiry('${esc(e.id)}')">✏️ Edit</button>
+          <button class="btn btn-red btn-sm" onclick="deleteEnquiry('${esc(e.id)}')">🗑️ Delete</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+/* Load customer records BEFORE enquiry rendering. */
+async function loadCustomerDirectory(list){
+  const s=S();
+  if(!s||!list.length)return;
+
+  const ids=[...new Set(
+    list.map(e=>String(e.customer_user_id||'')).filter(Boolean)
+  )];
+
+  if(!ids.length)return;
+
+  try{
+    const existing=(typeof customers!=='undefined'?customers:[]);
+    existing.forEach(c=>{
+      const uid=String(c.user_id||'');
+      const cid=String(c.id||'');
+      if(uid)enquiryCustomers[uid]=c;
+      if(cid)enquiryCustomers[cid]=c;
+    });
+
+    const r=await s
+      .from('customers')
+      .select('id,user_id,name,phone,email,mobile,customer_name')
+      .in('user_id',ids);
+
+    if(!r.error){
+      (r.data||[]).forEach(c=>{
+        if(c.user_id)enquiryCustomers[String(c.user_id)]=c;
+        if(c.id)enquiryCustomers[String(c.id)]=c;
+      });
+    }
+  }catch(e){
+    console.warn('enquiry customer lookup:',e);
+  }
+
+  try{
+    const r=await s
+      .from('profiles')
+      .select('id,full_name,phone,email')
+      .in('id',ids);
+
+    if(!r.error){
+      (r.data||[]).forEach(p=>{
+        enquiryProfiles[String(p.id)]=p;
+      });
+    }
+  }catch(e){
+    console.warn('enquiry profile lookup:',e);
+  }
+}
+
+/* Main enquiry loader. This is the source used by the existing
+   Approve / Cancel / Pending / Edit / Delete controls. */
+async function load(){
+  const s=S();
+  if(!s)return;
+
+  const r=await s
+    .from('contract_requests')
+    .select('*')
+    .order('created_at',{ascending:false});
+
+  if(r.error){
+    console.error('contract_requests:',r.error);
+    window.enquiries=[];
+    render();
+    return;
+  }
+
+  window.enquiries=r.data||[];
+
+  /* IMPORTANT: wait for customer data before rendering. */
+  await loadCustomerDirectory(window.enquiries);
+
+  render();
+}
+
+window.updateEnquiryStatus=async(id,status)=>{
+  const s=S();
+  if(!s)return;
+
+  const r=await s
+    .from('contract_requests')
+    .update({status:norm(status)})
+    .eq('id',id);
+
+  if(r.error){
+    toast('❌ Status update नहीं हुआ: '+r.error.message);
+    return;
+  }
+
+  toast('✅ Status: '+label(norm(status)));
+  await load();
+};
+
+window.editEnquiry=async id=>{
+  const e=(window.enquiries||[]).find(x=>String(x.id)===String(id));
+  if(!e)return;
+
+  const msg=prompt(
+    'Enquiry Message edit करें:',
+    e.details||e.message||e.enquiry||''
+  );
+
+  if(msg===null)return;
+
+  const s=S();
+  if(!s)return;
+
+  const r=await s
+    .from('contract_requests')
+    .update({details:msg.trim()})
+    .eq('id',id);
+
+  if(r.error){
+    toast('❌ Enquiry edit नहीं हुई: '+r.error.message);
+    return;
+  }
+
+  toast('✅ Enquiry updated');
+  await load();
+};
+
+window.deleteEnquiry=async id=>{
+  if(!confirm('क्या इस enquiry को delete करना है?'))return;
+
+  const s=S();
+  if(!s)return;
+
+  const r=await s
+    .from('contract_requests')
+    .delete()
+    .eq('id',id);
+
+  if(r.error){
+    toast('❌ Enquiry delete नहीं हुई: '+r.error.message);
+    return;
+  }
+
+  toast('🗑️ Enquiry deleted');
+  await load();
+};
+
+/*
+  The dashboard loads its main data first and then injects this file.
+  Run immediately (not after a delayed timeout) so the first page load
+  resolves Customer Name + Phone without requiring Refresh.
+*/
+window.__enquiryControlsReady=true;
+load().catch(e=>console.error('Initial enquiry load:',e));
+
 })();
