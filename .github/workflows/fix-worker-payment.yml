@@ -1,71 +1,10 @@
 name: Fix worker payment binding
 on:
-  push:
-    branches: [main]
+  workflow_dispatch:
 permissions:
-  contents: write
+  contents: read
 jobs:
-  fix:
-    if: github.event.head_commit.message != 'Fix worker payment binding'
+  disabled:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Patch worker payment list and UPI save
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          # Keep the existing worker-face binding fix.
-          p=Path('worker-face.js')
-          s=p.read_text()
-          old="window.__lastWorkers=Array.isArray(window.workers)?window.workers:[];"
-          new="window.__lastWorkers=(typeof workers!=='undefined'&&Array.isArray(workers))?workers:[];"
-          s=s.replace(old,new)
-          p.write_text(s)
-
-          # Make Worker UPI save reliable and verify the value after update.
-          p=Path('worker-payments.js')
-          s=p.read_text(encoding='utf-8')
-          start=s.find('function showUpiModal(worker){')
-          end=s.find('window.adminWorkerPayment', start)
-          if start < 0 or end < 0:
-              raise SystemExit('UPI function markers not found')
-          new_func=r'''function showUpiModal(worker){
-           document.getElementById('adminWorkerUpiModal')?.remove();
-           const m=document.createElement('div');m.className='modal workerUpiModal';m.id='adminWorkerUpiModal';
-           m.innerHTML=`<div class="modalBox"><div class="modalHead"><h3>📲 ${upiFor(worker)?'Edit':'Set'} Worker UPI</h3><button class="close" type="button">×</button></div><p style="margin:8px 0 14px"><strong>${esc(worker.name||worker.worker_name||'Worker')}</strong></p><div class="field"><label>UPI ID</label><input id="adminWorkerUpiInput" type="text" autocomplete="off" placeholder="9876543210@upi" value="${esc(upiFor(worker))}"><span class="uploadHint">उदाहरण: mobile@upi, name@oksbi, name@ybl</span></div><div class="modalActions"><button type="button" class="btn btn-light" id="upiCancel">Cancel</button><button type="button" class="btn btn-green" id="upiSave">💾 Save UPI</button></div></div>`;
-           document.body.appendChild(m);m.classList.add('show');
-           m.querySelector('.close').onclick=()=>m.remove();m.querySelector('#upiCancel').onclick=()=>m.remove();m.addEventListener('click',e=>{if(e.target===m)m.remove()});
-           m.querySelector('#upiSave').onclick=async()=>{
-             const s=getSB();if(!s)return toastSafe('❌ Supabase उपलब्ध नहीं है');
-             const input=m.querySelector('#adminWorkerUpiInput'),clean=input.value.trim().replace(/\s+/g,'');
-             if(!clean)return toastSafe('❌ UPI ID डालें');
-             if(!/^[A-Za-z0-9._-]{2,}@[A-Za-z0-9._-]{2,}$/.test(clean))return toastSafe('❌ सही UPI ID डालें, जैसे 9876543210@upi');
-             const save=await s.from('workers').update({upi_id:clean}).eq('id',worker.id);
-             if(save.error){console.error('UPI update:',save.error);return toastSafe('❌ UPI save नहीं हुआ: '+(save.error.message||'Database error'));}
-             const check=await s.from('workers').select('id,upi_id').eq('id',worker.id).maybeSingle();
-             if(check.error){console.error('UPI verify:',check.error);return toastSafe('❌ UPI save verify नहीं हो पाया: '+(check.error.message||'Database error'));}
-             if(!check.data || String(check.data.upi_id||'').trim()!==clean)return toastSafe('❌ UPI save नहीं हुआ। Database ने UPI ID update नहीं की।');
-             worker.upi_id=clean;
-             const c=workerList().find(x=>String(x.id)===String(worker.id));if(c)c.upi_id=clean;
-             if(Array.isArray(window.__workerAdminCache)){const cc=window.__workerAdminCache.find(x=>String(x.id)===String(worker.id));if(cc)cc.upi_id=clean;}
-             m.remove();toastSafe('✅ Worker UPI saved');await refreshData();patchCards();
-           };
-          }
-          s=s[:start]+new_func+s[end:]
-          p.write_text(s,encoding='utf-8')
-
-          # Cache-bust the module so GitHub Pages/browser cannot keep the old UPI code.
-          d=Path('dashboard.html')
-          ds=d.read_text(encoding='utf-8')
-          ds=ds.replace('<script src="worker-payments.js"></script>','<script src="worker-payments.js?v=20260815-upi3"></script>',1)
-          d.write_text(ds,encoding='utf-8')
-          PY
-      - name: Commit fix
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add worker-face.js worker-payments.js dashboard.html
-          git diff --cached --quiet && exit 0
-          git commit -m 'Fix worker payment binding'
-          git push
+      - run: echo "Disabled. Worker payment controls are maintained directly in worker-payments.js."
