@@ -3365,12 +3365,12 @@ function renderWorkers(){
 }
 async function approveWorkerAttendance(id){
   if(!confirm('इस Worker की face attendance को Present approve करें?'))return;
-  const {error}=await sb.from('worker_attendance').update({status:'present',verification_status:'approved',verification_method:'face_recognition',updated_at:new Date().toISOString()}).eq('id',id).eq('status','pending');
+  const {error}=await sb.from('worker_attendance').update({status:'present',verification_status:'verified',verification_method:'face_recognition',updated_at:new Date().toISOString()}).eq('id',id).eq('status','pending');
   if(error){toast('❌ Attendance approve नहीं हुई: '+error.message);return;} toast('✅ Attendance approved — Present'); await loadAll();
 }
 async function cancelWorkerAttendance(id){
   if(!confirm('इस attendance request को Cancel करके Absent करना है?'))return;
-  const {error}=await sb.from('worker_attendance').update({status:'absent',verification_status:'rejected',updated_at:new Date().toISOString()}).eq('id',id).eq('status','pending');
+  const {error}=await sb.from('worker_attendance').update({status:'absent',verification_status:'failed',updated_at:new Date().toISOString()}).eq('id',id).eq('status','pending');
   if(error){toast('❌ Attendance cancel नहीं हुई: '+error.message);return;} toast('❌ Attendance cancelled — Absent'); await loadAll();
 }
 
