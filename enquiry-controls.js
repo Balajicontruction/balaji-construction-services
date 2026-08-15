@@ -70,7 +70,46 @@ function hookCustomerRecords(){
   renderCustomerProjectColumn();
 }
 
-const oldLoad=window.loadAll;window.loadAll=async function(){const r=await oldLoad.apply(this,arguments);await load();setTimeout(hookCustomerRecords,0);return r};
-setTimeout(()=>{load();hookCustomerRecords()},0);
-setInterval(hookCustomerRecords,1500);
+/* =========================================================
+   PROJECTS — SHOW PROGRESS ONLY; DAILY UPDATE REMAINS THE UPDATE SOURCE
+========================================================= */
+function renderProjectProgressView(){
+  const section=document.getElementById('page-projects');
+  if(!section)return;
+  const cards=[...section.querySelectorAll('.projectCard')];
+  cards.forEach(card=>{
+    const buttons=[...card.querySelectorAll('button')];
+    const updateBtn=buttons.find(b=>String(b.textContent||'').includes('Progress Update'));
+    if(!updateBtn||updateBtn.dataset.progressViewApplied==='1')return;
+    const onclick=String(updateBtn.getAttribute('onclick')||'');
+    const m=onclick.match(/openProgressModal\(['"]([^'"]+)['"]\)/);
+    if(!m)return;
+    const projectId=m[1];
+    const link=document.createElement('a');
+    link.className=updateBtn.className;
+    link.href=`project-progress.html?project_id=${encodeURIComponent(projectId)}`;
+    link.textContent='📊 Project Progress';
+    link.title='इस project की progress देखें';
+    link.style.textDecoration='none';
+    link.style.display='inline-block';
+    updateBtn.replaceWith(link);
+  });
+}
+
+function hookProjectSection(){
+  if(typeof window.renderProjects==='function'&&!window.__projectProgressHook){
+    const oldRenderProjects=window.renderProjects;
+    window.renderProjects=function(){
+      const result=oldRenderProjects.apply(this,arguments);
+      setTimeout(renderProjectProgressView,0);
+      return result;
+    };
+    window.__projectProgressHook=true;
+  }
+  renderProjectProgressView();
+}
+
+const oldLoad=window.loadAll;window.loadAll=async function(){const r=await oldLoad.apply(this,arguments);await load();setTimeout(()=>{hookCustomerRecords();hookProjectSection()},0);return r};
+setTimeout(()=>{load();hookCustomerRecords();hookProjectSection()},0);
+setInterval(()=>{hookCustomerRecords();hookProjectSection()},1500);
 })();
