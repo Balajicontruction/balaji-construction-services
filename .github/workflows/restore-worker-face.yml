@@ -2,19 +2,21 @@ name: Restore worker face verification
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
 
 permissions:
   contents: write
 
 jobs:
   restore-face:
-    if: github.event.head_commit.message != 'Patch customer enquiry controls only'
+    if: github.event.head_commit.message != 'Fix enquiry patch workflow' && github.event.head_commit.message != 'Patch customer enquiry controls only'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Restore face verification and patch only customer enquiries
+      - name: Patch customer enquiries only
+        shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -28,14 +30,17 @@ jobs:
           if 'src="worker-face.js"' not in s and "src='worker-face.js'" not in s:
               s = s.replace('</body>', face_js + '\n</body>', 1)
 
-          marker = '/* =========================================================\\n   ENQUIRIES\\n========================================================= */'
-          if marker not in s:
+          marker = """/* =========================================================
+   ENQUIRIES
+========================================================= */"""
+          start = s.find(marker)
+          if start < 0:
               raise SystemExit('ENQUIRIES marker not found')
+          delete_start = s.find('async function deleteEnquiry(id)', start)
+          if delete_start < 0:
+              raise SystemExit('deleteEnquiry function not found')
 
-          start = s.index(marker)
-          delete_start = s.index('async function deleteEnquiry(id)', start)
-
-          new = r'''/* =========================================================
+          new = """/* =========================================================
    ENQUIRIES
 ========================================================= */
 
@@ -80,16 +85,12 @@ function renderEnquiries(){
           <button class="btn btn-red btn-sm" onclick="updateEnquiryStatus('${esc(e.id)}','cancelled')">Cancel</button>
           <button class="btn btn-light btn-sm" onclick="updateEnquiryStatus('${esc(e.id)}','pending')">Pending</button>
         </div>
-        <div style="margin-top:7px">
-          <span class="status ${status==='approved'?'completed':status==='cancelled'?'cancelled':'pending'}">${enquiryStatusLabel(status)}</span>
-        </div>
+        <div style="margin-top:7px"><span class="status ${status==='approved'?'completed':status==='cancelled'?'cancelled':'pending'}">${enquiryStatusLabel(status)}</span></div>
       </td>
-      <td>
-        <div class="actions">
-          <button class="btn btn-blue btn-sm" onclick="editEnquiry('${esc(e.id)}')">✏️ Edit</button>
-          <button class="btn btn-red btn-sm" onclick="deleteEnquiry('${esc(e.id)}')">🗑️ Delete</button>
-        </div>
-      </td>
+      <td><div class="actions">
+        <button class="btn btn-blue btn-sm" onclick="editEnquiry('${esc(e.id)}')">✏️ Edit</button>
+        <button class="btn btn-red btn-sm" onclick="deleteEnquiry('${esc(e.id)}')">🗑️ Delete</button>
+      </div></td>
     </tr>`;
   }).join('');
 }
@@ -97,10 +98,7 @@ function renderEnquiries(){
 async function updateEnquiryStatus(id,status){
   status=enquiryStatus(status);
   const result=await sb.from('customer_enquiries').update({status}).eq('id',id);
-  if(result.error){
-    toast('❌ Status update नहीं हुआ: '+result.error.message);
-    return;
-  }
+  if(result.error){toast('❌ Status update नहीं हुआ: '+result.error.message);return;}
   toast('✅ Status: '+enquiryStatusLabel(status));
   await loadAll();
 }
@@ -111,21 +109,17 @@ async function editEnquiry(id){
   const message=prompt('Enquiry Message edit करें:',e.details||e.message||e.enquiry||'');
   if(message===null)return;
   const result=await sb.from('customer_enquiries').update({details:message.trim()}).eq('id',id);
-  if(result.error){
-    toast('❌ Enquiry edit नहीं हुई: '+result.error.message);
-    return;
-  }
+  if(result.error){toast('❌ Enquiry edit नहीं हुई: '+result.error.message);return;}
   toast('✅ Enquiry updated');
   await loadAll();
 }
 
-'''
-
+"""
           s = s[:start] + new + s[delete_start:]
           p.write_text(s, encoding='utf-8')
           PY
 
-      - name: Commit dashboard changes
+      - name: Commit dashboard patch
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
