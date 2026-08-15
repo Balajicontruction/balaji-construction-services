@@ -818,6 +818,10 @@ td strong{
       📅 Daily Update
     </button>
 
+    <button data-page="admin-settings">
+      ⚙️ Admin Settings
+    </button>
+
   </nav>
 
   <button class="logout" onclick="logout()">
@@ -940,6 +944,13 @@ td strong{
 
   </div>
 
+</section>
+
+
+<!-- ================= ADMIN SETTINGS ================= -->
+<section id="page-admin-settings" class="page">
+  <div class="sectionHead"><div><h2>⚙️ Admin Settings</h2><p>Admin account password बदलें</p></div></div>
+  <div class="card" style="max-width:620px"><h3 style="margin-top:0">🔐 Change Password</h3><p class="muted">पुराना password डालने की जरूरत नहीं है।</p><div class="formGrid"><div class="field full"><label for="adminNewPassword">नया Password</label><input id="adminNewPassword" type="password" minlength="6" autocomplete="new-password" placeholder="नया password"></div><div class="field full"><label for="adminConfirmPassword">नया Password दोबारा</label><input id="adminConfirmPassword" type="password" minlength="6" autocomplete="new-password" placeholder="नया password दोबारा डालें"></div></div><div class="modalActions"><button class="btn btn-primary" onclick="changeAdminPassword()">🔐 Change Password</button></div><div id="adminPasswordMessage" style="margin-top:14px"></div></div>
 </section>
 
 
@@ -1878,7 +1889,8 @@ function showPage(page){
     enquiries:'📩 Customer Enquiries',
     workers:'👷 Workers',
     payments:'💰 Payments',
-    updates:'📅 Daily Update'
+    updates:'📅 Daily Update',
+    'admin-settings':'⚙️ Admin Settings'
 
   };
 
@@ -1976,6 +1988,12 @@ async function logout(){
     'index.html';
 
 }
+
+
+/* =========================================================
+   ADMIN PASSWORD SETTINGS
+========================================================= */
+async function changeAdminPassword(){const np=document.getElementById('adminNewPassword')?.value||'';const cp=document.getElementById('adminConfirmPassword')?.value||'';const msg=document.getElementById('adminPasswordMessage');if(!np||!cp){msg.innerHTML='<div class="status cancelled">❌ दोनों password भरें।</div>';return;}if(np.length<6){msg.innerHTML='<div class="status cancelled">❌ Password कम से कम 6 characters का रखें।</div>';return;}if(np!==cp){msg.innerHTML='<div class="status cancelled">❌ दोनों password एक जैसे नहीं हैं।</div>';return;}try{const {data,error}=await sb.auth.updateUser({password:np});if(error)throw error;if(!data?.user)throw new Error('Password update नहीं हुआ।');document.getElementById('adminNewPassword').value='';document.getElementById('adminConfirmPassword').value='';msg.innerHTML='<div class="status completed">✅ Admin password सफलतापूर्वक बदल गया।</div>';}catch(error){console.error('admin password update:',error);msg.innerHTML='<div class="status cancelled">❌ '+(error?.message||'Password बदलने में समस्या हुई।')+'</div>';}}
 
 
 /* =========================================================
