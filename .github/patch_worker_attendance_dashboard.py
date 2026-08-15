@@ -1,0 +1,46 @@
+from pathlib import Path
+p=Path('dashboard.html'); s=p.read_text(encoding='utf-8')
+if 'let workerPendingMap = {};' not in s:
+    s=s.replace('let workerAttendanceMap = {};','let workerAttendanceMap = {};\nlet workerPendingMap = {};',1)
+a=s.index('async function loadWorkers(){'); b=s.index('\n\n\n/* =========================================================\n   PAYMENTS LOAD',a)
+s=s[:a]+'''async function loadWorkers(){
+  const {data,error}=await sb.from('workers').select('*').order('created_at',{ascending:false});
+  if(error){console.error('workers:',error);workers=[];workerAttendanceMap={};workerPendingMap={};return;}
+  workers=data||[]; workerAttendanceMap={}; workerPendingMap={};
+  try{
+    const ar=await sb.from('worker_attendance').select('*');
+    if(ar.error){console.warn('Worker attendance unavailable',ar.error);return;}
+    (ar.data||[]).forEach(x=>{
+      const wid=x.worker_id||x.workerId;if(!wid)return;
+      const st=String(x.status||x.attendance||'').toLowerCase();
+      if(!workerAttendanceMap[wid])workerAttendanceMap[wid]={present:0,absent:0,total:0};
+      workerAttendanceMap[wid].total++;
+      if(['present','p','yes','1','full day','half day'].includes(st))workerAttendanceMap[wid].present++;
+      else if(['absent','a','no','0'].includes(st))workerAttendanceMap[wid].absent++;
+      if(st==='pending')workerPendingMap[wid]=x;
+    });
+  }catch(e){console.warn('Worker attendance unavailable',e);}
+}'''+s[b:]
+a=s.index('function renderWorkers(){'); b=s.index('\n\n\nfunction openWorkerModal',a)
+s=s[:a]+'''function renderWorkers(){
+  const box=document.getElementById('workersList');
+  if(!workers.length){box.innerHTML='<div class="empty">कोई Worker नहीं मिला।</div>';return;}
+  box.innerHTML=workers.map(w=>{
+    const name=w.name||w.worker_name||'Worker',role=w.work_role||w.role||w.designation||'—',wage=num(w.daily_rate ?? w.daily_wage ?? w.wage ?? w.daily_salary),phone=w.phone||w.mobile||'—';
+    const a=workerAttendanceMap[w.id],pending=workerPendingMap[w.id],attendance=a?`${a.present}/${a.total} days`:(w.present_days ?? w.attendance ?? w.attendance_status ?? '—');
+    const request=pending?`<div style="margin-top:15px;padding:14px;border:1px solid #e9d5ff;background:#faf5ff;border-radius:14px"><b style="color:#6b21a8">⏳ Attendance Approval Request</b><div style="margin-top:6px;color:#6b7280;font-size:13px">Date: ${esc(pending.attendance_date||'—')} ${pending.check_in?'• Face scan: '+esc(new Date(pending.check_in).toLocaleString('en-IN')):''}</div><div class="actions" style="margin-top:10px"><button class="btn btn-green btn-sm" onclick="approveWorkerAttendance('${esc(pending.id)}')">✅ Approve Present</button><button class="btn btn-red btn-sm" onclick="cancelWorkerAttendance('${esc(pending.id)}')">❌ Cancel / Absent</button></div></div>`:'';
+    return `<div class="workerCard"><div class="workerHead"><div class="avatar">${esc(name.charAt(0)).toUpperCase()}</div><div><h3>${esc(name)}</h3><p>${esc(role)}</p></div></div><div class="workerInfo"><div class="workerRow"><span>Mobile</span><strong>${esc(phone)}</strong></div><div class="workerRow"><span>Daily Wage</span><strong>${money(wage)}</strong></div><div class="workerRow"><span>Attendance</span><strong>${esc(attendance)}</strong></div><div class="workerRow"><span>Village</span><strong>${esc(w.village||'—')}</strong></div>${request}<div class="actions" style="margin-top:15px"><button class="btn btn-blue btn-sm" onclick="editWorker('${esc(w.id)}')">✏️ Edit</button><button class="btn btn-red btn-sm" onclick="deleteWorker('${esc(w.id)}')">🗑️ Delete</button></div></div></div>`;
+  }).join('');
+}
+async function approveWorkerAttendance(id){
+  if(!confirm('इस Worker की face attendance को Present approve करें?'))return;
+  const {error}=await sb.from('worker_attendance').update({status:'present',verification_status:'approved',verification_method:'face_recognition',updated_at:new Date().toISOString()}).eq('id',id).eq('status','pending');
+  if(error){toast('❌ Attendance approve नहीं हुई: '+error.message);return;} toast('✅ Attendance approved — Present'); await loadAll();
+}
+async function cancelWorkerAttendance(id){
+  if(!confirm('इस attendance request को Cancel करके Absent करना है?'))return;
+  const {error}=await sb.from('worker_attendance').update({status:'absent',verification_status:'rejected',updated_at:new Date().toISOString()}).eq('id',id).eq('status','pending');
+  if(error){toast('❌ Attendance cancel नहीं हुई: '+error.message);return;} toast('❌ Attendance cancelled — Absent'); await loadAll();
+}'''+s[b:]
+p.write_text(s,encoding='utf-8')
+print('dashboard.html patched')
