@@ -13,97 +13,43 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Patch only Admin Customer Enquiries section
+      - name: Move customer Edit/Delete into Actions column only
         shell: bash
         run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          p=Path('dashboard.html')
-          s=p.read_text(encoding='utf-8')
-          marker='/* =========================================================\n   ENQUIRIES\n========================================================= */'
-          start=s.index(marker)
-          delete_start=s.index('async function deleteEnquiry(id){',start)
-          new=r'''/* =========================================================
-   ENQUIRIES
-========================================================= */
+          cat >> worker-avatar.js <<'JS'
 
-function enquiryCustomer(e){
-  const uid=String(e?.customer_user_id||'');
-  const customer=(typeof customers!=='undefined'?customers:[]).find(c=>String(c.user_id||'')===uid)||{};
-  const profile=(typeof profileMap!=='undefined'?profileMap[uid]:null)||{};
-  return {customer,profile};
-}
-
-function enquiryStatus(value){
-  const s=String(value||'pending').toLowerCase().trim();
-  if(['approved','approve','accepted','accept'].includes(s)) return 'approved';
-  if(['cancelled','canceled','cancel','rejected','reject'].includes(s)) return 'cancelled';
-  return 'pending';
-}
-
-function enquiryStatusLabel(status){
-  return status==='approved'?'✅ Approved':status==='cancelled'?'❌ Cancelled':'⏳ Pending';
-}
-
-function renderEnquiries(){
-  const tbody=document.getElementById('enquiriesTable');
-  if(!enquiries.length){
-    tbody.innerHTML='<tr><td colspan="5"><div class="empty">अभी कोई enquiry नहीं मिली।</div></td></tr>';
-    return;
+/* BALAJI — Customer Records only: keep Projects column unchanged and force Edit/Delete into Actions column. */
+(()=>{
+  'use strict';
+  function fix(){
+    const tbody=document.getElementById('customersTable');
+    const table=tbody?.closest('table');
+    if(!tbody||!table)return;
+    const head=table.querySelector('thead tr');
+    if(head){
+      const actionHead=[...head.children].find(x=>x.textContent.trim().toLowerCase()==='actions');
+      if(actionHead && actionHead!==head.lastElementChild)head.appendChild(actionHead);
+    }
+    tbody.querySelectorAll('tr').forEach(row=>{
+      const project=row.querySelector('[data-customer-projects-cell]');
+      const cells=[...row.children];
+      const action=cells.find(td=>td.querySelector('[onclick*="editCustomer"], [onclick*="deleteCustomer"]'));
+      if(!action)return;
+      if(project && project!==action)row.insertBefore(project,action);
+      if(action!==row.lastElementChild)row.appendChild(action);
+    });
   }
-  tbody.innerHTML=enquiries.map(e=>{
-    const {customer,profile}=enquiryCustomer(e);
-    const name=e.name||e.customer_name||e.full_name||profile.full_name||customer.name||customer.customer_name||'—';
-    const phone=e.phone||e.mobile||profile.phone||customer.phone||customer.mobile||'—';
-    const message=e.message||e.enquiry||e.details||e.site_location||'—';
-    const status=enquiryStatus(e.status);
-    return `<tr>
-      <td><strong>${esc(name)}</strong></td>
-      <td>${esc(phone)}</td>
-      <td style="max-width:360px;white-space:pre-wrap">${esc(message)}</td>
-      <td>
-        <div class="actions" style="align-items:center">
-          <button class="btn btn-green btn-sm" style="opacity:${status==='approved'?1:.45}" onclick="updateEnquiryStatus('${esc(e.id)}','approved')">✅ Approve</button>
-          <button class="btn btn-red btn-sm" style="opacity:${status==='cancelled'?1:.45}" onclick="updateEnquiryStatus('${esc(e.id)}','cancelled')">❌ Cancel</button>
-          <button class="btn btn-light btn-sm" style="opacity:${status==='pending'?1:.45}" onclick="updateEnquiryStatus('${esc(e.id)}','pending')">⏳ Pending</button>
-        </div>
-        <div style="margin-top:7px"><span class="status ${status==='approved'?'completed':status==='cancelled'?'cancelled':'pending'}">${enquiryStatusLabel(status)}</span></div>
-      </td>
-      <td><div class="actions">
-        <button class="btn btn-blue btn-sm" onclick="editEnquiry('${esc(e.id)}')">✏️ Edit</button>
-        <button class="btn btn-red btn-sm" onclick="deleteEnquiry('${esc(e.id)}')">🗑️ Delete</button>
-      </div></td>
-    </tr>`;
-  }).join('');
-}
-
-async function updateEnquiryStatus(id,status){
-  status=enquiryStatus(status);
-  const {error}=await sb.from('customer_enquiries').update({status}).eq('id',id);
-  if(error){toast('❌ Enquiry status update नहीं हुआ: '+error.message);return;}
-  toast('✅ Enquiry status: '+enquiryStatusLabel(status));
-  await loadAll();
-}
-
-async function editEnquiry(id){
-  const e=enquiries.find(x=>String(x.id)===String(id));
-  if(!e)return;
-  const message=prompt('Enquiry Message edit करें:',e.details||e.message||e.enquiry||'');
-  if(message===null)return;
-  const {error}=await sb.from('customer_enquiries').update({details:message.trim()}).eq('id',id);
-  if(error){toast('❌ Enquiry edit नहीं हुई: '+error.message);return;}
-  toast('✅ Enquiry updated');
-  await loadAll();
-}
-
-'''
-          s=s[:start]+new+s[delete_start:]
-          p.write_text(s,encoding='utf-8')
-          if 'updateEnquiryStatus' not in s: raise SystemExit('verification failed')
-          PY
+  setInterval(fix,1000);
+  document.addEventListener('click',e=>{if(e.target?.closest?.('[data-page="customers"]')){setTimeout(fix,200);setTimeout(fix,900)}});
+  setTimeout(fix,500);
+})();
+JS
           git config user.name "Balajicontruction"
           git config user.email "satpalnehra30@gmail.com"
-          git add dashboard.html
+          git add worker-avatar.js
+          git diff --cached --quiet && exit 0 || true
+          git commit -m "Move customer actions into Actions column"
+          git push
           git rm .github/workflows/fix-customer-actions-column.yml
-          git commit -m "Fix admin customer enquiry controls"
+          git commit -m "Remove temporary customer actions workflow"
           git push
