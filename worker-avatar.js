@@ -189,3 +189,12 @@
   document.addEventListener('click',e=>{if(e.target?.closest?.('[data-page="customers"]')){setTimeout(run,150);setTimeout(run,700)}});
   setInterval(()=>{if(document.getElementById('page-customers')?.classList.contains('active'))run()},2500);
 })();
+
+/* Customer Records project column patch. Existing worker code untouched. */
+(()=>{
+  const S=()=>{try{return typeof sb!=='undefined'?sb:(window.sb||null)}catch(e){return null}};
+  const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const progress=(id,u)=>{const x=(u||[]).filter(a=>String(a.project_id)===String(id)).sort((a,b)=>new Date(b.update_date||b.created_at||0)-new Date(a.update_date||a.created_at||0))[0];return Math.max(0,Math.min(100,Number(x?.progress_percent??x?.progress??0)||0))};
+  async function patch(){const tb=document.getElementById('customersTable'),s=S();if(!tb||!s)return;const t=tb.closest('table'),h=t?.querySelector('thead tr');if(!t||!h)return;if(!h.querySelector('[data-project-head]')){const th=document.createElement('th');th.textContent='Projects';th.dataset.projectHead='1';h.insertBefore(th,h.lastElementChild)}const [a,b]=await Promise.all([s.from('projects').select('*'),s.from('project_updates').select('*')]);if(a.error)return;tb.querySelectorAll('tr').forEach(r=>{r.querySelector('[data-project-cell]')?.remove();const act=r.lastElementChild,e=act?.querySelector('[onclick*="editCustomer"]'),m=(e?.getAttribute('onclick')||'').match(/editCustomer\(['"]([^'"]+)['"]\)/);if(!m)return;const ps=(a.data||[]).filter(p=>String(p.customer_id)===String(m[1])),td=document.createElement('td');td.dataset.projectCell='1';const w=document.createElement('div');w.style.cssText='display:flex;flex-direction:column;gap:7px;min-width:210px';ps.forEach(p=>{const q=document.createElement('button');q.type='button';q.textContent='🏗️ '+(p.project_name||'Project')+'   '+progress(p.id,b.data)+'%';q.style.cssText='padding:8px 10px;border:1px solid #e3e9f0;border-radius:10px;background:#f8fafc;color:#17304a;font-weight:800;text-align:left;cursor:pointer';q.onclick=()=>{if(typeof window.openProjectProgressView==='function')window.openProjectProgressView(p.id);else if(typeof window.openProgressModal==='function')window.openProgressModal(p.id)};w.appendChild(q)});td.appendChild(w);r.insertBefore(td,act)})}
+  setInterval(()=>{if(document.getElementById('page-customers')?.classList.contains('active'))patch()},2500);setTimeout(patch,1000);
+})();
