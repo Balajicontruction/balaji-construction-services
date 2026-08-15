@@ -1,0 +1,44 @@
+name: Fix worker face camera
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Patch camera startup
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('worker-face.js')
+          s=p.read_text(encoding='utf-8')
+          marker="async function safeFaceCamera(){"
+          helper="""async function safeFaceCamera(){\n  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) throw new Error('इस browser/page में camera access उपलब्ध नहीं है। HTTPS और camera permission check करें।');\n  const attempts=[\n    {video:{facingMode:{ideal:'user'},width:{ideal:640},height:{ideal:480}},audio:false},\n    {video:{width:{ideal:640},height:{ideal:480}},audio:false},\n    {video:true,audio:false}\n  ];\n  let last=null;\n  for(const constraints of attempts){\n    try{return await navigator.mediaDevices.getUserMedia(constraints)}catch(e){last=e; if(e && e.name==='NotAllowedError') throw e;}\n  }\n  throw last || new Error('Could not start video source');\n}\n"""
+          if marker not in s:
+              s=s.replace("function stopVerifyCamera(){", "function stopVerifyCamera(){", 1)
+              anchor="async function loadModels(){"
+              if anchor not in s: raise SystemExit('loadModels anchor missing')
+              s=s.replace(anchor, helper+anchor, 1)
+          s=s.replace("navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:640},height:{ideal:480}},audio:false})", "safeFaceCamera()")
+          p.write_text(s,encoding='utf-8')
+          PY
+
+      - name: Commit camera fix
+        run: |
+          if git diff --quiet; then
+            echo 'No camera patch needed'
+            exit 0
+          fi
+          git config user.name 'Balajicontruction'
+          git config user.email 'satpalnehra30@gmail.com'
+          git add worker-face.js
+          git commit -m 'Fix worker face camera startup fallback'
+          git push
