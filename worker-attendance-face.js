@@ -23,15 +23,16 @@ window.markAttendance=async function(){
   const detections=await faceapi.detectAllFaces(video,new faceapi.TinyFaceDetectorOptions({inputSize:320,scoreThreshold:.55})).withFaceLandmarks().withFaceDescriptors();
   if(detections.length!==1){if(typeof msg==='function')msg('attendanceMsg',detections.length>1?'एक समय में केवल एक चेहरा रखें।':'चेहरा साफ और सामने रखें।','error');return;}
   const live=Array.from(detections[0].descriptor);const saved=current.face_descriptor.map(Number);const dist=distance(live,saved);const threshold=.52;
-  if(!Number.isFinite(dist)||dist>threshold){setStatus('❌ Face Match नहीं हुआ','err');if(typeof msg==='function')msg('attendanceMsg','❌ Face Match नहीं हुआ। Attendance नहीं लगाई गई।','error');return;}
+  if(!Number.isFinite(dist)||dist>threshold){setStatus('❌ Face Match नहीं हुआ','err');if(typeof msg==='function')msg('attendanceMsg','❌ Face Match नहीं हुआ। Attendance request नहीं भेजी गई।','error');return;}
   setStatus('✅ Face Match सफल','ok');
   const d=new Date().toISOString().slice(0,10);
-  const {data:result,error:saveErr}=await FACE_SB.rpc('mark_worker_attendance_by_phone',{p_phone:current.phone,p_worker_id:current.id,p_attendance_date:d,p_check_in:new Date().toISOString(),p_verification_method:'face_recognition',p_verification_status:'verified',p_device_info:navigator.userAgent});
-  if(saveErr){if(typeof msg==='function')msg('attendanceMsg','❌ Attendance save नहीं हुई: '+saveErr.message,'error');return;}
-  if(!result?.ok){if(typeof msg==='function')msg('attendanceMsg',result?.reason==='already_marked'?'आज की attendance पहले ही लग चुकी है।':'Attendance save नहीं हुई।','error');return;}
-  if(typeof msg==='function')msg('attendanceMsg','✅ Face Match सफल — आज की उपस्थिति दर्ज हो गई।','success');
-  setStatus('Attendance marked','ok');
+  const {data:result,error:saveErr}=await FACE_SB.rpc('submit_worker_attendance_for_approval',{p_phone:current.phone,p_worker_id:current.id,p_attendance_date:d,p_check_in:new Date().toISOString(),p_verification_method:'face_recognition',p_device_info:navigator.userAgent});
+  if(saveErr){if(typeof msg==='function')msg('attendanceMsg','❌ Attendance request save नहीं हुई: '+saveErr.message,'error');return;}
+  if(!result?.ok){if(typeof msg==='function')msg('attendanceMsg',result?.reason==='already_marked'?'आज की attendance request पहले ही भेजी जा चुकी है।':'Attendance request save नहीं हुई।','error');return;}
+  if(typeof msg==='function')msg('attendanceMsg','✅ Face Match सफल — Attendance request Admin को भेज दी गई है। Admin approve करने के बाद ही Present लगेगा।','success');
+  setStatus('⏳ Admin Approval Pending','info');
   if(video.srcObject){video.srcObject.getTracks().forEach(t=>t.stop());video.srcObject=null;}
+  if(typeof checkToday==='function')await checkToday();
   setTimeout(loadWorkerFinance,500);
  }catch(e){console.error(e);if(typeof msg==='function')msg('attendanceMsg','❌ Face verification में समस्या: '+e.message,'error');}finally{busy=false;const btn=document.getElementById('markBtn');if(btn)btn.disabled=false;}
 };
@@ -52,9 +53,54 @@ async function loadWorkerFinance(){
  const cards=document.getElementById('financeCards');
  if(cards)cards.innerHTML=`<div style="padding:13px;border-radius:14px;background:#f8fafc"><small>💵 Daily Rate</small><div style="font-size:23px;font-weight:900">${money(rate)} <small>/ दिन</small></div></div><div style="padding:13px;border-radius:14px;background:#f8fafc"><small>📅 Present</small><div style="font-size:23px;font-weight:900">${days} दिन</div></div><div style="padding:13px;border-radius:14px;background:#f8fafc"><small>💰 कुल कमाई</small><div style="font-size:23px;font-weight:900">${money(earned)}</div></div><div style="padding:13px;border-radius:14px;background:#f8fafc"><small>✅ दिया गया</small><div style="font-size:23px;font-weight:900">${money(paid)}</div></div><div style="padding:13px;border-radius:14px;background:#fff7ed;grid-column:1/-1"><small>🟠 बाकी भुगतान</small><div style="font-size:28px;font-weight:900">${money(pending)}</div></div>`;
  const at=data.attendance||[];
- const ae=document.getElementById('financeAttendance');if(ae)ae.innerHTML=at.length?`<table style="width:100%;border-collapse:collapse;font-size:13px"><tr><th style="text-align:left;padding:8px;border-bottom:1px solid #ddd">तारीख</th><th style="text-align:left;padding:8px;border-bottom:1px solid #ddd">स्थिति</th><th style="text-align:left;padding:8px;border-bottom:1px solid #ddd">दिन की मजदूरी</th></tr>${at.map(a=>`<tr><td style="padding:8px;border-bottom:1px solid #eee">${esc(a.date)}</td><td style="padding:8px;border-bottom:1px solid #eee">${a.status==='present'?'✅ Present':'❌ '+esc(a.status)}</td><td style="padding:8px;border-bottom:1px solid #eee">${a.status==='present'?money(rate):money(0)}</td></tr>`).join('')}</table>`:'<div style="padding:12px;background:#f8fafc;border-radius:10px">अभी attendance नहीं है।</div>';
+ const ae=document.getElementById('financeAttendance');if(ae)ae.innerHTML=at.length?`<table style="width:100%;border-collapse:collapse;font-size:13px"><tr><th style="text-align:left;padding:8px;border-bottom:1px solid #ddd">तारीख</th><th style="text-align:left;padding:8px;border-bottom:1px solid #ddd">स्थिति</th><th style="text-align:left;padding:8px;border-bottom:1px solid #ddd">दिन की मजदूरी</th></tr>${at.map(a=>`<tr><td style="padding:8px;border-bottom:1px solid #eee">${esc(a.date)}</td><td style="padding:8px;border-bottom:1px solid #eee">${a.status==='present'?'✅ Present':a.status==='pending'?'⏳ Approval Pending':'❌ '+esc(a.status)}</td><td style="padding:8px;border-bottom:1px solid #eee">${a.status==='present'?money(rate):money(0)}</td></tr>`).join('')}</table>`:'<div style="padding:12px;background:#f8fafc;border-radius:10px">अभी attendance नहीं है।</div>';
  const ps=data.payments||[];const pe=document.getElementById('financePayments');if(pe)pe.innerHTML=ps.length?`<table style="width:100%;border-collapse:collapse;font-size:13px"><tr><th style="text-align:left;padding:8px;border-bottom:1px solid #ddd">तारीख</th><th style="text-align:left;padding:8px;border-bottom:1px solid #ddd">राशि</th><th style="text-align:left;padding:8px;border-bottom:1px solid #ddd">तरीका</th></tr>${ps.map(p=>`<tr><td style="padding:8px;border-bottom:1px solid #eee">${esc(p.date)}</td><td style="padding:8px;border-bottom:1px solid #eee">${money(p.amount)}</td><td style="padding:8px;border-bottom:1px solid #eee">${esc(p.method||'—')}</td></tr>`).join('')}</table>`:'<div style="padding:12px;background:#f8fafc;border-radius:10px">अभी कोई payment record नहीं है।</div>';
 }
 window.loadWorkerFinance=loadWorkerFinance;
 let tries=0;const timer=setInterval(()=>{const box=document.getElementById('attendanceBox');if(box&&!box.classList.contains('hidden')){loadWorkerFinance();clearInterval(timer);}if(++tries>60)clearInterval(timer);},500);
+
+// Approval workflow: keep the existing login, camera and face-registration flow intact;
+// only change the final attendance write from immediate Present to Admin Approval Pending.
+window.verifyAndMark=async function(){
+ if(!window.worker||!window.stream)return typeof msg==='function'&&msg('attendanceMsg','पहले Camera Start करें।','error');
+ const btn=document.getElementById('verifyBtn');if(btn)btn.disabled=true;
+ const video=document.getElementById('video');
+ try{
+  document.getElementById('faceStatus').textContent='आपके चेहरे का मिलान हो रहा है...';
+  const detections=await faceapi.detectAllFaces(video,new faceapi.TinyFaceDetectorOptions({inputSize:320,scoreThreshold:.55})).withFaceLandmarks().withFaceDescriptors();
+  if(detections.length!==1){if(btn)btn.disabled=false;document.getElementById('faceStatus').textContent=detections.length>1?'एक समय में केवल एक चेहरा रखें।':'चेहरा साफ और सामने रखें।';return typeof msg==='function'&&msg('attendanceMsg','एक ही चेहरा camera में साफ दिखाई देना चाहिए।','error');}
+  const distanceValue=faceapi.euclideanDistance(detections[0].descriptor,new Float32Array(window.worker.face_descriptor));
+  if(distanceValue>.50){if(btn)btn.disabled=false;document.getElementById('faceStatus').textContent='❌ Face Match Failed';return typeof msg==='function'&&msg('attendanceMsg','Face verification असफल। यह चेहरा registered Worker से match नहीं हुआ।','error');}
+  document.getElementById('faceStatus').textContent='✅ Face Match सफल';
+  const d=new Date().toISOString().slice(0,10);
+  const {data:result,error}=await FACE_SB.rpc('submit_worker_attendance_for_approval',{p_phone:window.worker.phone,p_worker_id:window.worker.id,p_attendance_date:d,p_check_in:new Date().toISOString(),p_verification_method:'face_recognition',p_device_info:navigator.userAgent});
+  if(error){if(btn)btn.disabled=false;return typeof msg==='function'&&msg('attendanceMsg','Attendance request save नहीं हुई: '+error.message,'error');}
+  if(!result?.ok){if(btn)btn.disabled=false;return typeof msg==='function'&&msg('attendanceMsg',result?.reason==='already_marked'?'आज की attendance request पहले ही भेजी जा चुकी है।':'Attendance request save नहीं हुई।','error');}
+  if(typeof msg==='function')msg('attendanceMsg','✅ Face verification सफल। Attendance request Admin को भेज दी गई है। Admin approve करने के बाद ही Present लगेगा।','success');
+  document.getElementById('faceStatus').textContent='⏳ Admin Approval Pending';
+  if(window.stream){window.stream.getTracks().forEach(t=>t.stop());window.stream=null;}
+  video.srcObject=null;
+  if(typeof window.checkToday==='function')await window.checkToday();
+  if(typeof loadWorkerFinance==='function')await loadWorkerFinance();
+ }catch(e){console.error(e);if(typeof msg==='function')msg('attendanceMsg','Face verification में समस्या: '+e.message,'error');}
+ finally{if(btn)btn.disabled=false;}
+};
+
+window.checkToday=async function(){
+ if(!window.worker)return;
+ const d=new Date().toISOString().slice(0,10);
+ const {data,error}=await FACE_SB.from('worker_attendance').select('status,check_in,verification_status,check_in_face_verified').eq('worker_id',window.worker.id).eq('attendance_date',d).maybeSingle();
+ if(error)return typeof msg==='function'&&msg('attendanceMsg',error.message,'error');
+ const verifyBtn=document.getElementById('verifyBtn');
+ if(data){
+  if(data.status==='present'){document.getElementById('todayStatus').textContent='✅ Present — Admin Approved';document.getElementById('todayTime').textContent=data.check_in?'Check-in: '+new Date(data.check_in).toLocaleString('en-IN'):'';}
+  else if(data.status==='pending'){document.getElementById('todayStatus').textContent='⏳ Approval Pending';document.getElementById('todayTime').textContent='Face verified. Admin approval का इंतजार है।';}
+  else if(data.status==='absent'){document.getElementById('todayStatus').textContent='❌ Absent — Admin Cancelled';document.getElementById('todayTime').textContent='आज की attendance request Admin ने cancel कर दी।';}
+  else {document.getElementById('todayStatus').textContent=String(data.status||'Not Marked');document.getElementById('todayTime').textContent='';}
+  if(verifyBtn)verifyBtn.classList.add('hidden');
+ }else{
+  document.getElementById('todayStatus').textContent='Not Marked';
+  document.getElementById('todayTime').textContent='Face verification के बाद attendance request Admin को भेजें।';
+ }
+};
 })();
