@@ -46,7 +46,8 @@ function renderCustomerProjectColumn(){
       cell.innerHTML=matches.map(p=>{
         const name=esc(p.project_name||p.work_type||'Project');
         const status=String(p.status||'').trim();
-        return `<div style="margin-bottom:5px"><strong>${name}</strong>${status?`<br><small style="color:#60738a">${esc(status)}</small>`:''}</div>`;
+        const href=`project-progress.html?project_id=${encodeURIComponent(p.id)}`;
+        return `<div style="margin-bottom:7px"><a href="${href}" style="color:#1d4ed8;font-weight:800;text-decoration:underline;cursor:pointer" title="Project Progress देखें">${name}</a>${status?`<br><small style="color:#60738a">${esc(status)}</small>`:''}</div>`;
       }).join('');
     }else{
       cell.textContent='—';
