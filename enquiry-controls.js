@@ -9,6 +9,67 @@ async function load(){const s=S();if(!s)return;const r=await s.from('contract_re
 window.updateEnquiryStatus=async(id,status)=>{const r=await S().from('contract_requests').update({status:norm(status)}).eq('id',id);if(r.error){toast('❌ Status update नहीं हुआ: '+r.error.message);return}toast('✅ Status: '+label(norm(status)));await load()}
 window.editEnquiry=async id=>{const e=(window.enquiries||[]).find(x=>String(x.id)===String(id));if(!e)return;const msg=prompt('Enquiry Message edit करें:',e.details||e.message||e.enquiry||'');if(msg===null)return;const r=await S().from('contract_requests').update({details:msg.trim()}).eq('id',id);if(r.error){toast('❌ Enquiry edit नहीं हुई: '+r.error.message);return}toast('✅ Enquiry updated');await load()}
 window.deleteEnquiry=async id=>{if(!confirm('क्या इस enquiry को delete करना है?'))return;const r=await S().from('contract_requests').delete().eq('id',id);if(r.error){toast('❌ Enquiry delete नहीं हुई: '+r.error.message);return}toast('🗑️ Enquiry deleted');await load()}
-const oldLoad=window.loadAll;window.loadAll=async function(){const r=await oldLoad.apply(this,arguments);await load();return r};
-setTimeout(load,0);
+
+/* =========================================================
+   CUSTOMER RECORDS — ONLY ADD PROJECT COLUMN
+========================================================= */
+function renderCustomerProjectColumn(){
+  const table=document.querySelector('#page-customers table');
+  const tbody=document.getElementById('customersTable');
+  if(!table||!tbody)return;
+
+  const headRow=table.querySelector('thead tr');
+  if(headRow&&!headRow.querySelector('.customer-project-head')){
+    const th=document.createElement('th');
+    th.className='customer-project-head';
+    th.textContent='Project';
+    const actionsTh=[...headRow.children].find(x=>String(x.textContent||'').trim().toLowerCase()==='actions');
+    if(actionsTh)headRow.insertBefore(th,actionsTh);else headRow.appendChild(th);
+  }
+
+  const list=(typeof customers!=='undefined'?customers:[]);
+  const listProjects=(typeof projects!=='undefined'?projects:[]);
+
+  if(!list.length){
+    const emptyCell=tbody.querySelector('td[colspan]');
+    if(emptyCell)emptyCell.colSpan=7;
+    return;
+  }
+
+  [...tbody.querySelectorAll('tr')].forEach((row,index)=>{
+    row.querySelector('.customer-project-cell')?.remove();
+    const customer=list[index];
+    const cell=document.createElement('td');
+    cell.className='customer-project-cell';
+    const matches=listProjects.filter(p=>String(p.customer_id||'')===String(customer?.id||''));
+    if(matches.length){
+      cell.innerHTML=matches.map(p=>{
+        const name=esc(p.project_name||p.work_type||'Project');
+        const status=String(p.status||'').trim();
+        return `<div style="margin-bottom:5px"><strong>${name}</strong>${status?`<br><small style="color:#60738a">${esc(status)}</small>`:''}</div>`;
+      }).join('');
+    }else{
+      cell.textContent='—';
+    }
+    const actionsCell=row.lastElementChild;
+    if(actionsCell)row.insertBefore(cell,actionsCell);else row.appendChild(cell);
+  });
+}
+
+function hookCustomerRecords(){
+  if(typeof window.renderCustomers==='function'&&!window.__customerProjectHook){
+    const oldRenderCustomers=window.renderCustomers;
+    window.renderCustomers=function(){
+      const result=oldRenderCustomers.apply(this,arguments);
+      setTimeout(renderCustomerProjectColumn,0);
+      return result;
+    };
+    window.__customerProjectHook=true;
+  }
+  renderCustomerProjectColumn();
+}
+
+const oldLoad=window.loadAll;window.loadAll=async function(){const r=await oldLoad.apply(this,arguments);await load();setTimeout(hookCustomerRecords,0);return r};
+setTimeout(()=>{load();hookCustomerRecords()},0);
+setInterval(hookCustomerRecords,1500);
 })();
