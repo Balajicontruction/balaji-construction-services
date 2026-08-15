@@ -84,6 +84,83 @@
     }
   }
 
+  /* =========================================================
+     PROJECTS — READ-ONLY PROGRESS VIEW
+     This is deliberately isolated from Worker Add/Save/Face/Attendance
+     and from the Daily Update editor. Daily Update continues to use
+     the original openProgressModal() function unchanged.
+  ========================================================= */
+
+  function ensureProjectProgressView(){
+    if(document.getElementById('projectProgressViewModal'))return;
+    const modal=document.createElement('div');
+    modal.className='modal';
+    modal.id='projectProgressViewModal';
+    modal.innerHTML=`
+      <div class="modalBox" style="max-width:850px">
+        <div class="modalHead">
+          <h3 id="projectProgressViewTitle">📊 Project Progress</h3>
+          <button class="close" type="button" id="projectProgressViewClose">×</button>
+        </div>
+        <div id="projectProgressViewBody"></div>
+      </div>`;
+    document.body.appendChild(modal);
+    modal.addEventListener('click',e=>{if(e.target===modal)modal.classList.remove('show')});
+    document.getElementById('projectProgressViewClose').addEventListener('click',()=>modal.classList.remove('show'));
+  }
+
+  function projectDate(value){
+    if(!value)return '—';
+    try{return new Date(value).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'})}catch(e){return String(value)}
+  }
+
+  function patchProjectProgressButtons(){
+    if(!document.getElementById('projectsList')&&!document.getElementById('overviewProjects'))return;
+    ['#projectsList','#overviewProjects'].forEach(selector=>{
+      document.querySelectorAll(`${selector} .projectCard button`).forEach(button=>{
+        const onclick=button.getAttribute('onclick')||'';
+        const m=onclick.match(/openProgressModal\(['"]([^'"]+)['"]\)/);
+        if(!m)return;
+        button.setAttribute('onclick',`openProjectProgressView('${m[1]}')`);
+        button.textContent='📊 Show Progress';
+        button.title='Project की progress, updates और photos देखें';
+      });
+    });
+  }
+
+  window.openProjectProgressView=function(projectId){
+    try{
+      const p=typeof getProject==='function'?getProject(projectId):null;
+      if(!p)return;
+      ensureProjectProgressView();
+      const updates=(Array.isArray(window.projectUpdates)?window.projectUpdates:[])
+        .filter(u=>String(u.project_id)===String(projectId))
+        .sort((a,b)=>new Date(b.update_date||b.created_at||0)-new Date(a.update_date||a.created_at||0));
+      const progress=typeof projectProgress==='function'?projectProgress(projectId):0;
+      const customer=typeof getCustomer==='function'?getCustomer(p.customer_id):null;
+      const customerName=p.customer_name||customer?.name||customer?.customer_name||'—';
+      const title=document.getElementById('projectProgressViewTitle');
+      const body=document.getElementById('projectProgressViewBody');
+      if(title)title.textContent=`📊 ${p.project_name||'Project'} — Progress`;
+      const latest=updates[0];
+      body.innerHTML=`
+        <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:20px">
+          <div style="background:#fff7ed;border-radius:14px;padding:16px"><div style="color:#60738a;font-weight:800">Current Progress</div><strong style="display:block;font-size:30px;color:#ff7f1f;margin-top:7px">${progress}%</strong></div>
+          <div style="background:#f8fafc;border-radius:14px;padding:16px"><div style="color:#60738a;font-weight:800">Status</div><strong style="display:block;font-size:20px;margin-top:10px">${esc(p.status||'—')}</strong></div>
+          <div style="background:#f8fafc;border-radius:14px;padding:16px"><div style="color:#60738a;font-weight:800">Total Updates</div><strong style="display:block;font-size:30px;margin-top:7px">${updates.length}</strong></div>
+        </div>
+        <div style="background:#f8fafc;border-radius:14px;padding:15px;margin-bottom:18px">
+          <div><strong>👤 Customer:</strong> ${esc(customerName)}</div>
+          <div style="margin-top:6px"><strong>📍 Location:</strong> ${esc(p.location||'—')}</div>
+          <div style="margin-top:6px"><strong>🛠️ Work:</strong> ${esc(p.work_type||'—')}</div>
+          ${p.start_date||p.end_date?`<div style="margin-top:6px"><strong>📅 अवधि:</strong> ${esc(projectDate(p.start_date))} — ${esc(projectDate(p.end_date))}</div>`:''}
+        </div>
+        ${latest?`<div style="border:1px solid #e3e9f0;border-radius:16px;padding:17px;margin-bottom:18px"><div style="display:flex;justify-content:space-between;gap:10px;align-items:center"><strong style="font-size:18px">Latest Update</strong><span class="status ongoing">${clampProgress(latest.progress_percent)}%</span></div><div style="color:#60738a;margin-top:6px">${esc(projectDate(latest.update_date||latest.created_at))}</div><h4 style="margin:12px 0 7px">${esc(latest.title||'Progress Update')}</h4><div style="white-space:pre-wrap;line-height:1.55">${esc(latest.details||'कोई विवरण नहीं')}</div>${latest.photo_url?`<img src="${esc(latest.photo_url)}" alt="Progress Photo" style="width:100%;max-height:360px;object-fit:cover;border-radius:13px;margin-top:14px" onerror="this.style.display='none'">`:''}</div>`:''}
+        <div><h4 style="margin:0 0 12px">📜 Progress History</h4>${updates.length?updates.map(u=>`<div style="border:1px solid #e3e9f0;border-radius:14px;padding:14px;margin-bottom:10px"><div style="display:flex;justify-content:space-between;gap:10px"><strong>${esc(u.title||'Progress Update')}</strong><strong style="color:#ff7f1f">${clampProgress(u.progress_percent)}%</strong></div><div style="font-size:13px;color:#60738a;margin-top:5px">${esc(projectDate(u.update_date||u.created_at))}</div>${u.details?`<div style="margin-top:9px;white-space:pre-wrap;line-height:1.5">${esc(u.details)}</div>`:''}${u.photo_url?`<img src="${esc(u.photo_url)}" alt="Progress Photo" style="width:100%;max-height:280px;object-fit:cover;border-radius:11px;margin-top:10px" onerror="this.style.display='none'">`:''}</div>`).join(''):'<div class="empty">अभी कोई progress update save नहीं हुई है।</div>'}</div>`;
+      document.getElementById('projectProgressViewModal').classList.add('show');
+    }catch(e){console.warn('project progress view',e)}
+  };
+
   async function refresh(){
     await save();
     await patchAvatars();
@@ -97,6 +174,9 @@
       setTimeout(patchAvatars,150);
       setTimeout(patchAvatars,800);
       setTimeout(patchAvatars,1800);
+      setTimeout(patchProjectProgressButtons,200);
+      setTimeout(patchProjectProgressButtons,900);
+      setTimeout(patchProjectProgressButtons,1900);
       return r;
     };
     wrapped=true;
@@ -114,4 +194,5 @@
   },true);
 
   setInterval(patchAvatars,5000);
+  setInterval(patchProjectProgressButtons,3000);
 })();
