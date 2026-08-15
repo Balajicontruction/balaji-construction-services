@@ -5,7 +5,7 @@
 */
 (()=>{
 'use strict';
-const SB=window.sb;
+const SB=(typeof sb !== 'undefined' ? sb : (window.sb || null));
 let registerStream=null,verifyStream=null,modelsLoaded=false,faceBusy=false;
 let registeredDescriptor=null,faceRegistered=false,workerCache=[];
 const MODEL_URL='https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
