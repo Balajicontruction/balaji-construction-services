@@ -101,3 +101,91 @@
   document.addEventListener('click',e=>{if(e.target?.id==='workerFaceCapture'){setTimeout(refresh,1200);setTimeout(refresh,3000);setTimeout(patchAvatars,5000)}},true);
   setInterval(patchAvatars,5000);setInterval(patchProjectProgressButtons,3000);
 })();
+
+/* BALAJI — Customer Records: show each customer's projects and open project progress. */
+(()=>{
+  'use strict';
+  let ready=false;
+
+  const getData=()=>({
+    customers:(typeof window.customers!=='undefined'?window.customers:[]),
+    projects:(typeof window.projects!=='undefined'?window.projects:[]),
+    updates:(typeof window.projectUpdates!=='undefined'?window.projectUpdates:[])
+  });
+
+  function progressFor(id,updates){
+    const list=(updates||[]).filter(u=>String(u.project_id)===String(id)).sort((a,b)=>new Date(b.update_date||b.created_at||0)-new Date(a.update_date||a.created_at||0));
+    return Math.max(0,Math.min(100,Number(list[0]?.progress_percent||0)));
+  }
+
+  function addProjectStyles(){
+    if(document.getElementById('customerProjectStyles'))return;
+    const s=document.createElement('style');s.id='customerProjectStyles';s.textContent=`
+      .customerProjects{display:flex;flex-direction:column;gap:7px;min-width:220px}
+      .customerProjectBtn{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:8px 10px;border:1px solid #e3e9f0;border-radius:10px;background:#f8fafc;color:#17304a;text-align:left;font-weight:800;cursor:pointer}
+      .customerProjectBtn:hover{border-color:#ff7f1f;background:#fff7ed}
+      .customerProjectBtn small{font-weight:900;color:#ff7f1f;white-space:nowrap}
+      .customerProjectEmpty{color:#94a3b8;font-size:13px}
+    `;document.head.appendChild(s);
+  }
+
+  function patchHeader(){
+    const table=document.getElementById('customersTable')?.closest('table');if(!table)return;
+    const head=table.querySelector('thead tr');if(!head)return;
+    if(!head.querySelector('[data-customer-projects-head]')){
+      const th=document.createElement('th');th.textContent='Projects';th.setAttribute('data-customer-projects-head','1');head.insertBefore(th,head.lastElementChild);
+    }
+  }
+
+  function patchRows(){
+    const tbody=document.getElementById('customersTable');if(!tbody)return;
+    const table=tbody.closest('table');if(!table)return;
+    patchHeader();addProjectStyles();
+    const {customers,projects,updates}=getData();
+    tbody.querySelectorAll('tr').forEach(row=>{
+      const action=row.lastElementChild;if(!action||!row.children.length)return;
+      if(row.querySelector('[data-customer-projects-cell]'))return;
+      const edit=action.querySelector('[onclick*="editCustomer"]');
+      const idMatch=(edit?.getAttribute('onclick')||'').match(/editCustomer\(['"]([^'"]+)['"]\)/);
+      if(!idMatch)return;
+      const customerId=idMatch[1];
+      const customer=customers.find(c=>String(c.id)===String(customerId));
+      if(!customer)return;
+      const linked=projects.filter(p=>String(p.customer_id)===String(customer.id));
+      const td=document.createElement('td');td.setAttribute('data-customer-projects-cell','1');
+      if(!linked.length){td.innerHTML='<div class="customerProjectEmpty">कोई Project नहीं</div>'}
+      else{
+        const wrap=document.createElement('div');wrap.className='customerProjects';
+        linked.forEach(p=>{
+          const b=document.createElement('button');b.type='button';b.className='customerProjectBtn';
+          const name=document.createElement('span');name.textContent=p.project_name||'Project';
+          const pr=document.createElement('small');pr.textContent=progressFor(p.id,updates)+'%';
+          b.append(name,pr);b.title='Project की progress देखें';
+          b.addEventListener('click',()=>{
+            if(typeof window.openProjectProgressView==='function')window.openProjectProgressView(p.id);
+            else if(typeof window.openProgressModal==='function')window.openProgressModal(p.id);
+          });
+          wrap.appendChild(b);
+        });
+        td.appendChild(wrap);
+      }
+      row.insertBefore(td,action);
+    });
+  }
+
+  function run(){
+    patchRows();
+  }
+
+  function wrapLoad(){
+    if(ready||typeof window.loadAll!=='function')return;
+    const old=window.loadAll;
+    window.loadAll=async function(){const r=await old.apply(this,arguments);setTimeout(run,100);setTimeout(run,700);setTimeout(run,1600);return r};
+    ready=true;
+  }
+
+  const timer=setInterval(()=>{wrapLoad();run();if(ready)clearInterval(timer)},300);
+  setTimeout(()=>clearInterval(timer),15000);
+  document.addEventListener('click',e=>{if(e.target?.closest?.('[data-page="customers"]')){setTimeout(run,150);setTimeout(run,700)}});
+  setInterval(()=>{if(document.getElementById('page-customers')?.classList.contains('active'))run()},2500);
+})();
