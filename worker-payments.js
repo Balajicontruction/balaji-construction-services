@@ -76,3 +76,22 @@ window.adminSetWorkerUpi=id=>{const w=getWorker(id);if(w)showUpiModal(w)};
 async function boot(){if(started)return;started=true;styles();for(let i=0;i<100;i++){if(getSB()&&document.getElementById('workersList'))break;await wait(200)}if(!document.getElementById('workersList')){started=false;return}await refreshData();patchCards();const box=document.getElementById('workersList');new MutationObserver(()=>setTimeout(patchCards,60)).observe(box,{childList:true,subtree:true});const old=window.loadAll;if(old&&!old.__workerPaymentWrapped){const wrapped=async function(...a){const result=await old.apply(this,a);await wait(120);await refreshData();patchCards();return result};wrapped.__workerPaymentWrapped=true;window.loadAll=wrapped}patchCards()}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
+
+/* WORKER CARD PAYMENT UI LAYER v2 */
+(()=>{
+  'use strict';
+  const esc2=v=>String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
+  const workerData=()=>Array.isArray(window.__workerAdminCache)?window.__workerAdminCache:[];
+  const photoOf=w=>String(w?.photo_url||w?.face_photo_url||w?.image_url||w?.worker_image||w?.profile_photo||w?.avatar_url||w?.photo||w?.face_image_url||w?.snapshot_url||w?.image_data||'').trim();
+  const addStyle=()=>{if(document.getElementById('workerCardPaymentUILayer'))return;const s=document.createElement('style');s.id='workerCardPaymentUILayer';s.textContent=`
+    .workerNamePaymentBtn{display:inline-flex;align-items:center;justify-content:center;margin-top:7px;padding:7px 15px;border:0;border-radius:10px;background:#ff7f1f;color:#fff;font-weight:900;font-size:12px;cursor:pointer;box-shadow:0 2px 7px rgba(255,127,31,.22)}
+    .workerNamePaymentBtn:hover{filter:brightness(.96)}
+    .workerProfilePhoto{width:62px;height:62px;border-radius:50%;object-fit:cover;border:2px solid #fff;box-shadow:0 2px 8px rgba(15,23,42,.12);display:block}
+  `;document.head.appendChild(s)};
+  const findWorker=card=>{const b=card.querySelector('button[onclick*="editWorker("]');const m=b?.getAttribute('onclick')?.match(/editWorker\(['\"]([^'\"]+)/);return m?workerData().find(w=>String(w.id)===String(m[1])):null};
+  const enhance=()=>{addStyle();document.querySelectorAll('#workersList .workerCard').forEach(card=>{const w=findWorker(card);if(!w)return;const head=card.querySelector('.workerHead');const h3=head?.querySelector('h3');if(h3){h3.parentElement.querySelector('.workerNamePaymentBtn')?.remove();h3.insertAdjacentHTML('afterend',`<button type="button" class="workerNamePaymentBtn" onclick="adminWorkerPayment('${esc2(w.id)}')">💰 PAYMENT</button>`)}const av=head?.querySelector('.avatar');const photo=photoOf(w);if(av&&photo){const img=document.createElement('img');img.className='workerProfilePhoto';img.src=photo;img.alt=w.name||w.worker_name||'Worker';img.loading='lazy';av.replaceWith(img)}})};
+  const loadFacePhotos=async()=>{try{const s=window.sb;if(!s)return;const r=await s.from('worker_face_registrations').select('*');if(r.error)return;const rows=r.data||[];const map={};rows.forEach(x=>{const id=x.worker_id||x.workerId;const photo=x.photo_url||x.image_url||x.photo||x.face_image||x.face_image_url||x.snapshot_url||x.image_data||x.face_data||'';if(id&&photo)map[String(id)]=photo});workerData().forEach(w=>{const photo=map[String(w.id)];if(photo)w.face_photo_url=photo});enhance()}catch(e){console.warn('worker face photo UI:',e)}};
+  let timer=0;const run=()=>{clearTimeout(timer);timer=setTimeout(()=>{enhance();loadFacePhotos()},120)};
+  document.addEventListener('DOMContentLoaded',run);new MutationObserver(run).observe(document.body,{childList:true,subtree:true});setTimeout(run,250);setTimeout(run,1200);setTimeout(run,2500);
+})();
+
