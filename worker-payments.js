@@ -9,7 +9,7 @@
   var state={workers:[],payments:[],attendance:[],faces:[]};
   var booted=false;
 
-  function sb(){ return window.sb || null; }
+  function sb(){ return (typeof sb !== 'undefined' ? sb : (window.sb || null)); }
   function esc(v){ return String(v==null?'':v).replace(/[&<>\"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c];}); }
   function num(v){ var n=Number(String(v==null?'':v).replace(/[^0-9.-]/g,'')); return Number.isFinite(n)?n:0; }
   function money(v){ return '₹'+num(v).toLocaleString('en-IN'); }
