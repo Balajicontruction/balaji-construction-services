@@ -2,21 +2,19 @@ name: Restore worker face verification
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 permissions:
   contents: write
 
 jobs:
   restore-face:
-    if: github.event.head_commit.message != 'Fix enquiry patch workflow' && github.event.head_commit.message != 'Patch customer enquiry controls only'
+    if: github.event.head_commit.message != 'Restore worker face verification in admin dashboard'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: Patch customer enquiries only
-        shell: bash
+      - name: Restore face verification and patch only customer enquiries
         run: |
           python - <<'PY'
           from pathlib import Path
@@ -30,17 +28,11 @@ jobs:
           if 'src="worker-face.js"' not in s and "src='worker-face.js'" not in s:
               s = s.replace('</body>', face_js + '\n</body>', 1)
 
-          marker = """/* =========================================================
-   ENQUIRIES
-========================================================= */"""
-          start = s.find(marker)
-          if start < 0:
-              raise SystemExit('ENQUIRIES marker not found')
-          delete_start = s.find('async function deleteEnquiry(id)', start)
-          if delete_start < 0:
-              raise SystemExit('deleteEnquiry function not found')
-
-          new = """/* =========================================================
+          marker='/* =========================================================\n   ENQUIRIES\n========================================================= */'
+          if marker in s and 'function updateEnquiryStatus' not in s:
+              start=s.index(marker)
+              delete_start=s.index('async function deleteEnquiry(id){',start)
+              new=r'''/* =========================================================
    ENQUIRIES
 ========================================================= */
 
@@ -59,31 +51,30 @@ function enquiryStatus(value){
 }
 
 function enquiryStatusLabel(status){
-  return status==='approved'?'Approved':status==='cancelled'?'Cancelled':'Pending';
+  return status==='approved'?'✅ Approved':status==='cancelled'?'❌ Cancelled':'⏳ Pending';
 }
 
 function renderEnquiries(){
   const tbody=document.getElementById('enquiriesTable');
-  if(!tbody)return;
   if(!enquiries.length){
     tbody.innerHTML='<tr><td colspan="5"><div class="empty">अभी कोई enquiry नहीं मिली।</div></td></tr>';
     return;
   }
   tbody.innerHTML=enquiries.map(e=>{
     const {customer,profile}=enquiryCustomer(e);
-    const name=e.name||e.customer_name||e.full_name||profile.full_name||customer.name||'—';
-    const phone=e.phone||e.mobile||profile.phone||customer.phone||'—';
-    const message=e.message||e.details||e.enquiry||'—';
+    const name=e.name||e.customer_name||e.full_name||profile.full_name||customer.name||customer.customer_name||'—';
+    const phone=e.phone||e.mobile||profile.phone||customer.phone||customer.mobile||'—';
+    const message=e.message||e.enquiry||e.details||e.site_location||'—';
     const status=enquiryStatus(e.status);
     return `<tr>
       <td><strong>${esc(name)}</strong></td>
       <td>${esc(phone)}</td>
       <td style="max-width:360px;white-space:pre-wrap">${esc(message)}</td>
       <td>
-        <div class="actions">
-          <button class="btn btn-green btn-sm" onclick="updateEnquiryStatus('${esc(e.id)}','approved')">Approve</button>
-          <button class="btn btn-red btn-sm" onclick="updateEnquiryStatus('${esc(e.id)}','cancelled')">Cancel</button>
-          <button class="btn btn-light btn-sm" onclick="updateEnquiryStatus('${esc(e.id)}','pending')">Pending</button>
+        <div class="actions" style="align-items:center">
+          <button class="btn btn-green btn-sm" style="opacity:${status==='approved'?1:.45}" onclick="updateEnquiryStatus('${esc(e.id)}','approved')">✅ Approve</button>
+          <button class="btn btn-red btn-sm" style="opacity:${status==='cancelled'?1:.45}" onclick="updateEnquiryStatus('${esc(e.id)}','cancelled')">❌ Cancel</button>
+          <button class="btn btn-light btn-sm" style="opacity:${status==='pending'?1:.45}" onclick="updateEnquiryStatus('${esc(e.id)}','pending')">⏳ Pending</button>
         </div>
         <div style="margin-top:7px"><span class="status ${status==='approved'?'completed':status==='cancelled'?'cancelled':'pending'}">${enquiryStatusLabel(status)}</span></div>
       </td>
@@ -97,9 +88,9 @@ function renderEnquiries(){
 
 async function updateEnquiryStatus(id,status){
   status=enquiryStatus(status);
-  const result=await sb.from('customer_enquiries').update({status}).eq('id',id);
-  if(result.error){toast('❌ Status update नहीं हुआ: '+result.error.message);return;}
-  toast('✅ Status: '+enquiryStatusLabel(status));
+  const {error}=await sb.from('customer_enquiries').update({status}).eq('id',id);
+  if(error){toast('❌ Enquiry status update नहीं हुआ: '+error.message);return;}
+  toast('✅ Enquiry status: '+enquiryStatusLabel(status));
   await loadAll();
 }
 
@@ -108,22 +99,23 @@ async function editEnquiry(id){
   if(!e)return;
   const message=prompt('Enquiry Message edit करें:',e.details||e.message||e.enquiry||'');
   if(message===null)return;
-  const result=await sb.from('customer_enquiries').update({details:message.trim()}).eq('id',id);
-  if(result.error){toast('❌ Enquiry edit नहीं हुई: '+result.error.message);return;}
+  const {error}=await sb.from('customer_enquiries').update({details:message.trim()}).eq('id',id);
+  if(error){toast('❌ Enquiry edit नहीं हुई: '+error.message);return;}
   toast('✅ Enquiry updated');
   await loadAll();
 }
 
-"""
-          s = s[:start] + new + s[delete_start:]
+'''
+              s=s[:start]+new+s[delete_start:]
+
           p.write_text(s, encoding='utf-8')
           PY
 
-      - name: Commit dashboard patch
+      - name: Commit dashboard changes
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add dashboard.html
           git diff --cached --quiet && exit 0
-          git commit -m 'Patch customer enquiry controls only'
+          git commit -m 'Restore worker face verification in admin dashboard'
           git push
