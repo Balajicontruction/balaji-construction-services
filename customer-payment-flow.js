@@ -39,16 +39,8 @@
       if(typeof toast === 'function') toast('Payment amount select करें');
       return;
     }
-    sessionStorage.setItem(KEY, JSON.stringify({
-      projectId: projectId(project),
-      projectName: projectName(project),
-      amount,
-      startedAt: Date.now()
-    }));
-    const upi = 'upi://pay?pa=' + encodeURIComponent(UPI_ID) +
-      '&pn=' + encodeURIComponent(PAYEE) +
-      '&am=' + encodeURIComponent(amount.toFixed(2)) +
-      '&cu=INR&tn=' + encodeURIComponent('BALAJI Construction - ' + projectName(project));
+    sessionStorage.setItem(KEY, JSON.stringify({projectId: projectId(project), projectName: projectName(project), amount, startedAt: Date.now()}));
+    const upi = 'upi://pay?pa=' + encodeURIComponent(UPI_ID) + '&pn=' + encodeURIComponent(PAYEE) + '&am=' + encodeURIComponent(amount.toFixed(2)) + '&cu=INR&tn=' + encodeURIComponent('BALAJI Construction - ' + projectName(project));
     window.location.href = upi;
   }
 
@@ -67,51 +59,56 @@
     setTimeout(() => openSubmit(project, Number(p.amount), 'UPI'), 350);
   }
 
-  /*
-   * One canonical payment selector for EVERY project card.
-   * This intentionally replaces any older amount-button markup so no project
-   * can retain the previous payment UI/order.
-   */
+  // Keep one canonical payment selector for every project without observing
+  // our own DOM writes. The previous implementation caused a MutationObserver
+  // loop because ensureAmountButtons() changed the DOM that it was observing.
+  let rebuilding = false;
   function ensureAmountButtons(){
-    document.querySelectorAll('.amountOptions').forEach(box => {
-      const oldButtons = [...box.querySelectorAll('.amountBtn')];
-      const selected = oldButtons.find(b => b.classList.contains('selected'));
-      const selectedValue = selected ? Number(selected.dataset.amount || (selected.textContent || '').replace(/[^0-9]/g,'')) : 0;
-      box.innerHTML = '';
+    if(rebuilding || !document.body) return;
+    rebuilding = true;
+    try {
+      document.querySelectorAll('.amountOptions').forEach(box => {
+        const oldButtons = [...box.querySelectorAll('.amountBtn')];
+        const selected = oldButtons.find(b => b.classList.contains('selected'));
+        const selectedValue = selected ? Number(selected.dataset.amount || (selected.textContent || '').replace(/[^0-9]/g,'')) : 0;
+        box.innerHTML = '';
 
-      AMOUNTS.forEach(amount => {
-        const b = document.createElement('button');
-        b.type = 'button';
-        b.className = 'amountBtn';
-        b.dataset.amount = String(amount);
-        b.textContent = moneyLocal(amount);
-        if(selectedValue === amount) b.classList.add('selected');
-        b.addEventListener('click', () => {
+        AMOUNTS.forEach(amount => {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'amountBtn';
+          b.dataset.amount = String(amount);
+          b.textContent = moneyLocal(amount);
+          if(selectedValue === amount) b.classList.add('selected');
+          b.addEventListener('click', () => {
+            box.querySelectorAll('.amountBtn').forEach(x => x.classList.remove('selected'));
+            b.classList.add('selected');
+            setAmount(amount);
+          });
+          box.appendChild(b);
+        });
+
+        const other = document.createElement('button');
+        other.type = 'button';
+        other.className = 'amountBtn otherAmountBtn';
+        other.textContent = 'Other Amount';
+        other.addEventListener('click', () => {
+          const raw = prompt('Other Amount दर्ज करें (₹):');
+          if(raw === null) return;
+          const amount = Number(String(raw).replace(/[^0-9.]/g,''));
+          if(!amount || amount <= 0){
+            if(typeof toast === 'function') toast('सही amount दर्ज करें');
+            return;
+          }
           box.querySelectorAll('.amountBtn').forEach(x => x.classList.remove('selected'));
-          b.classList.add('selected');
+          other.classList.add('selected');
           setAmount(amount);
         });
-        box.appendChild(b);
+        box.appendChild(other);
       });
-
-      const other = document.createElement('button');
-      other.type = 'button';
-      other.className = 'amountBtn otherAmountBtn';
-      other.textContent = 'Other Amount';
-      other.addEventListener('click', () => {
-        const raw = prompt('Other Amount दर्ज करें (₹):');
-        if(raw === null) return;
-        const amount = Number(String(raw).replace(/[^0-9.]/g,''));
-        if(!amount || amount <= 0){
-          if(typeof toast === 'function') toast('सही amount दर्ज करें');
-          return;
-        }
-        box.querySelectorAll('.amountBtn').forEach(x => x.classList.remove('selected'));
-        other.classList.add('selected');
-        setAmount(amount);
-      });
-      box.appendChild(other);
-    });
+    } finally {
+      rebuilding = false;
+    }
   }
 
   document.addEventListener('click', (ev) => {
@@ -126,7 +123,6 @@
       }
       return;
     }
-
     const btn = ev.target.closest?.('button, a');
     if(!btn) return;
     if(/Pay\s+via\s+UPI/i.test(btn.textContent || '')){
@@ -136,11 +132,25 @@
     }
   }, true);
 
-  const observer = new MutationObserver(ensureAmountButtons);
-  observer.observe(document.body, {childList:true, subtree:true});
-  setInterval(ensureAmountButtons, 1200);
+  // Observe dashboard rendering, but disconnect while normalizing the payment UI
+  // so our own changes cannot recursively trigger the observer.
+  const observer = new MutationObserver(() => {
+    if(!rebuilding) {
+      observer.disconnect();
+      ensureAmountButtons();
+      observer.observe(document.body, {childList:true, subtree:true});
+    }
+  });
+
+  function start(){
+    ensureAmountButtons();
+    if(document.body) observer.observe(document.body, {childList:true, subtree:true});
+    setTimeout(resumeAfterUpi, 700);
+  }
+
   window.addEventListener('pageshow', resumeAfterUpi);
   document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') resumeAfterUpi(); });
-  window.addEventListener('load', () => { ensureAmountButtons(); setTimeout(resumeAfterUpi, 700); });
-  setTimeout(ensureAmountButtons, 300);
+  window.addEventListener('load', start);
+  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, {once:true});
+  else setTimeout(start, 0);
 })();
