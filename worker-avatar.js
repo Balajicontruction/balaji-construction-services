@@ -18,36 +18,49 @@
       return 'pending';
     }
     function label(v){return v==='approved'?'Approved':v==='cancelled'?'Cancelled':'Pending';}
-    function customerFor(e){
-      var uid=String(e&&e.customer_user_id||'');
-      var list=(typeof customers!=='undefined'&&Array.isArray(customers))?customers:[];
-      var customer=list.find(function(c){return String(c.user_id||'')===uid;})||{};
-      var profiles=(typeof profileMap!=='undefined'&&profileMap)?profileMap:{};
-      var profile=profiles[uid]||{};
-      return {customer:customer,profile:profile};
-    }
     function safe(v){
       if(typeof window.esc==='function')return window.esc(v);
       return String(v==null?'':v).replace(/[&<>\"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c];});
     }
+    function client(){return (typeof sb!=='undefined'?sb:window.sb);}
 
-    window.renderEnquiries=function(){
+    var enquiryRows=[];
+    var enquiryCustomers={};
+
+    async function loadEnquiryData(){
+      var db=client();
+      if(!db)return {rows:[],customers:{}};
+      var er=await db.from('contract_requests').select('id,customer_user_id,request_type,details,status,created_at').order('created_at',{ascending:false});
+      if(er.error){console.error('Customer enquiries load failed:',er.error);return {rows:[],customers:{}};}
+      var rows=er.data||[];
+      var ids=rows.map(function(x){return x.customer_user_id;}).filter(Boolean);
+      var customers={};
+      if(ids.length){
+        var cr=await db.from('customers').select('user_id,name,phone').in('user_id',ids);
+        if(!cr.error)(cr.data||[]).forEach(function(c){customers[String(c.user_id)]={name:c.name||'',phone:c.phone||''};});
+      }
+      return {rows:rows,customers:customers};
+    }
+
+    window.renderEnquiries=async function(){
       var tbody=document.getElementById('enquiriesTable');
       if(!tbody)return;
-      var list=(typeof enquiries!=='undefined'&&Array.isArray(enquiries))?enquiries:[];
-      if(!list.length){
+      var data=await loadEnquiryData();
+      enquiryRows=data.rows;
+      enquiryCustomers=data.customers;
+      if(!enquiryRows.length){
         tbody.innerHTML='<tr><td colspan="5"><div class="empty">अभी कोई enquiry नहीं मिली।</div></td></tr>';
         return;
       }
-      tbody.innerHTML=list.map(function(e){
-        var cp=customerFor(e),c=cp.customer,p=cp.profile;
-        var name=e.name||e.customer_name||e.full_name||p.full_name||c.name||'—';
-        var phone=e.phone||e.mobile||p.phone||c.phone||'—';
-        var message=e.message||e.details||e.enquiry||'—';
+      tbody.innerHTML=enquiryRows.map(function(e){
+        var c=enquiryCustomers[String(e.customer_user_id)]||{};
+        var name=c.name||'—';
+        var phone=c.phone||'—';
+        var message=e.details||'—';
         var st=status(e.status);
         var cls=st==='approved'?'completed':st==='cancelled'?'cancelled':'pending';
         return '<tr>'+
-          '<td><strong>'+safe(name)+'</strong></td>'+
+          '<td><strong>'+safe(name)+'</strong></td>'+\
           '<td>'+safe(phone)+'</td>'+\
           '<td style="max-width:360px;white-space:pre-wrap">'+safe(message)+'</td>'+\
           '<td><div class="actions">'+
@@ -65,46 +78,42 @@
 
     window.updateEnquiryStatus=async function(id,next){
       next=status(next);
-      var client=(typeof sb!=='undefined'?sb:window.sb);
-      if(!client){if(typeof toast==='function')toast('❌ Supabase उपलब्ध नहीं है');return;}
-      var r=await client.from('customer_enquiries').update({status:next}).eq('id',id);
+      var db=client();
+      if(!db){if(typeof toast==='function')toast('❌ Supabase उपलब्ध नहीं है');return;}
+      var r=await db.from('contract_requests').update({status:next}).eq('id',id);
       if(r.error){if(typeof toast==='function')toast('❌ Status update नहीं हुआ: '+r.error.message);return;}
       if(typeof toast==='function')toast('✅ Status: '+label(next));
-      if(typeof window.loadAll==='function')await window.loadAll();else window.renderEnquiries();
+      await window.renderEnquiries();
     };
 
     window.editEnquiry=async function(id){
-      var list=(typeof enquiries!=='undefined'&&Array.isArray(enquiries))?enquiries:[];
-      var e=list.find(function(x){return String(x.id)===String(id);});
+      var e=enquiryRows.find(function(x){return String(x.id)===String(id);});
       if(!e)return;
-      var old=e.details||e.message||e.enquiry||'';
-      var message=prompt('Enquiry Message edit करें:',old);
+      var message=prompt('Enquiry Message edit करें:',e.details||'');
       if(message===null)return;
-      var client=(typeof sb!=='undefined'?sb:window.sb);
-      var r=await client.from('customer_enquiries').update({details:message.trim()}).eq('id',id);
+      var db=client();
+      var r=await db.from('contract_requests').update({details:message.trim()}).eq('id',id);
       if(r.error){if(typeof toast==='function')toast('❌ Enquiry edit नहीं हुई: '+r.error.message);return;}
       if(typeof toast==='function')toast('✅ Enquiry updated');
-      if(typeof window.loadAll==='function')await window.loadAll();else window.renderEnquiries();
+      await window.renderEnquiries();
     };
 
     window.deleteEnquiry=async function(id){
       if(!confirm('क्या इस enquiry को delete करना है?'))return;
-      var client=(typeof sb!=='undefined'?sb:window.sb);
-      var r=await client.from('customer_enquiries').delete().eq('id',id);
+      var db=client();
+      var r=await db.from('contract_requests').delete().eq('id',id);
       if(r.error){if(typeof toast==='function')toast('❌ Enquiry delete नहीं हुई: '+r.error.message);return;}
       if(typeof toast==='function')toast('🗑️ Enquiry deleted');
-      if(typeof window.loadAll==='function')await window.loadAll();else window.renderEnquiries();
+      await window.renderEnquiries();
     };
 
     var tries=0;
     var timer=setInterval(function(){
       tries++;
-      if(typeof window.loadAll==='function'){
+      if(document.getElementById('enquiriesTable')){
         clearInterval(timer);
-        var oldLoad=window.loadAll;
-        window.loadAll=async function(){var r=await oldLoad.apply(this,arguments);setTimeout(window.renderEnquiries,0);return r;};
-        setTimeout(window.renderEnquiries,0);
-      }else if(tries>60)clearInterval(timer);
+        setTimeout(window.renderEnquiries,100);
+      }else if(tries>100)clearInterval(timer);
     },100);
   }
 
