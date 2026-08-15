@@ -12,10 +12,6 @@
   function projectName(p){ return p?.project_name || p?.work_type || 'Project'; }
   function projectId(p){ return String(p?.id || ''); }
 
-  function removeOldAmountSelectors(){
-    document.querySelectorAll('.amountOptions').forEach(el => el.remove());
-  }
-
   function askAmount(){
     const raw = prompt('Payment amount दर्ज करें (₹):');
     if(raw === null) return 0;
@@ -26,6 +22,10 @@
     }
     setAmount(amount);
     return amount;
+  }
+
+  function removeOldSelectors(){
+    document.querySelectorAll('.amountOptions').forEach(el => el.remove());
   }
 
   function openSubmit(project, amount, method='UPI'){
@@ -76,21 +76,16 @@
       sessionStorage.removeItem(KEY);
       return;
     }
-    const project = (typeof projects !== 'undefined' ? projects : []).find(x => String(x.id) === String(p.projectId));
+    const list = (typeof projects !== 'undefined' ? projects : []);
+    const project = list.find(x => String(x.id) === String(p.projectId));
     if(!project) return;
     sessionStorage.removeItem(KEY);
     setTimeout(() => openSubmit(project, Number(p.amount), 'UPI'), 350);
   }
 
-  // Remove the old fixed-amount selector from every project payment card.
-  // A customer enters the amount when starting a UPI payment instead.
-  let cleaning = false;
-  function cleanPaymentUI(){
-    if(cleaning || !document.body) return;
-    cleaning = true;
-    try { removeOldAmountSelectors(); } finally { cleaning = false; }
-  }
-
+  // One delegated click handler only. No MutationObserver is used here;
+  // the previous observer repeatedly watched the whole dashboard DOM and
+  // could make the laptop/browser freeze while sections were rendering.
   document.addEventListener('click', (ev) => {
     const btn = ev.target.closest?.('button, a');
     if(!btn) return;
@@ -101,23 +96,15 @@
     }
   }, true);
 
-  const observer = new MutationObserver(() => {
-    if(!cleaning){
-      observer.disconnect();
-      cleanPaymentUI();
-      observer.observe(document.body, {childList:true, subtree:true});
-    }
-  });
-
   function start(){
-    cleanPaymentUI();
-    if(document.body) observer.observe(document.body, {childList:true, subtree:true});
+    removeOldSelectors();
+    setTimeout(removeOldSelectors, 500);
     setTimeout(resumeAfterUpi, 700);
   }
 
   window.addEventListener('pageshow', resumeAfterUpi);
   document.addEventListener('visibilitychange', () => { if(document.visibilityState === 'visible') resumeAfterUpi(); });
-  window.addEventListener('load', start);
+  window.addEventListener('load', start, {once:true});
   if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, {once:true});
   else setTimeout(start, 0);
 })();
