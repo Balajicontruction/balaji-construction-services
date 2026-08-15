@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Inject worker face scripts
+      - name: Inject worker face scripts and fix attendance Supabase access
         shell: bash
         run: |
           python3 - <<'PY'
@@ -31,11 +31,20 @@ jobs:
               addon='<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>\n<script src="worker-attendance-face.js"></script>'
               s=s.replace('</body>',addon+'\n</body>',1)
               p.write_text(s,encoding='utf-8')
+          # worker-face.js runs as a separate classic script. dashboard.html keeps
+          # its Supabase client in a top-level lexical `sb`, not window.sb.
+          # Use the lexical binding when available, with window.sb as fallback.
+          p=Path('worker-face.js')
+          s=p.read_text(encoding='utf-8')
+          fixed="const SB=(typeof sb !== 'undefined' ? sb : (window.sb || null));"
+          s2=s.replace('const SB=window.sb;',fixed,1)
+          if s2!=s:
+              p.write_text(s2,encoding='utf-8')
           PY
       - name: Commit website integration
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add dashboard.html worker-attendance.html
-          git diff --cached --quiet || git commit -m 'Integrate registered face verification into worker flows'
+          git add dashboard.html worker-attendance.html worker-face.js
+          git diff --cached --quiet || git commit -m 'Fix worker attendance Supabase access'
           git push
