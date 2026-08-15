@@ -31,15 +31,17 @@ function openEnquiriesFromNotification(){
 
 function render(){
  const tb=document.getElementById('enquiriesTable');if(!tb)return;
+ const table=tb.closest('table');
+ const head=table?.querySelector('thead');
+ if(head)head.innerHTML='<tr><th>Customer Email</th><th>Message</th><th>Action</th></tr>';
  const list=window.enquiries||[];
- if(!list.length){tb.innerHTML='<tr><td colspan="5"><div class="empty">अभी कोई enquiry नहीं मिली।</div></td></tr>';return}
+ if(!list.length){tb.innerHTML='<tr><td colspan="3"><div class="empty">अभी कोई enquiry नहीं मिली।</div></td></tr>';return}
  tb.innerHTML=list.map(e=>{
   const {c,p}=customerFor(e);
-  const name=e.name||e.customer_name||e.full_name||c.name||c.customer_name||p.full_name||'—';
-  const phone=e.phone||e.mobile||e.phone_number||c.phone||c.mobile||p.phone||'—';
+  const email=e.email||e.customer_email||e.email_address||c.email||c.customer_email||c.email_address||p.email||p.customer_email||p.email_address||'—';
   const msg=e.message||e.details||e.enquiry||'—';
   const st=norm(e.status);
-  return `<tr><td><strong>${esc(name)}</strong></td><td>${esc(phone)}</td><td style="max-width:360px;white-space:pre-wrap">${esc(msg)}</td><td><div class="actions"><button class="btn btn-green btn-sm" style="opacity:${st==='approved'?1:.5}" onclick="updateEnquiryStatus('${esc(e.id)}','approved')">Approve</button><button class="btn btn-red btn-sm" style="opacity:${st==='cancelled'?1:.5}" onclick="updateEnquiryStatus('${esc(e.id)}','cancelled')">Cancel</button><button class="btn btn-light btn-sm" style="opacity:${st==='pending'?1:.5}" onclick="updateEnquiryStatus('${esc(e.id)}','pending')">Pending</button></div><div style="margin-top:7px"><span class="status ${st==='approved'?'completed':st==='cancelled'?'cancelled':'pending'}">${label(st)}</span></div></td><td><div class="actions"><button class="btn btn-blue btn-sm" onclick="editEnquiry('${esc(e.id)}')">✏️ Edit</button><button class="btn btn-red btn-sm" onclick="deleteEnquiry('${esc(e.id)}')">🗑️ Delete</button></div></td></tr>`
+  return `<tr><td><strong>${esc(email)}</strong></td><td style="max-width:520px;white-space:pre-wrap">${esc(msg)}</td><td><div class="actions"><button class="btn btn-green btn-sm" style="opacity:${st==='approved'?1:.5}" onclick="updateEnquiryStatus('${esc(e.id)}','approved')">Approve</button><button class="btn btn-red btn-sm" style="opacity:${st==='cancelled'?1:.5}" onclick="updateEnquiryStatus('${esc(e.id)}','cancelled')">Cancel</button></div></td></tr>`
  }).join('');
  updateNotification(list);
 }
