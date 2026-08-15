@@ -1,0 +1,57 @@
+name: Customer Projects Fix
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Append customer project UI patch
+        run: |
+          cat >> worker-avatar.js <<'JS'
+
+/* BALAJI — Customer Records project column patch. Existing Worker/Attendance/Face code untouched. */
+(()=>{
+  'use strict';
+  let busy=false;
+  const getSB=()=>{try{return typeof sb!=='undefined'?sb:(window.sb||null)}catch(e){return window.sb||null}};
+  const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const progressFor=(id,updates)=>{
+    const u=(updates||[]).filter(x=>String(x.project_id)===String(id)).sort((a,b)=>new Date(b.update_date||b.created_at||0)-new Date(a.update_date||a.created_at||0))[0];
+    const n=Number(u?.progress_percent??u?.progress??0);return Math.max(0,Math.min(100,Number.isFinite(n)?n:0));
+  };
+  function styles(){
+    if(document.getElementById('customerProjectPatchStyles'))return;
+    const s=document.createElement('style');s.id='customerProjectPatchStyles';s.textContent='.customerProjects{display:flex;flex-direction:column;gap:7px;min-width:210px}.customerProjectBtn{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;padding:8px 10px;border:1px solid #e3e9f0;border-radius:10px;background:#f8fafc;color:#17304a;font-weight:800;text-align:left;cursor:pointer}.customerProjectBtn:hover{border-color:#ff7f1f;background:#fff7ed}.customerProjectBtn small{color:#ff7f1f;font-weight:900;white-space:nowrap}';document.head.appendChild(s);
+  }
+  async function patch(){
+    if(busy)return;const tbody=document.getElementById('customersTable');if(!tbody)return;const table=tbody.closest('table');if(!table)return;const head=table.querySelector('thead tr');if(!head)return;
+    const s=getSB();if(!s)return;busy=true;
+    try{
+      styles();
+      if(!head.querySelector('[data-customer-projects-head]')){const th=document.createElement('th');th.textContent='Projects';th.setAttribute('data-customer-projects-head','1');head.insertBefore(th,head.lastElementChild)}
+      const [pr,up]=await Promise.all([s.from('projects').select('*'),s.from('project_updates').select('*')]);
+      if(pr.error)return;const projects=pr.data||[],updates=up.error?[]:(up.data||[]);
+      tbody.querySelectorAll('tr').forEach(row=>{
+        row.querySelector('[data-customer-projects-cell]')?.remove();const action=row.lastElementChild;if(!action)return;
+        const edit=action.querySelector('[onclick*="editCustomer"]');const m=(edit?.getAttribute('onclick')||'').match(/editCustomer\(['"]([^'"]+)['"]\)/);if(!m)return;
+        const linked=projects.filter(p=>String(p.customer_id)===String(m[1]));const td=document.createElement('td');td.setAttribute('data-customer-projects-cell','1');
+        if(!linked.length){td.textContent='कोई Project नहीं';td.style.color='#94a3b8'}else{const wrap=document.createElement('div');wrap.className='customerProjects';linked.forEach(p=>{const b=document.createElement('button');b.type='button';b.className='customerProjectBtn';b.innerHTML='<span>🏗️ '+esc(p.project_name||'Project')+'</span><small>'+progressFor(p.id,updates)+'%</small>';b.title='Project की progress देखें';b.onclick=()=>{if(typeof window.openProjectProgressView==='function')window.openProjectProgressView(p.id);else if(typeof window.openProgressModal==='function')window.openProgressModal(p.id)};wrap.appendChild(b)});td.appendChild(wrap)}
+        row.insertBefore(td,action);
+      });
+    }finally{busy=false}
+  }
+  setInterval(()=>{if(document.getElementById('page-customers')?.classList.contains('active'))patch()},2500);
+  document.addEventListener('click',e=>{if(e.target?.closest?.('[data-page="customers"]')){setTimeout(patch,200);setTimeout(patch,900)}});
+  setTimeout(patch,1000);
+})();
+JS
+          git config user.name "Balajicontruction"
+          git config user.email "satpalnehra30@gmail.com"
+          git add worker-avatar.js
+          git rm .github/workflows/customer-projects-fix.yml
+          git commit -m "Fix customer project list in customer records"
+          git push
