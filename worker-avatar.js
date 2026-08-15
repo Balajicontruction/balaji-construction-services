@@ -1,121 +1,76 @@
-/* BALAJI — compatibility loader for the existing worker-avatar.js plus Customer Enquiry controls. */
-(function(){
+/* BALAJI Construction — worker face photo -> avatar bridge. No Worker Add/Save/Face/Attendance UI changes. */
+(()=>{
   'use strict';
+  let pendingPhoto=null,pendingId='',pendingName='',pendingPhone='',wrapped=false;
+  const S=()=>{try{return typeof sb!=='undefined'?sb:(window.sb||null)}catch(e){return window.sb||null}};
+  const snap=()=>{const v=document.getElementById('workerFaceVideo');if(!v||!v.videoWidth||!v.videoHeight)return null;const c=document.createElement('canvas'),scale=Math.min(1,640/v.videoWidth);c.width=Math.max(1,Math.round(v.videoWidth*scale));c.height=Math.max(1,Math.round(v.videoHeight*scale));const x=c.getContext('2d');x.translate(c.width,0);x.scale(-1,1);x.drawImage(v,0,0,c.width,c.height);return c.toDataURL('image/jpeg',.78)};
 
-  function loadOriginal(done){
-    var s=document.createElement('script');
-    s.src='worker-avatar-original.js';
-    s.onload=done;
-    s.onerror=function(){console.warn('worker-avatar-original.js could not load');done();};
-    document.body.appendChild(s);
+  document.addEventListener('click',e=>{
+    if(e.target?.id!=='workerFaceCapture')return;
+    const p=snap();
+    if(p){
+      pendingPhoto=p;
+      pendingId=document.getElementById('workerId')?.value||'';
+      pendingName=document.getElementById('workerName')?.value?.trim()||'';
+      pendingPhone=(document.getElementById('workerMobile')?.value||'').replace(/\D/g,'');
+    }
+  },true);
+
+  async function findWorker(s){
+    try{
+      if(pendingId){const r=await s.from('workers').select('id').eq('id',pendingId).maybeSingle();if(r.data?.id)return r.data;}
+      if(pendingPhone){const r=await s.from('workers').select('id').eq('phone',pendingPhone).order('created_at',{ascending:false}).limit(1).maybeSingle();if(r.data?.id)return r.data;}
+      if(pendingName){const r=await s.from('workers').select('id').eq('name',pendingName).order('created_at',{ascending:false}).limit(1).maybeSingle();if(r.data?.id)return r.data;}
+    }catch(e){console.warn('worker lookup',e)}
+    return null;
   }
 
-  function installEnquiryPatch(){
-    function status(v){
-      v=String(v||'pending').toLowerCase().trim();
-      if(v==='approved'||v==='approve'||v==='accepted'||v==='accept')return 'approved';
-      if(v==='cancelled'||v==='canceled'||v==='cancel'||v==='rejected'||v==='reject')return 'cancelled';
-      return 'pending';
-    }
-    function label(v){return v==='approved'?'Approved':v==='cancelled'?'Cancelled':'Pending';}
-    function safe(v){
-      if(typeof window.esc==='function')return window.esc(v);
-      return String(v==null?'':v).replace(/[&<>\"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c];});
-    }
-    function client(){return (typeof sb!=='undefined'?sb:window.sb);}
-
-    var enquiryRows=[];
-    var enquiryCustomers={};
-
-    async function loadEnquiryData(){
-      var db=client();
-      if(!db)return {rows:[],customers:{}};
-      var er=await db.from('contract_requests').select('id,customer_user_id,request_type,details,status,created_at').order('created_at',{ascending:false});
-      if(er.error){console.error('Customer enquiries load failed:',er.error);return {rows:[],customers:{}};}
-      var rows=er.data||[];
-      var ids=rows.map(function(x){return x.customer_user_id;}).filter(Boolean);
-      var customers={};
-      if(ids.length){
-        var cr=await db.from('customers').select('user_id,name,phone').in('user_id',ids);
-        if(!cr.error)(cr.data||[]).forEach(function(c){customers[String(c.user_id)]={name:c.name||'',phone:c.phone||''};});
-      }
-      return {rows:rows,customers:customers};
-    }
-
-    window.renderEnquiries=async function(){
-      var tbody=document.getElementById('enquiriesTable');
-      if(!tbody)return;
-      var data=await loadEnquiryData();
-      enquiryRows=data.rows;
-      enquiryCustomers=data.customers;
-      if(!enquiryRows.length){
-        tbody.innerHTML='<tr><td colspan="5"><div class="empty">अभी कोई enquiry नहीं मिली।</div></td></tr>';
-        return;
-      }
-      tbody.innerHTML=enquiryRows.map(function(e){
-        var c=enquiryCustomers[String(e.customer_user_id)]||{};
-        var name=c.name||'—';
-        var phone=c.phone||'—';
-        var message=e.details||'—';
-        var st=status(e.status);
-        var cls=st==='approved'?'completed':st==='cancelled'?'cancelled':'pending';
-        return '<tr>'+
-          '<td><strong>'+safe(name)+'</strong></td>'+\
-          '<td>'+safe(phone)+'</td>'+\
-          '<td style="max-width:360px;white-space:pre-wrap">'+safe(message)+'</td>'+\
-          '<td><div class="actions">'+
-            '<button class="btn btn-green btn-sm" onclick="updateEnquiryStatus(\''+safe(e.id)+'\',\'approved\')">Approve</button>'+\
-            '<button class="btn btn-red btn-sm" onclick="updateEnquiryStatus(\''+safe(e.id)+'\',\'cancelled\')">Cancel</button>'+\
-            '<button class="btn btn-light btn-sm" onclick="updateEnquiryStatus(\''+safe(e.id)+'\',\'pending\')">Pending</button>'+\
-          '</div><div style="margin-top:7px"><span class="status '+cls+'">'+label(st)+'</span></div></td>'+\
-          '<td><div class="actions">'+\
-            '<button class="btn btn-blue btn-sm" onclick="editEnquiry(\''+safe(e.id)+'\')">✏️ Edit</button>'+\
-            '<button class="btn btn-red btn-sm" onclick="deleteEnquiry(\''+safe(e.id)+'\')">🗑️ Delete</button>'+\
-          '</div></td>'+\
-        '</tr>';
-      }).join('');
-    };
-
-    window.updateEnquiryStatus=async function(id,next){
-      next=status(next);
-      var db=client();
-      if(!db){if(typeof toast==='function')toast('❌ Supabase उपलब्ध नहीं है');return;}
-      var r=await db.from('contract_requests').update({status:next}).eq('id',id);
-      if(r.error){if(typeof toast==='function')toast('❌ Status update नहीं हुआ: '+r.error.message);return;}
-      if(typeof toast==='function')toast('✅ Status: '+label(next));
-      await window.renderEnquiries();
-    };
-
-    window.editEnquiry=async function(id){
-      var e=enquiryRows.find(function(x){return String(x.id)===String(id);});
-      if(!e)return;
-      var message=prompt('Enquiry Message edit करें:',e.details||'');
-      if(message===null)return;
-      var db=client();
-      var r=await db.from('contract_requests').update({details:message.trim()}).eq('id',id);
-      if(r.error){if(typeof toast==='function')toast('❌ Enquiry edit नहीं हुई: '+r.error.message);return;}
-      if(typeof toast==='function')toast('✅ Enquiry updated');
-      await window.renderEnquiries();
-    };
-
-    window.deleteEnquiry=async function(id){
-      if(!confirm('क्या इस enquiry को delete करना है?'))return;
-      var db=client();
-      var r=await db.from('contract_requests').delete().eq('id',id);
-      if(r.error){if(typeof toast==='function')toast('❌ Enquiry delete नहीं हुई: '+r.error.message);return;}
-      if(typeof toast==='function')toast('🗑️ Enquiry deleted');
-      await window.renderEnquiries();
-    };
-
-    var tries=0;
-    var timer=setInterval(function(){
-      tries++;
-      if(document.getElementById('enquiriesTable')){
-        clearInterval(timer);
-        setTimeout(window.renderEnquiries,100);
-      }else if(tries>100)clearInterval(timer);
-    },100);
+  async function save(){
+    if(!pendingPhoto)return false;
+    const s=S();if(!s)return false;
+    try{
+      const w=await findWorker(s);if(!w?.id)return false;
+      let ok=false;const now=new Date().toISOString();
+      const r1=await s.from('worker_face_registrations').upsert({worker_id:w.id,photo_url:pendingPhoto,registered_at:now,updated_at:now},{onConflict:'worker_id'});
+      if(!r1.error)ok=true;else console.warn('face registration photo save',r1.error);
+      const r2=await s.from('workers').update({face_photo_url:pendingPhoto}).eq('id',w.id);
+      if(!r2.error)ok=true;else console.warn('worker face_photo_url save',r2.error);
+      pendingPhoto=null;pendingId='';pendingName='';pendingPhone='';return ok;
+    }catch(e){console.warn('worker avatar save',e);return false}
   }
 
-  loadOriginal(installEnquiryPatch);
+  async function getPhoto(id){
+    const s=S();if(!s||!id)return '';
+    try{const w=await s.from('workers').select('face_photo_url').eq('id',id).maybeSingle();if(w.data?.face_photo_url)return w.data.face_photo_url;}catch(e){}
+    try{const r=await s.from('worker_face_registrations').select('photo_url').eq('worker_id',id).maybeSingle();if(r.data?.photo_url)return r.data.photo_url;}catch(e){}
+    return '';
+  }
+
+  async function patchAvatars(){
+    const cards=document.querySelectorAll('#workersList .workerCard');if(!cards.length)return;
+    for(const card of cards){
+      let id='';card.querySelectorAll('button').forEach(b=>{const m=(b.getAttribute('onclick')||'').match(/editWorker\(['"]([^'"]+)['"]\)/);if(m)id=m[1]});
+      if(!id)continue;const url=await getPhoto(id);if(!url)continue;const av=card.querySelector('.avatar');if(!av)continue;
+      if(av.querySelector('img')?.getAttribute('src')===url)continue;
+      const img=document.createElement('img');img.src=url;img.alt='Worker Face';img.loading='lazy';img.style.cssText='width:100%;height:100%;object-fit:cover;border-radius:50%;display:block';img.onerror=()=>{img.remove()};av.replaceChildren(img);
+    }
+  }
+
+  async function refresh(){await save();await patchAvatars();}
+
+  function wrap(){
+    if(wrapped||typeof window.loadAll!=='function')return;
+    const old=window.loadAll;
+    window.loadAll=async function(){const r=await old.apply(this,arguments);setTimeout(patchAvatars,150);setTimeout(patchAvatars,800);setTimeout(patchAvatars,1800);return r;};
+    wrapped=true;
+  }
+
+  const t=setInterval(()=>{if(!wrapped)wrap();else clearInterval(t)},300);setTimeout(()=>clearInterval(t),15000);
+  document.addEventListener('click',e=>{if(e.target?.id==='workerFaceCapture'){setTimeout(refresh,1200);setTimeout(refresh,3000);setTimeout(patchAvatars,5000);}},true);
+  setInterval(patchAvatars,5000);
+
+  const enquiryScript=document.createElement('script');
+  enquiryScript.src='enquiry-controls.js';
+  enquiryScript.onload=()=>{};
+  document.body.appendChild(enquiryScript);
 })();

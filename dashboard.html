@@ -369,7 +369,6 @@ td strong{
   color:#ea720f;
 }
 
-.status.rejected,
 .status.cancelled{
   background:#feecec;
   color:#dc2626;
@@ -819,10 +818,6 @@ td strong{
       📅 Daily Update
     </button>
 
-    <button data-page="admin-settings">
-      ⚙️ Admin Settings
-    </button>
-
   </nav>
 
   <button class="logout" onclick="logout()">
@@ -945,13 +940,6 @@ td strong{
 
   </div>
 
-</section>
-
-
-<!-- ================= ADMIN SETTINGS ================= -->
-<section id="page-admin-settings" class="page">
-  <div class="sectionHead"><div><h2>⚙️ Admin Settings</h2><p>Admin account password बदलें</p></div></div>
-  <div class="card" style="max-width:620px"><h3 style="margin-top:0">🔐 Change Password</h3><p class="muted">पुराना password डालने की जरूरत नहीं है।</p><div class="formGrid"><div class="field full"><label for="adminNewPassword">नया Password</label><input id="adminNewPassword" type="password" minlength="6" autocomplete="new-password" placeholder="नया password"></div><div class="field full"><label for="adminConfirmPassword">नया Password दोबारा</label><input id="adminConfirmPassword" type="password" minlength="6" autocomplete="new-password" placeholder="नया password दोबारा डालें"></div></div><div class="modalActions"><button class="btn btn-primary" onclick="changeAdminPassword()">🔐 Change Password</button></div><div id="adminPasswordMessage" style="margin-top:14px"></div></div>
 </section>
 
 
@@ -1530,9 +1518,8 @@ td strong{
       <div class="field">
         <label>Status</label>
         <select id="paymentStatus">
-          <option value="pending">Pending</option>
           <option value="received">Received</option>
-          <option value="rejected">Rejected</option>
+          <option value="pending">Pending</option>
         </select>
       </div>
 
@@ -1694,7 +1681,6 @@ let enquiries = [];
 let projectUpdates = [];
 let profileMap = {};
 let workerAttendanceMap = {};
-let workerPendingMap = {};
 
 let currentPage = 'overview';
 
@@ -1891,8 +1877,7 @@ function showPage(page){
     enquiries:'📩 Customer Enquiries',
     workers:'👷 Workers',
     payments:'💰 Payments',
-    updates:'📅 Daily Update',
-    'admin-settings':'⚙️ Admin Settings'
+    updates:'📅 Daily Update'
 
   };
 
@@ -1990,12 +1975,6 @@ async function logout(){
     'index.html';
 
 }
-
-
-/* =========================================================
-   ADMIN PASSWORD SETTINGS
-========================================================= */
-async function changeAdminPassword(){const np=document.getElementById('adminNewPassword')?.value||'';const cp=document.getElementById('adminConfirmPassword')?.value||'';const msg=document.getElementById('adminPasswordMessage');if(!np||!cp){msg.innerHTML='<div class="status cancelled">❌ दोनों password भरें।</div>';return;}if(np.length<6){msg.innerHTML='<div class="status cancelled">❌ Password कम से कम 6 characters का रखें।</div>';return;}if(np!==cp){msg.innerHTML='<div class="status cancelled">❌ दोनों password एक जैसे नहीं हैं।</div>';return;}try{const {data,error}=await sb.auth.updateUser({password:np});if(error)throw error;if(!data?.user)throw new Error('Password update नहीं हुआ।');document.getElementById('adminNewPassword').value='';document.getElementById('adminConfirmPassword').value='';msg.innerHTML='<div class="status completed">✅ Admin password सफलतापूर्वक बदल गया।</div>';}catch(error){console.error('admin password update:',error);msg.innerHTML='<div class="status cancelled">❌ '+(error?.message||'Password बदलने में समस्या हुई।')+'</div>';}}
 
 
 /* =========================================================
@@ -2124,22 +2103,25 @@ async function loadCustomers(){
 ========================================================= */
 
 async function loadWorkers(){
+
   const {data,error}=await sb.from('workers').select('*').order('created_at',{ascending:false});
-  if(error){console.error('workers:',error);workers=[];workerAttendanceMap={};workerPendingMap={};return;}
-  workers=data||[]; workerAttendanceMap={}; workerPendingMap={};
+  if(error){console.error('workers:',error);workers=[];return;}
+  workers=data||[];
+  workerAttendanceMap={};
   try{
     const ar=await sb.from('worker_attendance').select('*');
-    if(ar.error){console.warn('Worker attendance unavailable',ar.error);return;}
-    (ar.data||[]).forEach(x=>{
-      const wid=x.worker_id||x.workerId;if(!wid)return;
-      const st=String(x.status||x.attendance||'').toLowerCase();
-      if(!workerAttendanceMap[wid])workerAttendanceMap[wid]={present:0,absent:0,total:0};
-      workerAttendanceMap[wid].total++;
-      if(['present','p','yes','1','full day','half day'].includes(st))workerAttendanceMap[wid].present++;
-      else if(['absent','a','no','0'].includes(st))workerAttendanceMap[wid].absent++;
-      if(st==='pending')workerPendingMap[wid]=x;
-    });
+    if(!ar.error){
+      (ar.data||[]).forEach(a=>{
+        const wid=a.worker_id||a.workerId;if(!wid)return;
+        if(!workerAttendanceMap[wid])workerAttendanceMap[wid]={present:0,absent:0,total:0};
+        const st=String(a.status||a.attendance||'').toLowerCase();
+        workerAttendanceMap[wid].total++;
+        if(['present','p','yes','1','full day','half day'].includes(st))workerAttendanceMap[wid].present++;
+        else if(['absent','a','no','0'].includes(st))workerAttendanceMap[wid].absent++;
+      });
+    }
   }catch(e){console.warn('Worker attendance unavailable',e);}
+
 }
 
 
@@ -3377,21 +3359,20 @@ function renderWorkers(){
   const box=document.getElementById('workersList');
   if(!workers.length){box.innerHTML='<div class="empty">कोई Worker नहीं मिला।</div>';return;}
   box.innerHTML=workers.map(w=>{
-    const name=w.name||w.worker_name||'Worker',role=w.work_role||w.role||w.designation||'—',wage=num(w.daily_rate ?? w.daily_wage ?? w.wage ?? w.daily_salary),phone=w.phone||w.mobile||'—';
-    const a=workerAttendanceMap[w.id],pending=workerPendingMap[w.id],attendance=a?`${a.present}/${a.total} days`:(w.present_days ?? w.attendance ?? w.attendance_status ?? '—');
-    const request=pending?`<div style="margin-top:15px;padding:14px;border:1px solid #e9d5ff;background:#faf5ff;border-radius:14px"><b style="color:#6b21a8">⏳ Attendance Approval Request</b><div style="margin-top:6px;color:#6b7280;font-size:13px">Date: ${esc(pending.attendance_date||'—')} ${pending.check_in?'• Face scan: '+esc(new Date(pending.check_in).toLocaleString('en-IN')):''}</div><div class="actions" style="margin-top:10px"><button class="btn btn-green btn-sm" onclick="approveWorkerAttendance('${esc(pending.id)}')">✅ Approve Present</button><button class="btn btn-red btn-sm" onclick="cancelWorkerAttendance('${esc(pending.id)}')">❌ Cancel / Absent</button></div></div>`:'';
-    return `<div class="workerCard"><div class="workerHead"><div class="avatar">${esc(name.charAt(0)).toUpperCase()}</div><div><h3>${esc(name)}</h3><p>${esc(role)}</p></div></div><div class="workerInfo"><div class="workerRow"><span>Mobile</span><strong>${esc(phone)}</strong></div><div class="workerRow"><span>Daily Wage</span><strong>${money(wage)}</strong></div><div class="workerRow"><span>Attendance</span><strong>${esc(attendance)}</strong></div><div class="workerRow"><span>Village</span><strong>${esc(w.village||'—')}</strong></div>${request}<div class="actions" style="margin-top:15px"><button class="btn btn-blue btn-sm" onclick="editWorker('${esc(w.id)}')">✏️ Edit</button><button class="btn btn-red btn-sm" onclick="deleteWorker('${esc(w.id)}')">🗑️ Delete</button></div></div></div>`;
+    const name=w.name||w.worker_name||'Worker';
+    const role=w.work_role||w.role||w.designation||'—';
+    const wage=num(w.daily_rate ?? w.daily_wage ?? w.wage ?? w.daily_salary);
+    const phone=w.phone||w.mobile||'—';
+    const a=workerAttendanceMap[w.id];
+    const attendance=a?`${a.present}/${a.total} days`:(w.present_days ?? w.attendance ?? w.attendance_status ?? '—');
+    return `<div class="workerCard"><div class="workerHead"><div class="avatar">${esc(name.charAt(0)).toUpperCase()}</div><div><h3>${esc(name)}</h3><p>${esc(role)}</p></div></div><div class="workerInfo">
+      <div class="workerRow"><span>Mobile</span><strong>${esc(phone)}</strong></div>
+      <div class="workerRow"><span>Daily Wage</span><strong>${money(wage)}</strong></div>
+      <div class="workerRow"><span>Attendance</span><strong>${esc(attendance)}</strong></div>
+      <div class="workerRow"><span>Village</span><strong>${esc(w.village||'—')}</strong></div>
+      <div class="actions" style="margin-top:15px"><button class="btn btn-blue btn-sm" onclick="editWorker('${esc(w.id)}')">✏️ Edit</button><button class="btn btn-red btn-sm" onclick="deleteWorker('${esc(w.id)}')">🗑️ Delete</button></div>
+    </div></div>`;
   }).join('');
-}
-async function approveWorkerAttendance(id){
-  if(!confirm('इस Worker की face attendance को Present approve करें?'))return;
-  const {error}=await sb.from('worker_attendance').update({status:'present',verification_status:'verified',verification_method:'face_recognition',updated_at:new Date().toISOString()}).eq('id',id).eq('status','pending');
-  if(error){toast('❌ Attendance approve नहीं हुई: '+error.message);return;} toast('✅ Attendance approved — Present'); await loadAll();
-}
-async function cancelWorkerAttendance(id){
-  if(!confirm('इस attendance request को Cancel करके Absent करना है?'))return;
-  const {error}=await sb.from('worker_attendance').update({status:'absent',verification_status:'failed',updated_at:new Date().toISOString()}).eq('id',id).eq('status','pending');
-  if(error){toast('❌ Attendance cancel नहीं हुई: '+error.message);return;} toast('❌ Attendance cancelled — Absent'); await loadAll();
 }
 
 
@@ -3720,118 +3701,366 @@ async function deleteWorker(id){
 ========================================================= */
 
 function renderPayments(){
-  let received=0, pending=0, rejected=0;
+
+  let received = 0;
+  let pending = 0;
+
+
   payments.forEach(p=>{
-    const amount=num(p.amount);
-    const st=String(p.status||'pending').toLowerCase();
-    if(st==='received') received+=amount;
-    else if(st==='rejected') rejected+=amount;
-    else pending+=amount;
+
+    const amount =
+      num(p.amount);
+
+
+    if(
+      String(
+        p.status || ''
+      ).toLowerCase()
+      === 'received'
+    ){
+
+      received += amount;
+
+    }else{
+
+      pending += amount;
+
+    }
+
   });
 
-  document.getElementById('paymentReceived').textContent=money(received);
-  document.getElementById('paymentPending').textContent=money(pending);
 
-  const tbody=document.getElementById('paymentsTable');
+  document.getElementById(
+    'paymentReceived'
+  ).textContent =
+    money(received);
+
+
+  document.getElementById(
+    'paymentPending'
+  ).textContent =
+    money(pending);
+
+
+  const tbody =
+    document.getElementById(
+      'paymentsTable'
+    );
+
+
   if(!payments.length){
-    tbody.innerHTML='<tr><td colspan="6"><div class="empty">कोई payment record नहीं मिला।</div></td></tr>';
+
+    tbody.innerHTML = `
+      <tr>
+        <td colspan="6">
+          <div class="empty">
+            कोई payment record नहीं मिला।
+          </div>
+        </td>
+      </tr>
+    `;
+
     return;
+
   }
 
-  tbody.innerHTML=payments.map(p=>{
-    const project=getProject(p.project_id);
-    const customer=getCustomer(p.customer_id || project?.customer_id);
-    const status=String(p.status||'pending').toLowerCase();
-    const statusHtml=status==='received'
-      ? '<span class="status received">✅ Received</span>'
-      : status==='rejected'
-        ? '<span class="status rejected">❌ Rejected</span>'
-        : '<span class="status pending">⏳ Pending</span>';
-    const actions = status==='pending'
-      ? `<div class="actions">
-          <button class="btn btn-green btn-sm" onclick="approvePayment('${esc(p.id)}')">✅ Approve</button>
-          <button class="btn btn-red btn-sm" onclick="rejectPayment('${esc(p.id)}')">❌ Cancel</button>
-          <button class="btn btn-blue btn-sm" onclick="editPayment('${esc(p.id)}')">✏️ Edit</button>
-          <button class="btn btn-red btn-sm" onclick="deletePayment('${esc(p.id)}')">🗑️ Delete</button>
-        </div>`
-      : `<div class="actions">
-          <button class="btn btn-blue btn-sm" onclick="editPayment('${esc(p.id)}')">✏️ Edit</button>
-          <button class="btn btn-red btn-sm" onclick="deletePayment('${esc(p.id)}')">🗑️ Delete</button>
-        </div>`;
-    return `<tr>
-      <td><strong>${esc(p.project_name||project?.project_name||'—')}</strong></td>
-      <td>${esc(p.customer_name||customer?.name||customer?.customer_name||'—')}</td>
-      <td><strong>${money(p.amount)}</strong></td>
-      <td>${esc(p.payment_date||p.date||'—')}</td>
-      <td>${statusHtml}</td>
-      <td>${actions}</td>
-    </tr>`;
-  }).join('');
+
+  tbody.innerHTML =
+    payments.map(p=>{
+
+      const project =
+        getProject(
+          p.project_id
+        );
+
+
+      const customer =
+        getCustomer(
+          p.customer_id
+        );
+
+
+      const status =
+        String(
+          p.status ||
+          'pending'
+        ).toLowerCase();
+
+
+      return `
+
+        <tr>
+
+          <td>
+            <strong>
+              ${esc(
+                p.project_name ||
+                project?.project_name ||
+                '—'
+              )}
+            </strong>
+          </td>
+
+          <td>
+            ${esc(
+              p.customer_name ||
+              customer?.name ||
+              customer?.customer_name ||
+              '—'
+            )}
+          </td>
+
+          <td>
+            <strong>
+              ${money(p.amount)}
+            </strong>
+          </td>
+
+          <td>
+            ${esc(
+              p.payment_date ||
+              p.date ||
+              '—'
+            )}
+          </td>
+
+          <td>
+
+            <span class="status ${esc(status)}">
+              ${status === 'received'
+                ? '✅ Received'
+                : '⏳ Pending'}
+            </span>
+
+          </td>
+
+          <td>
+
+            <div class="actions">
+
+              <button
+                class="btn btn-blue btn-sm"
+                onclick="editPayment('${esc(p.id)}')">
+
+                ✏️ Edit
+
+              </button>
+
+              <button
+                class="btn btn-red btn-sm"
+                onclick="deletePayment('${esc(p.id)}')">
+
+                🗑️ Delete
+
+              </button>
+
+            </div>
+
+          </td>
+
+        </tr>
+
+      `;
+
+    }).join('');
+
 }
 
-async function approvePayment(id){
-  if(!confirm('इस payment को Approve करके Received करना है?')) return;
-  const {error}=await sb.from('payments').update({status:'received'}).eq('id',id).eq('status','pending');
-  if(error){toast('❌ Payment approve नहीं हुआ: '+error.message);return;}
-  toast('✅ Payment approved — Received');
-  await loadAll();
-}
-
-async function rejectPayment(id){
-  if(!confirm('इस payment को Cancel करके Rejected करना है?')) return;
-  const {error}=await sb.from('payments').update({status:'rejected'}).eq('id',id).eq('status','pending');
-  if(error){toast('❌ Payment reject नहीं हुआ: '+error.message);return;}
-  toast('❌ Payment rejected');
-  await loadAll();
-}
 
 function openPaymentModal(id=''){
-  document.getElementById('paymentForm').reset();
-  document.getElementById('paymentId').value='';
+
+  document.getElementById(
+    'paymentForm'
+  ).reset();
+
+
+  document.getElementById(
+    'paymentId'
+  ).value = '';
+
+
   populateSelects();
-  document.getElementById('paymentDate').value=today();
-  document.getElementById('paymentStatus').value='pending';
+
+
+  document.getElementById(
+    'paymentDate'
+  ).value =
+    today();
+
 
   if(id){
-    const p=payments.find(x=>String(x.id)===String(id));
-    if(!p) return;
-    document.getElementById('paymentId').value=p.id;
-    document.getElementById('paymentProject').value=p.project_id||'';
-    const project=getProject(p.project_id);
-    document.getElementById('paymentCustomer').value=p.customer_id||project?.customer_id||'';
-    document.getElementById('paymentAmount').value=p.amount||'';
-    document.getElementById('paymentDate').value=p.payment_date||p.date||today();
-    document.getElementById('paymentStatus').value=p.status||'pending';
-    document.getElementById('paymentNotes').value=p.notes||'';
+
+    const p =
+      payments.find(
+        x =>
+          String(x.id) ===
+          String(id)
+      );
+
+
+    if(!p)
+      return;
+
+
+    document.getElementById(
+      'paymentId'
+    ).value =
+      p.id;
+
+
+    document.getElementById(
+      'paymentProject'
+    ).value =
+      p.project_id || '';
+
+
+    const paymentProjectRecord=getProject(p.project_id);
+    document.getElementById(
+      'paymentCustomer'
+    ).value =
+      paymentProjectRecord?.customer_id || '';
+
+
+    document.getElementById(
+      'paymentAmount'
+    ).value =
+      p.amount || '';
+
+
+    document.getElementById(
+      'paymentDate'
+    ).value =
+      p.payment_date ||
+      p.date ||
+      today();
+
+
+    document.getElementById(
+      'paymentStatus'
+    ).value =
+      p.status ||
+      'received';
+
+
+    document.getElementById(
+      'paymentNotes'
+    ).value =
+      p.notes || '';
+
   }
-  openModal('paymentModal');
+
+
+  openModal(
+    'paymentModal'
+  );
+
 }
 
-function editPayment(id){ openPaymentModal(id); }
+
+function editPayment(id){
+
+  openPaymentModal(id);
+
+}
 
 
-document.getElementById('paymentForm').addEventListener('submit', async e=>{
-  e.preventDefault();
-  const id=document.getElementById('paymentId').value;
-  const projectId=document.getElementById('paymentProject').value||null;
-  const project=getProject(projectId);
-  const customerId=document.getElementById('paymentCustomer').value||project?.customer_id||null;
-  const payload={
-    project_id:projectId,
-    customer_id:customerId,
-    amount:num(document.getElementById('paymentAmount').value),
-    payment_date:document.getElementById('paymentDate').value||null,
-    status:document.getElementById('paymentStatus').value||'pending',
-    notes:document.getElementById('paymentNotes').value.trim()
-  };
-  let result;
-  if(id) result=await sb.from('payments').update(payload).eq('id',id);
-  else result=await sb.from('payments').insert(payload);
-  if(result.error){toast('❌ Payment save नहीं हुआ: '+result.error.message);return;}
-  closeModal('paymentModal');
-  toast(id?'✅ Payment updated':'✅ Payment added as Pending');
-  await loadAll();
-});
+document.getElementById(
+  'paymentForm'
+).addEventListener(
+  'submit',
+  async e=>{
+
+    e.preventDefault();
+
+
+    const id =
+      document.getElementById(
+        'paymentId'
+      ).value;
+
+
+    const payload = {
+
+      project_id:
+        document.getElementById(
+          'paymentProject'
+        ).value || null,
+
+      amount:
+        num(
+          document.getElementById(
+            'paymentAmount'
+          ).value
+        ),
+
+      payment_date:
+        document.getElementById(
+          'paymentDate'
+        ).value || null,
+
+      status:
+        document.getElementById(
+          'paymentStatus'
+        ).value,
+
+      notes:
+        document.getElementById(
+          'paymentNotes'
+        ).value.trim()
+
+    };
+
+
+    let result;
+
+
+    if(id){
+
+      result =
+        await sb
+          .from('payments')
+          .update(payload)
+          .eq('id',id);
+
+    }else{
+
+      result =
+        await sb
+          .from('payments')
+          .insert(payload);
+
+    }
+
+
+    if(result.error){
+
+      toast(
+        '❌ Payment save नहीं हुआ: ' +
+        result.error.message
+      );
+
+      return;
+
+    }
+
+
+    closeModal(
+      'paymentModal'
+    );
+
+
+    toast(
+      id
+        ? '✅ Payment updated'
+        : '✅ Payment added'
+    );
+
+
+    await loadAll();
+
+  }
+);
+
 
 async function deletePayment(id){
 
@@ -4560,44 +4789,3 @@ document
 <script src="worker-avatar.js"></script>
 </body>
 </html>
-
-
-<script>
-/* BALAJI CUSTOMER COLUMNS NORMALIZER */
-(()=>{
-  'use strict';
-  function normalizeCustomerColumns(){
-    const tb=document.getElementById('customersTable');
-    const table=tb?.closest('table');
-    if(!tb||!table)return;
-    const head=table.querySelector('thead tr');
-    if(head){
-      const projects=[...head.children].filter(x=>x.textContent.trim().toLowerCase()==='projects');
-      projects.slice(1).forEach(x=>x.remove());
-      const actions=[...head.children].filter(x=>x.textContent.trim().toLowerCase()==='actions');
-      if(actions.length){
-        actions.slice(1).forEach(x=>x.remove());
-        head.appendChild(actions[0]);
-      }
-    }
-    tb.querySelectorAll('tr').forEach(row=>{
-      const action=[...row.children].find(td=>td.querySelector('[onclick*="editCustomer"],[onclick*="deleteCustomer"]'));
-      if(!action)return;
-      const candidates=[...row.children].filter(td=>td.hasAttribute('data-customer-projects-cell')||td.hasAttribute('data-project-cell'));
-      let project=candidates.find(td=>td.querySelector('button'))||candidates.find(td=>td.textContent.trim())||candidates[0];
-      if(!project){
-        const heads=[...table.querySelectorAll('thead tr th')];
-        const pi=heads.findIndex(th=>th.textContent.trim().toLowerCase()==='projects');
-        if(pi>=0)project=row.children[pi];
-      }
-      candidates.filter(td=>td!==project).forEach(td=>td.remove());
-      if(project&&project!==action)row.insertBefore(project,action);
-      if(action!==row.lastElementChild)row.appendChild(action);
-    });
-  }
-  normalizeCustomerColumns();
-  setTimeout(normalizeCustomerColumns,300);
-  setTimeout(normalizeCustomerColumns,1000);
-  setInterval(normalizeCustomerColumns,2500);
-})();
-</script>
