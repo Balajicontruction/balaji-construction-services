@@ -59,26 +59,27 @@ async function loadWorkerFinance(){
 window.loadWorkerFinance=loadWorkerFinance;
 let tries=0;const timer=setInterval(()=>{const box=document.getElementById('attendanceBox');if(box&&!box.classList.contains('hidden')){loadWorkerFinance();clearInterval(timer);}if(++tries>60)clearInterval(timer);},500);
 
-// Approval workflow: keep the existing login, camera and face-registration flow intact;
-// only change the final attendance write from immediate Present to Admin Approval Pending.
+// Make the existing global-lexical worker/stream values available to the approval override.
+try{Object.defineProperty(window,'worker',{configurable:true,get:()=>worker});Object.defineProperty(window,'stream',{configurable:true,get:()=>stream});}catch(e){}
+
 window.verifyAndMark=async function(){
- if(!window.worker||!window.stream)return typeof msg==='function'&&msg('attendanceMsg','पहले Camera Start करें।','error');
+ if(!worker||!stream)return typeof msg==='function'&&msg('attendanceMsg','पहले Camera Start करें।','error');
  const btn=document.getElementById('verifyBtn');if(btn)btn.disabled=true;
  const video=document.getElementById('video');
  try{
   document.getElementById('faceStatus').textContent='आपके चेहरे का मिलान हो रहा है...';
   const detections=await faceapi.detectAllFaces(video,new faceapi.TinyFaceDetectorOptions({inputSize:320,scoreThreshold:.55})).withFaceLandmarks().withFaceDescriptors();
   if(detections.length!==1){if(btn)btn.disabled=false;document.getElementById('faceStatus').textContent=detections.length>1?'एक समय में केवल एक चेहरा रखें।':'चेहरा साफ और सामने रखें।';return typeof msg==='function'&&msg('attendanceMsg','एक ही चेहरा camera में साफ दिखाई देना चाहिए।','error');}
-  const distanceValue=faceapi.euclideanDistance(detections[0].descriptor,new Float32Array(window.worker.face_descriptor));
+  const distanceValue=faceapi.euclideanDistance(detections[0].descriptor,new Float32Array(worker.face_descriptor));
   if(distanceValue>.50){if(btn)btn.disabled=false;document.getElementById('faceStatus').textContent='❌ Face Match Failed';return typeof msg==='function'&&msg('attendanceMsg','Face verification असफल। यह चेहरा registered Worker से match नहीं हुआ।','error');}
   document.getElementById('faceStatus').textContent='✅ Face Match सफल';
   const d=new Date().toISOString().slice(0,10);
-  const {data:result,error}=await FACE_SB.rpc('submit_worker_attendance_for_approval',{p_phone:window.worker.phone,p_worker_id:window.worker.id,p_attendance_date:d,p_check_in:new Date().toISOString(),p_verification_method:'face_recognition',p_device_info:navigator.userAgent});
+  const {data:result,error}=await FACE_SB.rpc('submit_worker_attendance_for_approval',{p_phone:worker.phone,p_worker_id:worker.id,p_attendance_date:d,p_check_in:new Date().toISOString(),p_verification_method:'face_recognition',p_device_info:navigator.userAgent});
   if(error){if(btn)btn.disabled=false;return typeof msg==='function'&&msg('attendanceMsg','Attendance request save नहीं हुई: '+error.message,'error');}
   if(!result?.ok){if(btn)btn.disabled=false;return typeof msg==='function'&&msg('attendanceMsg',result?.reason==='already_marked'?'आज की attendance request पहले ही भेजी जा चुकी है।':'Attendance request save नहीं हुई।','error');}
   if(typeof msg==='function')msg('attendanceMsg','✅ Face verification सफल। Attendance request Admin को भेज दी गई है। Admin approve करने के बाद ही Present लगेगा।','success');
   document.getElementById('faceStatus').textContent='⏳ Admin Approval Pending';
-  if(window.stream){window.stream.getTracks().forEach(t=>t.stop());window.stream=null;}
+  if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}
   video.srcObject=null;
   if(typeof window.checkToday==='function')await window.checkToday();
   if(typeof loadWorkerFinance==='function')await loadWorkerFinance();
@@ -87,9 +88,9 @@ window.verifyAndMark=async function(){
 };
 
 window.checkToday=async function(){
- if(!window.worker)return;
+ if(!worker)return;
  const d=new Date().toISOString().slice(0,10);
- const {data,error}=await FACE_SB.from('worker_attendance').select('status,check_in,verification_status,check_in_face_verified').eq('worker_id',window.worker.id).eq('attendance_date',d).maybeSingle();
+ const {data,error}=await FACE_SB.from('worker_attendance').select('status,check_in,verification_status,check_in_face_verified').eq('worker_id',worker.id).eq('attendance_date',d).maybeSingle();
  if(error)return typeof msg==='function'&&msg('attendanceMsg',error.message,'error');
  const verifyBtn=document.getElementById('verifyBtn');
  if(data){
