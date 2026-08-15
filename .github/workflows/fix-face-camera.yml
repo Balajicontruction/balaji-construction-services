@@ -32,13 +32,10 @@ jobs:
 
       - name: Normalize customer Projects and Actions columns
         run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          p=Path('worker-avatar.js')
-          s=p.read_text(encoding='utf-8')
-          marker='/* BALAJI — Customer Records only: exactly one Projects column + one Actions column. */'
-          if marker not in s:
-              s += r'''\n\n/* BALAJI — Customer Records only: exactly one Projects column + one Actions column. */
+          if ! grep -q 'BALAJI — Customer Records only: exactly one Projects column + one Actions column.' worker-avatar.js; then
+            cat >> worker-avatar.js <<'JS'
+
+/* BALAJI — Customer Records only: exactly one Projects column + one Actions column. */
 (()=>{
   'use strict';
   function normalize(){
@@ -75,9 +72,8 @@ jobs:
   setTimeout(normalize,1000);
   setInterval(normalize,2500);
 })();
-'''
-              p.write_text(s,encoding='utf-8')
-          PY
+JS
+          fi
 
       - name: Commit fixes
         run: |
