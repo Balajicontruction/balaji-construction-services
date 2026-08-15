@@ -1,0 +1,55 @@
+name: Fix Customer Actions Column
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Move customer Edit/Delete into Actions column only
+        shell: bash
+        run: |
+          cat >> worker-avatar.js <<'JS'
+
+/* BALAJI — Customer Records only: keep Projects column unchanged and force Edit/Delete into Actions column. */
+(()=>{
+  'use strict';
+  function fix(){
+    const tbody=document.getElementById('customersTable');
+    const table=tbody?.closest('table');
+    if(!tbody||!table)return;
+    const head=table.querySelector('thead tr');
+    if(head){
+      const actionHead=[...head.children].find(x=>x.textContent.trim().toLowerCase()==='actions');
+      if(actionHead && actionHead!==head.lastElementChild)head.appendChild(actionHead);
+    }
+    tbody.querySelectorAll('tr').forEach(row=>{
+      const project=row.querySelector('[data-customer-projects-cell]');
+      const cells=[...row.children];
+      const action=cells.find(td=>td.querySelector('[onclick*="editCustomer"], [onclick*="deleteCustomer"]'));
+      if(!action)return;
+      if(project && project!==action)row.insertBefore(project,action);
+      if(action!==row.lastElementChild)row.appendChild(action);
+    });
+  }
+  setInterval(fix,1000);
+  document.addEventListener('click',e=>{if(e.target?.closest?.('[data-page="customers"]')){setTimeout(fix,200);setTimeout(fix,900)}});
+  setTimeout(fix,500);
+})();
+JS
+          git config user.name "Balajicontruction"
+          git config user.email "satpalnehra30@gmail.com"
+          git add worker-avatar.js
+          git diff --cached --quiet && exit 0 || true
+          git commit -m "Move customer actions into Actions column"
+          git push
+          git rm .github/workflows/fix-customer-actions-column.yml
+          git commit -m "Remove temporary customer actions workflow"
+          git push
