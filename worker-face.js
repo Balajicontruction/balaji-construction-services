@@ -39,6 +39,97 @@ window.openWorkerFaceVerification=function(workerId){ensureVerifyModal();const w
 function addVerifyButtons(){const cards=[...document.querySelectorAll('#workersList .workerCard')];cards.forEach((card,i)=>{const edit=card.querySelector('button[onclick*="editWorker("]');const m=edit?.getAttribute('onclick')?.match(/editWorker\(['\"]([^'\"]+)/);const w=m?getWorker(m[1]):getWorkers()[i];if(!w)return;const actions=card.querySelector('.actions');if(!actions||actions.querySelector('.workerFaceVerifyBtn'))return;const b=document.createElement('button');b.type='button';b.className='btn btn-dark btn-sm workerFaceVerifyBtn';b.textContent='🔐 Verify Face';b.onclick=()=>window.openWorkerFaceVerification(w.id);actions.insertBefore(b,actions.firstChild)})}
 async function refreshAdminAttendanceDisplay(){if(!SB)return;try{const r=await SB.from('worker_attendance').select('worker_id,status,attendance_date');if(r.error){console.warn('Admin worker attendance:',r.error);return}const map={};(r.data||[]).forEach(a=>{const id=String(a.worker_id||'');if(!id)return;if(!map[id])map[id]={present:0,total:0};map[id].total++;const s=String(a.status||'').toLowerCase();if(['present','p','yes','1','full day','half day'].includes(s))map[id].present++});document.querySelectorAll('#workersList .workerCard').forEach(card=>{const btn=card.querySelector('button[onclick*="editWorker("]');const m=btn?.getAttribute('onclick')?.match(/editWorker\(['\"]([^'\"]+)/);const id=m?.[1];if(!id)return;const row=[...card.querySelectorAll('.workerRow')].find(x=>x.querySelector('span')?.textContent.trim().toLowerCase()==='attendance');if(!row)return;const a=map[String(id)];row.querySelector('strong').textContent=a?`${a.present}/${a.total} days`:'0/0 days'});}catch(e){console.warn('Admin attendance display:',e)}}
 function patchRenderWorkers(){if(typeof window.renderWorkers!=='function'||window.renderWorkers.__faceRenderPatched)return;const original=window.renderWorkers;const wrapped=function(){original();setTimeout(addVerifyButtons,60);setTimeout(refreshAdminAttendanceDisplay,80)};wrapped.__faceRenderPatched=true;window.renderWorkers=wrapped}
-async function boot(){for(let i=0;i<80;i++){if(window.sb&&document.getElementById('workerForm'))break;await new Promise(r=>setTimeout(r,100))}await refreshWorkerCache();ensureFaceUI();installSaveGuard();patchOpen();ensureVerifyModal();patchRenderWorkers();setTimeout(()=>{patchOpen();patchRenderWorkers();addVerifyButtons();setupFaceState();refreshAdminAttendanceDisplay()},300);const old=window.loadAll;if(old&&!old.__faceLoadWrapped){const wrapped=async function(...args){const r=await old.apply(this,args);await new Promise(r=>setTimeout(r,80));await refreshWorkerCache();addVerifyButtons();await refreshAdminAttendanceDisplay();return r};wrapped.__faceLoadWrapped=true;window.loadAll=wrapped}}
+
+/* =========================================================
+   DATE-WISE WORKER ATTENDANCE DETAILS
+   Attendance row in Admin Workers is clickable. This is an
+   add-on only; Worker Add/Save/Face Registration is untouched.
+========================================================= */
+function attendanceDate(a){
+  return a?.attendance_date || a?.date || a?.work_date || a?.day || '';
+}
+function attendanceIsPresent(a){
+  const s=String(a?.status||'').trim().toLowerCase();
+  return ['present','p','yes','1','full day'].includes(s);
+}
+function attendanceIsAbsent(a){
+  const s=String(a?.status||'').trim().toLowerCase();
+  return ['absent','a','no','0'].includes(s);
+}
+function attendanceLabel(a){
+  if(attendanceIsPresent(a)) return '🟢 Present';
+  if(attendanceIsAbsent(a)) return '🔴 Absent';
+  return a?.status ? String(a.status) : '—';
+}
+function attendancePrettyDate(value){
+  if(!value)return 'Date नहीं मिली';
+  const d=new Date(String(value).slice(0,10)+'T00:00:00');
+  if(Number.isNaN(d.getTime()))return String(value);
+  return d.toLocaleDateString('en-IN',{day:'2-digit',month:'2-digit',year:'numeric'});
+}
+function ensureAttendanceDetailModal(){
+  if(document.getElementById('workerAttendanceDetailModal'))return;
+  const m=document.createElement('div');
+  m.className='modal';
+  m.id='workerAttendanceDetailModal';
+  m.innerHTML=`<div class="modalBox" style="max-width:900px"><div class="modalHead"><div><h3 id="workerAttendanceDetailTitle">📅 Worker Attendance</h3><div id="workerAttendanceDetailSub" style="color:#60738a;margin-top:5px"></div></div><button class="close" type="button">×</button></div><div id="workerAttendanceSummary" class="grid grid3" style="margin-bottom:18px"></div><div class="tableWrap"><table style="min-width:620px"><thead><tr><th>Date</th><th>Status</th><th>Day</th></tr></thead><tbody id="workerAttendanceDetailBody"><tr><td colspan="3"><div class="empty">Attendance load हो रही है...</div></td></tr></tbody></table></div></div>`;
+  document.body.appendChild(m);
+  m.querySelector('.close').onclick=()=>m.classList.remove('show');
+  m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('show')});
+}
+async function openWorkerAttendanceDetails(workerId){
+  ensureAttendanceDetailModal();
+  const w=getWorker(workerId)||getWorkers().find(x=>String(x.id)===String(workerId));
+  const modal=document.getElementById('workerAttendanceDetailModal');
+  const title=document.getElementById('workerAttendanceDetailTitle');
+  const sub=document.getElementById('workerAttendanceDetailSub');
+  const summary=document.getElementById('workerAttendanceSummary');
+  const body=document.getElementById('workerAttendanceDetailBody');
+  const name=w?.name||w?.worker_name||'Worker';
+  title.textContent=`📅 ${name} — Attendance Details`;
+  sub.textContent='Date-wise पूरी attendance';
+  summary.innerHTML=`<div class="stat" style="min-height:105px;padding:16px"><div class="statTitle">कुल दिन</div><div class="statValue blue" style="font-size:27px;margin-top:12px">—</div></div><div class="stat" style="min-height:105px;padding:16px"><div class="statTitle">🟢 Present</div><div class="statValue green" style="font-size:27px;margin-top:12px">—</div></div><div class="stat" style="min-height:105px;padding:16px"><div class="statTitle">🔴 Absent</div><div class="statValue red" style="font-size:27px;margin-top:12px">—</div></div>`;
+  body.innerHTML='<tr><td colspan="3"><div class="empty">Attendance load हो रही है...</div></td></tr>';
+  modal.classList.add('show');
+  if(!SB){body.innerHTML='<tr><td colspan="3"><div class="empty">Supabase उपलब्ध नहीं है।</div></td></tr>';return;}
+  try{
+    const r=await SB.from('worker_attendance').select('*').eq('worker_id',workerId);
+    if(r.error)throw r.error;
+    const rows=(r.data||[]).filter(a=>attendanceDate(a)).sort((a,b)=>String(attendanceDate(b)).localeCompare(String(attendanceDate(a))));
+    const present=rows.filter(attendanceIsPresent).length;
+    const absent=rows.filter(attendanceIsAbsent).length;
+    const total=rows.length;
+    summary.innerHTML=`<div class="stat" style="min-height:105px;padding:16px"><div class="statTitle">कुल Attendance Days</div><div class="statValue blue" style="font-size:27px;margin-top:12px">${total}</div></div><div class="stat" style="min-height:105px;padding:16px"><div class="statTitle">🟢 Present / Attended</div><div class="statValue green" style="font-size:27px;margin-top:12px">${present}</div></div><div class="stat" style="min-height:105px;padding:16px"><div class="statTitle">🔴 Absent</div><div class="statValue red" style="font-size:27px;margin-top:12px">${absent}</div></div>`;
+    if(!rows.length){body.innerHTML='<tr><td colspan="3"><div class="empty">इस Worker की attendance अभी दर्ज नहीं है।</div></td></tr>';return;}
+    body.innerHTML=rows.map((a,i)=>{const d=attendanceDate(a);const dayName=new Date(String(d).slice(0,10)+'T00:00:00').toLocaleDateString('en-IN',{weekday:'long'});const cls=attendanceIsPresent(a)?'completed':attendanceIsAbsent(a)?'cancelled':'pending';return `<tr><td><strong>${esc(attendancePrettyDate(d))}</strong></td><td><span class="status ${cls}">${esc(attendanceLabel(a))}</span></td><td>${esc(dayName)}</td></tr>`}).join('');
+  }catch(e){console.error('Worker attendance details:',e);body.innerHTML=`<tr><td colspan="3"><div class="empty">❌ Attendance details नहीं मिली: ${esc(e.message||'Unknown error')}</div></td></tr>`;}
+}
+function installAttendanceClick(){
+  const box=document.getElementById('workersList');
+  if(!box||box.__attendanceClickInstalled)return;
+  box.__attendanceClickInstalled=true;
+  box.addEventListener('click',e=>{
+    const row=e.target.closest('.workerRow');
+    if(!row||!box.contains(row))return;
+    const label=row.querySelector('span')?.textContent.trim().toLowerCase();
+    if(label!=='attendance')return;
+    const card=row.closest('.workerCard');
+    const edit=card?.querySelector('button[onclick*="editWorker("]');
+    const m=edit?.getAttribute('onclick')?.match(/editWorker\(['\"]([^'\"]+)/);
+    if(m?.[1]){e.preventDefault();openWorkerAttendanceDetails(m[1]);}
+  });
+  box.addEventListener('mousemove',e=>{const row=e.target.closest('.workerRow');if(row&&row.querySelector('span')?.textContent.trim().toLowerCase()==='attendance')row.style.cursor='pointer';});
+}
+function addAttendanceHint(){
+  document.querySelectorAll('#workersList .workerCard .workerRow').forEach(row=>{if(row.querySelector('span')?.textContent.trim().toLowerCase()==='attendance'){row.title='Click करके date-wise attendance देखें';row.style.cursor='pointer';}});
+}
+function patchRenderWorkersAttendance(){
+  if(typeof window.renderWorkers!=='function'||window.renderWorkers.__attendancePatched)return;
+  const original=window.renderWorkers;
+  const wrapped=function(){original();setTimeout(installAttendanceClick,30);setTimeout(addAttendanceHint,50)};
+  wrapped.__attendancePatched=true;
+  window.renderWorkers=wrapped;
+}
+async function boot(){for(let i=0;i<80;i++){if(window.sb&&document.getElementById('workerForm'))break;await new Promise(r=>setTimeout(r,100))}await refreshWorkerCache();ensureFaceUI();installSaveGuard();patchOpen();ensureVerifyModal();patchRenderWorkers();patchRenderWorkersAttendance();setTimeout(()=>{patchOpen();patchRenderWorkers();patchRenderWorkersAttendance();addVerifyButtons();setupFaceState();refreshAdminAttendanceDisplay();installAttendanceClick();addAttendanceHint()},300);const old=window.loadAll;if(old&&!old.__faceLoadWrapped){const wrapped=async function(...args){const r=await old.apply(this,args);await new Promise(r=>setTimeout(r,80));await refreshWorkerCache();addVerifyButtons();await refreshAdminAttendanceDisplay();installAttendanceClick();addAttendanceHint();return r};wrapped.__faceLoadWrapped=true;window.loadAll=wrapped}}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();window.addEventListener('beforeunload',()=>{stopRegisterCamera();stopVerifyCamera()});
 })();
