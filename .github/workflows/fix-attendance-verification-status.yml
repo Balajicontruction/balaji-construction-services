@@ -12,12 +12,56 @@ jobs:
       - uses: actions/checkout@v4
       - name: Patch dashboard
         run: python3 .github/patches/fix-attendance-verification-status.py
+      - name: Normalize customer Projects and Actions columns
+        run: |
+          if ! grep -q 'BALAJI — Customer Records only: exactly one Projects column + one Actions column.' worker-avatar.js; then
+            cat >> worker-avatar.js <<'JS'
+
+/* BALAJI — Customer Records only: exactly one Projects column + one Actions column. */
+(()=>{
+  'use strict';
+  function normalize(){
+    const tb=document.getElementById('customersTable');
+    const table=tb?.closest('table');
+    if(!tb||!table)return;
+    const head=table.querySelector('thead tr');
+    if(head){
+      const projectHeads=[...head.children].filter(x=>x.textContent.trim().toLowerCase()==='projects');
+      projectHeads.slice(1).forEach(x=>x.remove());
+      const actionHeads=[...head.children].filter(x=>x.textContent.trim().toLowerCase()==='actions');
+      if(actionHeads.length){
+        actionHeads.slice(1).forEach(x=>x.remove());
+        head.appendChild(actionHeads[0]);
+      }
+    }
+    tb.querySelectorAll('tr').forEach(row=>{
+      const action=[...row.children].find(td=>td.querySelector('[onclick*="editCustomer"],[onclick*="deleteCustomer"]'));
+      if(!action)return;
+      const markedProjects=[...row.children].filter(td=>td.hasAttribute('data-customer-projects-cell')||td.hasAttribute('data-project-cell'));
+      let project=markedProjects.find(td=>td.hasAttribute('data-customer-projects-cell'))||markedProjects.find(td=>td.hasAttribute('data-project-cell'));
+      if(!project){
+        const heads=[...table.querySelectorAll('thead tr th')];
+        const pi=heads.findIndex(th=>th.textContent.trim().toLowerCase()==='projects');
+        if(pi>=0)project=row.children[pi];
+      }
+      markedProjects.filter(td=>td!==project).forEach(td=>td.remove());
+      if(project&&project!==action)row.insertBefore(project,action);
+      if(action!==row.lastElementChild)row.appendChild(action);
+    });
+  }
+  normalize();
+  setTimeout(normalize,300);
+  setTimeout(normalize,1000);
+  setInterval(normalize,2500);
+})();
+JS
+          fi
       - name: Commit dashboard fix
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add dashboard.html
+          git add dashboard.html worker-avatar.js
           if ! git diff --cached --quiet; then
-            git commit -m 'Fix worker attendance approval status values'
+            git commit -m 'Normalize customer Projects and Actions columns'
             git push
           fi
