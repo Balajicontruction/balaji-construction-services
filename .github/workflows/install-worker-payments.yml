@@ -10,19 +10,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Inject worker payment script into dashboard
+      - name: Ensure worker payment script is present
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
           p=Path('dashboard.html')
           s=p.read_text(encoding='utf-8')
-          tag='<script src="worker-payments.js"></script>'
-          if tag not in s:
-              marker='<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>'
-              if marker not in s:
-                  raise SystemExit('dashboard injection marker not found')
-              s=s.replace(marker,tag+'\n'+marker,1)
-              p.write_text(s,encoding='utf-8')
+          if re.search(r'<script\s+src="worker-payments\.js(?:\?[^\"]*)?"></script>', s):
+              raise SystemExit(0)
+          marker='<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>'
+          if marker not in s:
+              raise SystemExit('dashboard injection marker not found')
+          s=s.replace(marker,'<script src="worker-payments.js?v=20260815-payfix5"></script>\n'+marker,1)
+          p.write_text(s,encoding='utf-8')
           PY
       - name: Commit dashboard injection
         run: |
