@@ -14,53 +14,38 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Patch payment button and worker photo mapping
+      - name: Append safe worker-card UI layer
         run: |
           python - <<'PY'
           from pathlib import Path
-          import re
 
           p = Path('worker-payments.js')
           s = p.read_text(encoding='utf-8')
+          marker = '/* WORKER CARD PAYMENT UI LAYER v2 */'
 
-          # 1) Keep the existing worker Add/Save/Face/Attendance code untouched.
-          # Only improve the payment add-on's read-only face-photo mapping.
-          old = "try{const r=await s.from('worker_face_registrations').select('worker_id,photo_url');faceRows=r.error?[]:(r.data||[]);const fm={};faceRows.forEach(x=>{if(x.photo_url)fm[String(x.worker_id)]=x.photo_url});workersCache.forEach(w=>{w.face_photo_url=fm[String(w.id)]||w.face_photo_url||''})}catch(e){faceRows=[]}"
-          new = "try{const r=await s.from('worker_face_registrations').select('*');faceRows=r.error?[]:(r.data||[]);const fm={};faceRows.forEach(x=>{const photo=x.photo_url||x.image_url||x.photo||x.face_image||x.face_image_url||x.snapshot_url||x.image_data||x.face_data||'';if(photo)fm[String(x.worker_id||x.workerId)]=photo});workersCache.forEach(w=>{w.face_photo_url=fm[String(w.id)]||w.face_photo_url||''})}catch(e){faceRows=[]}"
-          if old not in s:
-              raise SystemExit('face mapping marker not found')
-          s = s.replace(old, new, 1)
+          if marker not in s:
+              layer = r'''
 
-          # 2) Add the PAYMENT button next to the worker name, matching the supplied design.
-          pattern = r"function patchCards\(\)\{.*?\}\nfunction showPaymentModal"
-          replacement = r'''function patchCards(){
-           const box=document.getElementById('workersList');if(!box)return;
-           [...box.querySelectorAll('.workerCard')].forEach((card,i)=>{
-             const w=cardWorker(card,i);if(!w)return;
-             const avatar=card.querySelector('.workerHead .avatar'),img=imageFor(w);
-             if(avatar&&img){const safe=esc(img);avatar.outerHTML=`<img class="workerProfilePhoto" src="${safe}" alt="${esc(w.name||w.worker_name||'Worker')}" loading="lazy">`}
-             card.querySelector('[data-worker-payment]')?.remove();
-             const nameBlock=card.querySelector('.workerHead h3');
-             if(nameBlock){nameBlock.parentElement.querySelector('.workerNamePaymentBtn')?.remove();nameBlock.insertAdjacentHTML('afterend',`<button type="button" class="workerNamePaymentBtn" onclick="adminWorkerPayment('${esc(w.id)}')">💰 PAYMENT</button>`)}
-             const actions=card.querySelector('.actions');
-             if(actions)actions.insertAdjacentHTML('beforebegin',panelHTML(w));
-           })
-          }
-          function showPaymentModal'''
-          s2, n = re.subn(pattern, replacement, s, count=1, flags=re.S)
-          if n != 1:
-              raise SystemExit('patchCards marker not found')
-          s = s2
-
-          # 3) Small CSS only for the new PAYMENT button beside the worker name.
-          css_marker = ".workerPaymentBox{margin-top:16px;"
-          css = ".workerNamePaymentBtn{display:inline-flex;align-items:center;justify-content:center;margin-top:7px;padding:7px 14px;border:0;border-radius:10px;background:#ff7f1f;color:#fff;font-weight:900;font-size:12px;cursor:pointer;box-shadow:0 2px 7px rgba(255,127,31,.22)}.workerNamePaymentBtn:hover{filter:brightness(.96)}\n"
-          if css not in s:
-              if css_marker not in s:
-                  raise SystemExit('CSS marker not found')
-              s = s.replace(css_marker, css + css_marker, 1)
-
-          p.write_text(s, encoding='utf-8')
+          /* WORKER CARD PAYMENT UI LAYER v2 */
+          (()=>{
+            'use strict';
+            const esc2=v=>String(v??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#39;'}[c]));
+            const workerData=()=>Array.isArray(window.__workerAdminCache)?window.__workerAdminCache:[];
+            const photoOf=w=>String(w?.photo_url||w?.face_photo_url||w?.image_url||w?.worker_image||w?.profile_photo||w?.avatar_url||w?.photo||w?.face_image_url||w?.snapshot_url||w?.image_data||'').trim();
+            const addStyle=()=>{if(document.getElementById('workerCardPaymentUILayer'))return;const s=document.createElement('style');s.id='workerCardPaymentUILayer';s.textContent=`
+              .workerNamePaymentBtn{display:inline-flex;align-items:center;justify-content:center;margin-top:7px;padding:7px 15px;border:0;border-radius:10px;background:#ff7f1f;color:#fff;font-weight:900;font-size:12px;cursor:pointer;box-shadow:0 2px 7px rgba(255,127,31,.22)}
+              .workerNamePaymentBtn:hover{filter:brightness(.96)}
+              .workerProfilePhoto{width:62px;height:62px;border-radius:50%;object-fit:cover;border:2px solid #fff;box-shadow:0 2px 8px rgba(15,23,42,.12);display:block}
+            `;document.head.appendChild(s)};
+            const findWorker=card=>{const b=card.querySelector('button[onclick*="editWorker("]');const m=b?.getAttribute('onclick')?.match(/editWorker\(['\"]([^'\"]+)/);return m?workerData().find(w=>String(w.id)===String(m[1])):null};
+            const enhance=()=>{addStyle();document.querySelectorAll('#workersList .workerCard').forEach(card=>{const w=findWorker(card);if(!w)return;const head=card.querySelector('.workerHead');const h3=head?.querySelector('h3');if(h3){h3.parentElement.querySelector('.workerNamePaymentBtn')?.remove();h3.insertAdjacentHTML('afterend',`<button type="button" class="workerNamePaymentBtn" onclick="adminWorkerPayment('${esc2(w.id)}')">💰 PAYMENT</button>`)}const av=head?.querySelector('.avatar');const photo=photoOf(w);if(av&&photo){const img=document.createElement('img');img.className='workerProfilePhoto';img.src=photo;img.alt=w.name||w.worker_name||'Worker';img.loading='lazy';av.replaceWith(img)}})};
+            const loadFacePhotos=async()=>{try{const s=window.sb;if(!s)return;const r=await s.from('worker_face_registrations').select('*');if(r.error)return;const rows=r.data||[];const map={};rows.forEach(x=>{const id=x.worker_id||x.workerId;const photo=x.photo_url||x.image_url||x.photo||x.face_image||x.face_image_url||x.snapshot_url||x.image_data||x.face_data||'';if(id&&photo)map[String(id)]=photo});workerData().forEach(w=>{const photo=map[String(w.id)];if(photo)w.face_photo_url=photo});enhance()}catch(e){console.warn('worker face photo UI:',e)}};
+            let timer=0;const run=()=>{clearTimeout(timer);timer=setTimeout(()=>{enhance();loadFacePhotos()},120)};
+            document.addEventListener('DOMContentLoaded',run);new MutationObserver(run).observe(document.body,{childList:true,subtree:true});setTimeout(run,250);setTimeout(run,1200);setTimeout(run,2500);
+          })();
+          '''
+              s = s.rstrip() + layer + '\n'
+              p.write_text(s, encoding='utf-8')
           PY
 
       - name: Commit patch
