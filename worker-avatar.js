@@ -1,14 +1,25 @@
 (()=>{
   'use strict';
 
-  // Keep the modern Admin Dashboard UI, but block the legacy 5-second
-  // polling loops for the lifetime of the dashboard. The main dashboard
-  // functions continue to use their own normal timers.
+  // Load the modern Admin Dashboard enhancement without allowing the
+  // expensive worker/customer DOM patch loops to run continuously.
+  // Existing dashboard functions remain untouched.
   const nativeSetInterval=window.setInterval;
-  const nativeClearInterval=window.clearInterval;
+  const nativeSetTimeout=window.setTimeout;
+  const blocked=(fn)=>{
+    try{
+      const s=typeof fn==='function'?Function.prototype.toString.call(fn):String(fn||'');
+      return s.includes('patchAvatars')||s.includes('patchCustomerProjects');
+    }catch(e){return false}
+  };
+
   window.setInterval=function(fn,ms,...args){
-    if(Number(ms)===5000) return 0;
+    if(blocked(fn)) return 0;
     return nativeSetInterval.call(window,fn,ms,...args);
+  };
+  window.setTimeout=function(fn,ms,...args){
+    if(blocked(fn)) return 0;
+    return nativeSetTimeout.call(window,fn,ms,...args);
   };
 
   const load=(src)=>new Promise((resolve,reject)=>{
@@ -21,9 +32,8 @@
 
   load('worker-avatar-core.js')
     .then(()=>{
-      // IMPORTANT: do not restore setInterval here. worker-avatar-core.js
-      // contains two 5-second DOM/database polling loops which can make the
-      // dashboard unresponsive. Other dashboard timers remain untouched.
+      // Keep the guards active: worker-avatar-core.js otherwise starts
+      // repeated DOM/database patch work that can freeze the dashboard.
       let loaded=false;
       const loadEnquiry=()=>{
         if(loaded)return;
@@ -38,8 +48,5 @@
         if(e.target?.closest?.('[data-page="enquiries"]')) loadEnquiry();
       },true);
     })
-    .catch(e=>{
-      // Keep the interval guard active even if the enhancement fails.
-      console.error('Admin dashboard enhancement loader:',e);
-    });
+    .catch(e=>console.error('Admin dashboard enhancement loader:',e));
 })();
