@@ -1,8 +1,9 @@
 (()=>{
   'use strict';
 
-  // Keep the modern Admin Dashboard UI, but prevent the old 5-second
-  // background polling loops from making the page unresponsive.
+  // Keep the modern Admin Dashboard UI, but block the legacy 5-second
+  // polling loops for the lifetime of the dashboard. The main dashboard
+  // functions continue to use their own normal timers.
   const nativeSetInterval=window.setInterval;
   const nativeClearInterval=window.clearInterval;
   window.setInterval=function(fn,ms,...args){
@@ -20,15 +21,16 @@
 
   load('worker-avatar-core.js')
     .then(()=>{
-      window.setInterval=nativeSetInterval;
-      window.clearInterval=nativeClearInterval;
-      // Enquiry enhancement is loaded only when its section is opened.
+      // IMPORTANT: do not restore setInterval here. worker-avatar-core.js
+      // contains two 5-second DOM/database polling loops which can make the
+      // dashboard unresponsive. Other dashboard timers remain untouched.
       let loaded=false;
       const loadEnquiry=()=>{
         if(loaded)return;
         loaded=true;
         const s=document.createElement('script');
         s.src='enquiry-status-fix.js?v=2';
+        s.async=true;
         s.onerror=()=>{loaded=false};
         document.body.appendChild(s);
       };
@@ -37,8 +39,7 @@
       },true);
     })
     .catch(e=>{
-      window.setInterval=nativeSetInterval;
-      window.clearInterval=nativeClearInterval;
+      // Keep the interval guard active even if the enhancement fails.
       console.error('Admin dashboard enhancement loader:',e);
     });
 })();
